@@ -10,7 +10,13 @@ export type TimerStatus = "idle" | "running" | "paused" | "finished"
  */
 export function useTimer(durationSec: number) {
 
-  const [status, setStatus] = useState<TimerStatus>("idle")
+  const [status, setStatusState] = useState<TimerStatus>("idle")
+  const statusRef = useRef<TimerStatus>("idle")
+  const setStatus = useCallback((s: TimerStatus) => {
+    statusRef.current = s
+    setStatusState(s)
+  }, [])
+
   const [remaining, setRemaining] = useState(durationSec)
 
   const deadlineRef = useRef<number>(0)
@@ -35,6 +41,9 @@ export function useTimer(durationSec: number) {
   }, [])
 
   const tick = useCallback(() => {
+    // Si por alguna razón de concurrencia (Strict Mode) hay un loop huérfano, lo matamos.
+    if (statusRef.current !== "running") return
+
     const msLeft = deadlineRef.current - Date.now()
     const secLeft = Math.max(0, Math.ceil(msLeft / 1000))
     setRemaining(secLeft)
@@ -61,25 +70,21 @@ export function useTimer(durationSec: number) {
   }, [stopLoop, tick])
 
   const pause = useCallback(() => {
-    setStatus((s) => {
-      if (s !== "running") return s
-      stopLoop()
-      // Freeze remaining based on deadline.
-      const secLeft = Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000))
-      setRemaining(secLeft)
-      return "paused"
-    })
-  }, [stopLoop])
+    if (statusRef.current !== "running") return
+    stopLoop()
+    const secLeft = Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000))
+    setRemaining(secLeft)
+    setStatus("paused")
+  }, [stopLoop, setStatus])
 
   const resume = useCallback(() => {
-    setStatus((s) => {
-      if (s !== "paused") return s
-      deadlineRef.current = Date.now() + remaining * 1000
-      lastWholeRef.current = remaining
-      rafRef.current = requestAnimationFrame(tick)
-      return "running"
-    })
-  }, [remaining, tick])
+    if (statusRef.current !== "paused") return
+    deadlineRef.current = Date.now() + remaining * 1000
+    lastWholeRef.current = remaining
+    stopLoop()
+    rafRef.current = requestAnimationFrame(tick)
+    setStatus("running")
+  }, [remaining, tick, stopLoop, setStatus])
 
   const reset = useCallback(() => {
     stopLoop()

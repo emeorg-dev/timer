@@ -1,0 +1,23 @@
+{
+  "name": "Voice Timer",
+  "short_name": "Voice Timer",
+  "description": "A simple, accessible timer that announces remaining or elapsed time by voice in multiple languages.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fcfcfd",
+  "theme_color": "#2a9bb5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

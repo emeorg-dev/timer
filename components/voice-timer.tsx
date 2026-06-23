@@ -12,6 +12,7 @@ import { buildAnnouncement } from "@/lib/announcements"
 import { TimerDisplay } from "@/components/timer-display"
 import { TimerControls } from "@/components/timer-controls"
 import { SettingsSidebar } from "@/components/settings-sidebar"
+import { TimerBackground } from "@/components/timer-background"
 import { Button } from "@/components/ui/button"
 
 export function VoiceTimer() {
@@ -96,6 +97,7 @@ export function VoiceTimer() {
 
   const lang = settings.language
   const isIdle = timer.status === "idle"
+  const progress = durationSec > 0 ? (durationSec - timer.remaining) / durationSec : 0
 
   // Teclado numérico microondas (magia para PC)
   useEffect(() => {
@@ -129,11 +131,13 @@ export function VoiceTimer() {
   }
 
   return (
-    <main className="flex h-[100dvh] w-full select-none overflow-hidden bg-background">
+    <main className="relative flex h-[100dvh] w-full select-none overflow-hidden bg-background">
       <SettingsSidebar />
 
       {/* Main Content Area */}
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-[clamp(1rem,4vh,2.5rem)] px-4 py-4 transition-all duration-300">
+      <div className="relative z-0 flex min-h-0 flex-1 flex-col items-center justify-center gap-[clamp(1rem,4vh,2.5rem)] px-4 py-4 transition-all duration-300">
+        <TimerBackground status={timer.status} progress={progress} />
+        
         <TimerDisplay
           remaining={timer.remaining}
           duration={timer.duration || durationSec}

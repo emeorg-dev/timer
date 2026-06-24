@@ -12,7 +12,7 @@ import { buildAnnouncement } from "@/lib/announcements"
 import { TimerDisplay } from "@/components/timer-display"
 import { TimerControls } from "@/components/timer-controls"
 import { SettingsSidebar } from "@/components/settings-sidebar"
-import { TimerBackground } from "@/components/timer-background"
+import { GradientBackground } from "@/components/GradientBackground"
 import { Button } from "@/components/ui/button"
 
 export function VoiceTimer() {
@@ -136,7 +136,7 @@ export function VoiceTimer() {
 
       {/* Main Content Area */}
       <div className="relative z-0 flex min-h-0 flex-1 flex-col items-center justify-center gap-[clamp(1rem,4vh,2.5rem)] px-4 py-4 transition-all duration-300">
-        <TimerBackground status={timer.status} progress={progress} />
+        <GradientBackground status={timer.status} progress={progress} />
         
         <TimerDisplay
           remaining={timer.remaining}

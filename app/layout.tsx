@@ -10,24 +10,35 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Voice Timer',
+  title: 'Timer',
   description:
-    'A simple, accessible timer that announces remaining or elapsed time by voice in multiple languages.',
-  generator: 'v0.app',
+    'Un temporizador minimalista y accesible que anuncia el tiempo restante o transcurrido por voz en múltiples idiomas.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Voice Timer',
+    title: 'Timer',
   },
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
+        url: '/icon-light-34x34.png',
+        sizes: '34x34',
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/icon-dark-32x32.png',
+        url: '/icon-light-44x44.png',
+        sizes: '44x44',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/icon-dark-34x34.png',
+        sizes: '34x34',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/icon-dark-44x44.png',
+        sizes: '44x44',
         media: '(prefers-color-scheme: dark)',
       },
       {
@@ -35,7 +46,6 @@ export const metadata: Metadata = {
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
   },
 }
 

@@ -1,7 +1,7 @@
 {
-  "name": "Voice Timer",
-  "short_name": "Voice Timer",
-  "description": "A simple, accessible timer that announces remaining or elapsed time by voice in multiple languages.",
+  "name": "Timer",
+  "short_name": "Timer",
+  "description": "Un temporizador minimalista y accesible que anuncia el tiempo restante o transcurrido por voz en múltiples idiomas.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fcfcfd",
@@ -13,11 +13,6 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
-    },
-    {
-      "src": "/apple-icon.png",
-      "sizes": "180x180",
-      "type": "image/png"
     }
   ]
 }

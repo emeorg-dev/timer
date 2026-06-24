@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server"
+import { tryCatch } from "@/lib/try-catch"
+
+export const runtime = "edge"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -9,11 +12,11 @@ export async function GET(request: Request) {
     return new NextResponse("Missing text parameter", { status: 400 })
   }
 
-  try {
-    // Usamos el endpoint público de Google Translate como servicio de voz gratuito.
-    // Al hacerlo desde el servidor, evitamos los bloqueos de CORS y Autoplay del navegador.
-    const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&q=${encodeURIComponent(text)}`
-    
+  // Usamos el endpoint público de Google Translate como servicio de voz gratuito.
+  // Al hacerlo desde el servidor, evitamos los bloqueos de CORS y Autoplay del navegador.
+  const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&q=${encodeURIComponent(text)}`
+  
+  const fetchAudio = async () => {
     const response = await fetch(googleTtsUrl, {
       headers: {
         // Nos hacemos pasar por un navegador estándar para evitar ser bloqueados por Google
@@ -26,16 +29,19 @@ export async function GET(request: Request) {
       throw new Error(`Google TTS API responded with status: ${response.status}`)
     }
 
-    const arrayBuffer = await response.arrayBuffer()
+    return response.arrayBuffer()
+  }
 
-    return new NextResponse(arrayBuffer, {
-      headers: {
-        "Content-Type": "audio/mpeg",
-        "Cache-Control": "public, max-age=31536000, immutable" // Cachear la voz para no hacer tantas peticiones
-      },
-    })
-  } catch (error) {
-    console.error("Error en API proxy de TTS:", error)
+  const [error, arrayBuffer] = await tryCatch(fetchAudio(), "Fallo en API proxy de TTS")
+
+  if (error || !arrayBuffer) {
     return new NextResponse("Error generating speech", { status: 500 })
   }
+
+  return new NextResponse(arrayBuffer, {
+    headers: {
+      "Content-Type": "audio/mpeg",
+      "Cache-Control": "public, max-age=31536000, immutable" // Cachear la voz para no hacer tantas peticiones
+    },
+  })
 }

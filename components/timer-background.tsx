@@ -6,6 +6,8 @@ import React, { useMemo } from "react"
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react"
 import { TimerStatus } from "@/hooks/use-timer"
 import { cn } from "@/lib/utils"
+import { useSettings } from "./settings-provider"
+import { useTheme } from "@/hooks/use-theme"
 
 function interpolateColor(color1: string, color2: string, factor: number) {
   const hex = (x: number) => {
@@ -35,11 +37,18 @@ export function TimerBackground({
   status: TimerStatus
   progress: number // 0 to 1
 }) {
+  const { settings } = useSettings()
+  const isDark = useTheme(settings.theme)
+
   const runningColors = useMemo(() => {
-    const palettes = {
+    const palettes = isDark ? {
       green: ["#000000", "#008800", "#22cc22"], // Verde puro de laboratorio (0% azul)
       yellow: ["#000000", "#b45309", "#fef08a"], // Ámbar -> Amarillo
       red: ["#000000", "#b91c1c", "#fbbf24"], // Rojo -> Ámbar (fuego)
+    } : {
+      green: ["#ffffff", "#86efac", "#22c55e"], // Verde más claro y brillante
+      yellow: ["#ffffff", "#fde047", "#eab308"], // Amarillo suave
+      red: ["#ffffff", "#fca5a5", "#ef4444"], // Rojo claro
     }
 
     if (status === "finished") return palettes.red
@@ -60,9 +69,11 @@ export function TimerBackground({
         interpolateColor(palettes.yellow[2], palettes.red[2], factor),
       ]
     }
-  }, [status, progress])
+  }, [status, progress, isDark])
 
-  const idleColors = ["#000000", "#3f3f46", "#d4d4d8"] // Gris neutro -> Plata neutro
+  const idleColors = isDark
+    ? ["#000000", "#3f3f46", "#d4d4d8"] // Gris neutro -> Plata neutro (Dark)
+    : ["#ffffff", "#3f3f46", "#000000"] // Blanco -> Gris medio -> Negro (Light)
 
   const commonProps = {
     type: "sphere" as const,

@@ -46,10 +46,10 @@ export function useTimer(durationSec: number) {
 
     const msLeft = deadlineRef.current - Date.now()
     const secLeft = Math.max(0, Math.ceil(msLeft / 1000))
-    setRemaining(secLeft)
 
     if (secLeft !== lastWholeRef.current) {
       lastWholeRef.current = secLeft
+      setRemaining(secLeft)
     }
 
     if (msLeft <= 0) {

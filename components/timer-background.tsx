@@ -92,47 +92,28 @@ export function TimerBackground({
     uAmplitude: 0.5,
   }
 
-  return (
-    <>
-      {/* Esfera en Reposo / Pausa */}
-      <div
-        className={cn(
-          "absolute inset-0 z-0 pointer-events-none overflow-hidden blur-xl transition-opacity duration-1000 flex items-center justify-center",
-          status === "idle" || status === "paused" ? "opacity-30 md:opacity-40" : "opacity-0"
-        )}
-      >
-        <ShaderGradientCanvas
-          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }}
-        >
-          <ShaderGradient
-            {...commonProps}
-            color1={idleColors[0]}
-            color2={idleColors[1]}
-            color3={idleColors[2]}
-            uSpeed={0.05}
-          />
-        </ShaderGradientCanvas>
-      </div>
+  const isIdle = status === "idle" || status === "paused"
+  const currentColors = isIdle ? idleColors : runningColors
+  const currentSpeed = isIdle ? 0.05 : 0.3
 
-      {/* Esfera Corriendo */}
-      <div
-        className={cn(
-          "absolute inset-0 z-0 pointer-events-none overflow-hidden blur-xl transition-opacity duration-1000 flex items-center justify-center",
-          status === "running" || status === "finished" ? "opacity-30 md:opacity-40" : "opacity-0"
-        )}
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 z-0 pointer-events-none overflow-hidden blur-xl transition-opacity duration-1000 flex items-center justify-center",
+        "opacity-30 md:opacity-40"
+      )}
+    >
+      <ShaderGradientCanvas
+        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }}
       >
-        <ShaderGradientCanvas
-          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }}
-        >
-          <ShaderGradient
-            {...commonProps}
-            color1={runningColors[0]}
-            color2={runningColors[1]}
-            color3={runningColors[2]}
-            uSpeed={0.3}
-          />
-        </ShaderGradientCanvas>
-      </div>
-    </>
+        <ShaderGradient
+          {...commonProps}
+          color1={currentColors[0]}
+          color2={currentColors[1]}
+          color3={currentColors[2]}
+          uSpeed={currentSpeed}
+        />
+      </ShaderGradientCanvas>
+    </div>
   )
 }

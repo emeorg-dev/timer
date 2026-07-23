@@ -15,7 +15,7 @@ import { TimerControls } from "@/components/timer-controls"
 import { SettingsSidebar } from "@/components/settings-sidebar"
 import { GradientBackground } from "@/components/GradientBackground"
 import { Button } from "@/components/ui/button"
-
+import { InputParser } from "@/lib/core/input-parser"
 export function VoiceTimer() {
   const { settings, ready, update } = useSettings()
   useTheme(settings.theme)
@@ -27,12 +27,7 @@ export function VoiceTimer() {
   const [inputSequence, setInputSequence] = useState("1500")
 
   const durationSec = useMemo(() => {
-    if (!inputSequence) return 0
-    const padded = inputSequence.padStart(6, "0")
-    const h = parseInt(padded.slice(0, 2), 10)
-    const m = parseInt(padded.slice(2, 4), 10)
-    const s = parseInt(padded.slice(4, 6), 10)
-    return h * 3600 + m * 60 + s
+    return InputParser.parse(inputSequence)
   }, [inputSequence])
 
   // 1. El Relojero (mide el tiempo)

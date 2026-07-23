@@ -8,31 +8,10 @@ import {
   type ReactNode,
 } from "react"
 import type { LangCode } from "@/lib/i18n"
+import { Settings, DEFAULT_SETTINGS, AnnouncementMode, ThemePref } from "@/lib/settings/types"
+import { SettingsRepository } from "@/lib/settings/settings-repository"
 
-export type AnnouncementMode = "remaining" | "elapsed"
-export type ThemePref = "light" | "dark" | "system"
-
-export interface Settings {
-  voiceEnabled: boolean
-  language: LangCode
-  announcementInterval: number // seconds; 0 = only at end
-  announcementMode: AnnouncementMode
-  soundEnabled: boolean
-  theme: ThemePref
-  musicEnabled: boolean
-}
-
-const DEFAULT_SETTINGS: Settings = {
-  voiceEnabled: true,
-  language: "es-ES",
-  announcementInterval: 60,
-  announcementMode: "remaining",
-  soundEnabled: true,
-  theme: "system",
-  musicEnabled: true,
-}
-
-const STORAGE_KEY = "voice-timer-settings"
+export type { AnnouncementMode, ThemePref, Settings }
 
 interface SettingsContextValue {
   settings: Settings
@@ -41,6 +20,7 @@ interface SettingsContextValue {
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null)
+const repo = new SettingsRepository()
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
@@ -48,26 +28,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   // Load persisted settings on mount.
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<Settings>
-        setSettings((prev) => ({ ...prev, ...parsed }))
-      }
-    } catch {
-      // ignore malformed storage
-    }
+    setSettings(repo.load())
     setReady(true)
   }, [])
 
   // Persist whenever settings change (after initial load).
   useEffect(() => {
     if (!ready) return
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-    } catch {
-      // ignore quota errors
-    }
+    repo.save(settings)
   }, [settings, ready])
 
   const update: SettingsContextValue["update"] = (key, value) => {

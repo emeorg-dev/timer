@@ -1,7 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useState, useRef } from "react"
-import { TimerCore, TimerStatus } from "@/lib/core/timer-core"
+import { useCallback, useEffect, useRef, useState } from "react"
+
+import type { TimerStatus } from "@/lib/core/timer-core"
+import { TimerCore } from "@/lib/core/timer-core"
 
 export type { TimerStatus }
 
@@ -11,18 +13,18 @@ export type { TimerStatus }
 export function useTimer(durationSec: number) {
   const [status, setStatus] = useState<TimerStatus>("idle")
   const [remaining, setRemaining] = useState(durationSec)
-  
+
   const timerRef = useRef<TimerCore | null>(null)
-  
+
   useEffect(() => {
     const timer = new TimerCore(durationSec)
     timerRef.current = timer
 
-    timer.onStatusChange = (newStatus) => {
+    timer.onStatusChange = newStatus => {
       setStatus(newStatus)
     }
 
-    timer.onTick = (rem) => {
+    timer.onTick = rem => {
       setRemaining(rem)
     }
 

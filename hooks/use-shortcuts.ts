@@ -13,7 +13,7 @@ interface ShortcutHandlers {
 
 /**
  * Escucha eventos de teclado globales y ejecuta acciones mapeadas,
- * ignorando automáticamente las pulsaciones cuando el usuario está 
+ * ignorando automáticamente las pulsaciones cuando el usuario está
  * enfocado en un campo de texto (inputs, textareas).
  */
 export function useShortcuts({

@@ -1,5 +1,5 @@
-import { IFilePlayer, ISoundGenerator } from "./interfaces"
 import { duckingBus } from "./audio-ducking-bus"
+import type { IFilePlayer, ISoundGenerator } from "./interfaces"
 
 export class BackgroundMusicController {
   private player: IFilePlayer
@@ -12,12 +12,12 @@ export class BackgroundMusicController {
   constructor(player: IFilePlayer, sfx: ISoundGenerator) {
     this.player = player
     this.sfx = sfx
-    
+
     this.player.setSource("/bg-music.ogg")
     this.player.setLoop(true)
     this.player.setVolume(this.BASE_VOLUME)
 
-    this.unsubscribeDucking = duckingBus.subscribe((isDucking) => {
+    this.unsubscribeDucking = duckingBus.subscribe(isDucking => {
       this.player.setVolume(isDucking ? this.DUCK_VOLUME : this.BASE_VOLUME)
     })
   }
@@ -31,9 +31,9 @@ export class BackgroundMusicController {
     this.currentStage = 0
     this.player.setPlaybackRate(1.0)
   }
-  
+
   pause(): void {
-      this.player.pause()
+    this.player.pause()
   }
 
   updatePace(remainingSec: number, durationSec: number): void {
@@ -59,11 +59,11 @@ export class BackgroundMusicController {
     this.currentStage = stage
     this.player.setPlaybackRate(targetRate)
   }
-  
+
   destroy(): void {
-      if (this.unsubscribeDucking) {
-          this.unsubscribeDucking()
-      }
-      this.stop()
+    if (this.unsubscribeDucking) {
+      this.unsubscribeDucking()
+    }
+    this.stop()
   }
 }

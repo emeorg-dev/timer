@@ -8,10 +8,7 @@ export type Result<T, E = Error> = [null, T] | [E, null]
  * Función genérica para atrapar errores de funciones asíncronas de forma limpia.
  * (Estilo Go-lang). Registra automáticamente en el logger si algo falla.
  */
-export async function tryCatch<T>(
-  promise: Promise<T>,
-  contextMsg?: string
-): Promise<Result<T>> {
+export async function tryCatch<T>(promise: Promise<T>, contextMsg?: string): Promise<Result<T>> {
   try {
     const data = await promise
     return [null, data]
@@ -26,10 +23,7 @@ export async function tryCatch<T>(
 /**
  * Función genérica para ejecutar bloques síncronos de forma segura.
  */
-export function tryCatchSync<T>(
-  fn: () => T,
-  contextMsg?: string
-): Result<T> {
+export function tryCatchSync<T>(fn: () => T, contextMsg?: string): Result<T> {
   try {
     const data = fn()
     return [null, data]
@@ -42,7 +36,7 @@ export function tryCatchSync<T>(
 }
 
 /**
- * Función "fire-and-forget" que ejecuta un bloque ignorando los fallos, 
+ * Función "fire-and-forget" que ejecuta un bloque ignorando los fallos,
  * pero registrándolos en el sistema.
  */
 export function executeSafe(fn: () => void, contextMsg?: string): void {

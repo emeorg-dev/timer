@@ -1,5 +1,6 @@
-import { ISettingsRepository } from "./interfaces"
-import { Settings, DEFAULT_SETTINGS } from "./types"
+import type { ISettingsRepository } from "./interfaces"
+import type { Settings } from "./types"
+import { DEFAULT_SETTINGS } from "./types"
 
 const STORAGE_KEY = "voice-timer-settings"
 
@@ -8,7 +9,7 @@ export class SettingsRepository implements ISettingsRepository {
     if (typeof window === "undefined") {
       return DEFAULT_SETTINGS
     }
-    
+
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
@@ -23,7 +24,7 @@ export class SettingsRepository implements ISettingsRepository {
 
   save(settings: Settings): void {
     if (typeof window === "undefined") return
-    
+
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
     } catch {

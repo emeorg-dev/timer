@@ -1,16 +1,13 @@
 "use client"
 
-import { Minus, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSettings } from "@/components/settings-provider"
+import { Button } from "@/components/ui/button"
+import { Stepper } from "@/components/ui/stepper"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
-import { Stepper } from "@/components/ui/stepper"
 
 const PRESETS = [5, 10, 15, 25, 30, 45, 60] // minutes
-
 
 export function TimeSetup({
   hours,
@@ -36,19 +33,14 @@ export function TimeSetup({
       </TabsList>
 
       <TabsContent value="presets" className="mt-4">
-        <div
-          className={cn(
-            "grid grid-cols-4 gap-2",
-            disabled && "pointer-events-none opacity-50",
-          )}
-        >
-          {PRESETS.map((m) => {
-            const active = hours === 0 && minutes === m && seconds === 0
+        <div className={cn("grid grid-cols-4 gap-2", disabled && "pointer-events-none opacity-50")}>
+          {PRESETS.map(m => {
+            const isActive = hours === 0 && minutes === m && seconds === 0
             return (
               <Button
                 key={m}
-                variant={active ? "default" : "outline"}
-                className={cn("h-12 flex-col gap-0", !active && "bg-transparent")}
+                variant={isActive ? "default" : "outline"}
+                className={cn("h-12 flex-col gap-0", !isActive && "bg-transparent")}
                 onClick={() => onChange(0, m, 0)}
               >
                 <span className="text-base font-semibold">{m}</span>
@@ -63,28 +55,28 @@ export function TimeSetup({
         <div
           className={cn(
             "flex items-end justify-center gap-4",
-            disabled && "pointer-events-none opacity-50",
+            disabled && "pointer-events-none opacity-50"
           )}
         >
           <Stepper
             label={t(lang, "hours")}
             value={hours}
             max={23}
-            onChange={(v) => onChange(v, minutes, seconds)}
+            onChange={v => onChange(v, minutes, seconds)}
           />
           <span className="pb-3 font-mono text-2xl text-muted-foreground">:</span>
           <Stepper
             label={t(lang, "minutes")}
             value={minutes}
             max={59}
-            onChange={(v) => onChange(hours, v, seconds)}
+            onChange={v => onChange(hours, v, seconds)}
           />
           <span className="pb-3 font-mono text-2xl text-muted-foreground">:</span>
           <Stepper
             label={t(lang, "seconds")}
             value={seconds}
             max={59}
-            onChange={(v) => onChange(hours, minutes, v)}
+            onChange={v => onChange(hours, minutes, v)}
           />
         </div>
       </TabsContent>

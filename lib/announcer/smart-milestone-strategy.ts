@@ -1,7 +1,8 @@
-import { IAnnouncementStrategy } from "./interfaces"
-import { AnnouncementMode } from "../settings/types"
 import { buildAnnouncement } from "../announcements"
-import { LangCode } from "../i18n"
+import type { LangCode } from "../i18n"
+import type { AnnouncementMode } from "../settings/types"
+
+import type { IAnnouncementStrategy } from "./interfaces"
 
 export class SmartMilestoneStrategy implements IAnnouncementStrategy {
   private mode: AnnouncementMode
@@ -13,7 +14,7 @@ export class SmartMilestoneStrategy implements IAnnouncementStrategy {
     this.mode = mode
     this.lang = lang
   }
-  
+
   private isSmartMilestone(seconds: number): boolean {
     if (seconds <= 0) return false
     if (seconds <= 10) return true // cada segundo

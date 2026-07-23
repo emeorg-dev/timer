@@ -28,7 +28,7 @@ export class AudioDuckingBus {
   }
 
   private notify(isDucking: boolean): void {
-    this.listeners.forEach((listener) => listener(isDucking))
+    this.listeners.forEach(listener => listener(isDucking))
   }
 }
 

@@ -1,8 +1,9 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import { pad, secondsToTime } from "@/lib/time-utils"
 import { useMemo } from "react"
+
+import { pad, secondsToTime } from "@/lib/time-utils"
+import { cn } from "@/lib/utils"
 
 function interpolateColor(color1: string, color2: string, factor: number) {
   const hex = (x: number) => {
@@ -42,9 +43,7 @@ export function TimerDisplay({
 }) {
   const { hours, minutes, seconds } = secondsToTime(remaining)
 
-  const progress = status === "idle" 
-    ? 0 
-    : (duration > 0 ? (duration - remaining) / duration : 0)
+  const progress = status === "idle" ? 0 : duration > 0 ? (duration - remaining) / duration : 0
 
   // Use a fixed SVG coordinate system and scale the rendered box responsively
   // so the circle always fits the viewport without causing scroll.
@@ -108,12 +107,12 @@ export function TimerDisplay({
             type="tel"
             className="absolute inset-0 z-10 w-full h-full opacity-0 cursor-text"
             value={inputValue || ""}
-            onChange={(e) => {
+            onChange={e => {
               // Limpiar todo lo que no sea número y tomar los últimos 6
               const val = e.target.value.replace(/\D/g, "").slice(-6)
               onInputChange(val)
             }}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === "Enter" && onEnter) {
                 e.currentTarget.blur()
                 onEnter()
@@ -127,7 +126,7 @@ export function TimerDisplay({
           className={cn(
             "font-mono tabular-nums tracking-tight",
             "text-[clamp(2rem,12vmin,4rem)]",
-            status === "finished" && "text-destructive",
+            status === "finished" && "text-destructive"
           )}
         >
           {hours > 0 && <span>{pad(hours)}:</span>}

@@ -1,7 +1,8 @@
-import { IAnnouncementStrategy } from "./interfaces"
-import { AnnouncementMode } from "../settings/types"
 import { buildAnnouncement } from "../announcements"
-import { LangCode } from "../i18n"
+import type { LangCode } from "../i18n"
+import type { AnnouncementMode } from "../settings/types"
+
+import type { IAnnouncementStrategy } from "./interfaces"
 
 export class FixedIntervalStrategy implements IAnnouncementStrategy {
   private interval: number
@@ -16,20 +17,22 @@ export class FixedIntervalStrategy implements IAnnouncementStrategy {
   }
 
   shouldAnnounce(remaining: number, elapsed: number): boolean {
-    const currentBlock = this.mode === "remaining"
-      ? Math.ceil(remaining / this.interval)
-      : Math.floor(elapsed / this.interval)
+    const currentBlock =
+      this.mode === "remaining"
+        ? Math.ceil(remaining / this.interval)
+        : Math.floor(elapsed / this.interval)
 
     if (this.lastAnnouncedBlock === null) {
       this.lastAnnouncedBlock = currentBlock
       return false
     }
 
-    const crossedThreshold = this.mode === "remaining"
-      ? currentBlock < this.lastAnnouncedBlock
-      : currentBlock > this.lastAnnouncedBlock
+    const hasCrossedThreshold =
+      this.mode === "remaining"
+        ? currentBlock < this.lastAnnouncedBlock
+        : currentBlock > this.lastAnnouncedBlock
 
-    if (crossedThreshold) {
+    if (hasCrossedThreshold) {
       this.lastAnnouncedBlock = currentBlock
       return true
     }
@@ -41,7 +44,7 @@ export class FixedIntervalStrategy implements IAnnouncementStrategy {
     if (this.lastAnnouncedBlock === null) return null
     const boundaryToAnnounce = this.lastAnnouncedBlock * this.interval
     if (boundaryToAnnounce <= 0) return null
-    
+
     return buildAnnouncement(boundaryToAnnounce, this.lang, this.mode, false)
   }
 }

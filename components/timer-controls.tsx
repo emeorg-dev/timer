@@ -1,10 +1,11 @@
 "use client"
 
-import { Play, Pause, RotateCcw } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Pause, Play, RotateCcw } from "lucide-react"
+
 import { useSettings } from "@/components/settings-provider"
-import { t } from "@/lib/i18n"
+import { Button } from "@/components/ui/button"
 import type { TimerStatus } from "@/hooks/use-timer"
+import { t } from "@/lib/i18n"
 
 export function TimerControls({
   status,

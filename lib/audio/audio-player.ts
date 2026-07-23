@@ -1,4 +1,4 @@
-import { IFilePlayer } from "./interfaces"
+import type { IFilePlayer } from "./interfaces"
 
 export class AudioPlayer implements IFilePlayer {
   private audio: HTMLAudioElement | null = null
@@ -37,7 +37,7 @@ export class AudioPlayer implements IFilePlayer {
 
   play(): void {
     if (this.audio && this.audio.paused) {
-      this.audio.play().catch((e) => console.error("Error reproduciendo audio", e))
+      this.audio.play().catch(e => console.error("Error reproduciendo audio", e))
     }
   }
 

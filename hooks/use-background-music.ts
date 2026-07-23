@@ -1,11 +1,12 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+
 import { useSettings } from "@/components/settings-provider"
-import { BackgroundMusicController } from "@/lib/audio/background-music-controller"
+import type { TimerStatus } from "@/hooks/use-timer"
 import { AudioPlayer } from "@/lib/audio/audio-player"
+import { BackgroundMusicController } from "@/lib/audio/background-music-controller"
 import { SoundEffectPlayer } from "@/lib/audio/sound-effect-player"
-import { TimerStatus } from "@/hooks/use-timer"
 
 interface UseBackgroundMusicProps {
   status: TimerStatus

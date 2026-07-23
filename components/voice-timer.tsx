@@ -1,23 +1,24 @@
 "use client"
 
-import { useCallback, useState, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+
+import { GradientBackground } from "@/components/GradientBackground"
 import { useSettings } from "@/components/settings-provider"
-import { useTheme } from "@/hooks/use-theme"
-import { useTimer } from "@/hooks/use-timer"
-import { useSpeech } from "@/hooks/use-speech"
-import { useSound } from "@/hooks/use-sound"
+import { SettingsSidebar } from "@/components/settings-sidebar"
+import { TimerControls } from "@/components/timer-controls"
+import { TimerDisplay } from "@/components/timer-display"
+import { Button } from "@/components/ui/button"
+import { useAnnouncer } from "@/hooks/use-announcer"
 import { useBackgroundMusic } from "@/hooks/use-background-music"
 import { useShortcuts } from "@/hooks/use-shortcuts"
-import { useAnnouncer } from "@/hooks/use-announcer"
+import { useSound } from "@/hooks/use-sound"
+import { useSpeech } from "@/hooks/use-speech"
+import { useTheme } from "@/hooks/use-theme"
+import { useTimer } from "@/hooks/use-timer"
 import { buildAnnouncement } from "@/lib/announcements"
-import { TimerDisplay } from "@/components/timer-display"
-import { TimerControls } from "@/components/timer-controls"
-import { SettingsSidebar } from "@/components/settings-sidebar"
-import { GradientBackground } from "@/components/GradientBackground"
-import { Button } from "@/components/ui/button"
 import { InputParser } from "@/lib/core/input-parser"
 export function VoiceTimer() {
-  const { settings, ready, update } = useSettings()
+  const { settings, isReady, update } = useSettings()
   useTheme(settings.theme)
 
   const { speak, cancel, unlock } = useSpeech()
@@ -108,17 +109,20 @@ export function VoiceTimer() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Si el usuario está escribiendo en el ghost input o configuraciones, el input nativo se encarga
-      if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") {
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
         return
       }
 
       if (e.key >= "0" && e.key <= "9") {
-        setInputSequence((prev) => {
+        setInputSequence(prev => {
           const next = prev === "0" ? e.key : prev + e.key
           return next.length > 6 ? next.slice(-6) : next
         })
       } else if (e.key === "Backspace") {
-        setInputSequence((prev) => prev.slice(0, -1))
+        setInputSequence(prev => prev.slice(0, -1))
       } else if (e.key === "Enter") {
         e.preventDefault()
         if (durationSec > 0) handleStart()
@@ -129,7 +133,7 @@ export function VoiceTimer() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isIdle, durationSec, handleStart])
 
-  if (!ready) {
+  if (!isReady) {
     return <div className="h-[100dvh] w-full bg-background" aria-hidden="true" />
   }
 
@@ -140,7 +144,7 @@ export function VoiceTimer() {
       {/* Main Content Area */}
       <div className="relative z-0 flex min-h-0 flex-1 flex-col items-center justify-center gap-[clamp(1rem,4vh,2.5rem)] px-4 py-4 transition-all duration-300">
         <GradientBackground status={timer.status} progress={progress} />
-        
+
         <TimerDisplay
           remaining={timer.remaining}
           duration={timer.duration || durationSec}
@@ -162,11 +166,41 @@ export function VoiceTimer() {
 
         {isIdle && (
           <div className="flex w-full max-w-md shrink-0 flex-wrap justify-center gap-2">
-            <Button variant="outline" className="w-16 font-mono" onClick={() => setInputSequence("0100")}>1m</Button>
-            <Button variant="outline" className="w-16 font-mono" onClick={() => setInputSequence("0500")}>5m</Button>
-            <Button variant="outline" className="w-16 font-mono" onClick={() => setInputSequence("1500")}>15m</Button>
-            <Button variant="outline" className="w-16 font-mono" onClick={() => setInputSequence("2500")}>25m</Button>
-            <Button variant="ghost" className="w-16 text-muted-foreground" onClick={() => setInputSequence("")}>CLR</Button>
+            <Button
+              variant="outline"
+              className="w-16 font-mono"
+              onClick={() => setInputSequence("0100")}
+            >
+              1m
+            </Button>
+            <Button
+              variant="outline"
+              className="w-16 font-mono"
+              onClick={() => setInputSequence("0500")}
+            >
+              5m
+            </Button>
+            <Button
+              variant="outline"
+              className="w-16 font-mono"
+              onClick={() => setInputSequence("1500")}
+            >
+              15m
+            </Button>
+            <Button
+              variant="outline"
+              className="w-16 font-mono"
+              onClick={() => setInputSequence("2500")}
+            >
+              25m
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-16 text-muted-foreground"
+              onClick={() => setInputSequence("")}
+            >
+              CLR
+            </Button>
           </div>
         )}
       </div>

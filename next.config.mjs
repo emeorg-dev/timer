@@ -7,7 +7,7 @@ const nextConfig = {
     unoptimized: true,
   },
   // Permitir conexiones externas al entorno de desarrollo
-  allowedDevOrigins: ["192.168.1.24"],
+  allowedDevOrigins: ["192.168.1.24", "192.168.11.39"],
 }
 
 export default nextConfig

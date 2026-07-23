@@ -27,7 +27,7 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
     hour: ["hour", "hours"],
     minute: ["minute", "minutes"],
     second: ["second", "seconds"],
-    remaining: (u) => `${u} remaining`,
+    remaining: u => `${u} remaining`,
     elapsed: (u, p) => `${u} ${p ? "have" : "has"} passed`,
     finished: "Time is up",
     and: "and",
@@ -45,7 +45,7 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
     hour: ["heure", "heures"],
     minute: ["minute", "minutes"],
     second: ["seconde", "secondes"],
-    remaining: (u) => `Il reste ${u}`,
+    remaining: u => `Il reste ${u}`,
     elapsed: (u, p) => `${u} ${p ? "se sont écoulées" : "s'est écoulée"}`,
     finished: "Temps écoulé",
     and: "et",
@@ -54,7 +54,7 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
     hour: ["Stunde", "Stunden"],
     minute: ["Minute", "Minuten"],
     second: ["Sekunde", "Sekunden"],
-    remaining: (u) => `Noch ${u}`,
+    remaining: u => `Noch ${u}`,
     elapsed: (u, p) => `${u} ${p ? "sind" : "ist"} vergangen`,
     finished: "Zeit abgelaufen",
     and: "und",
@@ -110,7 +110,7 @@ export function buildAnnouncement(
     units = `${parts.slice(0, -1).join(", ")} ${p.and} ${parts[parts.length - 1]}`
   }
 
-  const firstValue = hours > 0 ? hours : (minutes > 0 ? minutes : seconds)
+  const firstValue = hours > 0 ? hours : minutes > 0 ? minutes : seconds
   const isPlural = new Intl.PluralRules(lang).select(firstValue) !== "one"
 
   return mode === "remaining" ? p.remaining(units, isPlural) : p.elapsed(units, isPlural)

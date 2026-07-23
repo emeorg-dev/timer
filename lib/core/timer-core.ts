@@ -4,11 +4,11 @@ export class TimerCore {
   private durationSec: number
   private remainingSec: number
   private status: TimerStatus = "idle"
-  
+
   private deadlineMs: number = 0
   private rafId: number | null = null
   private lastWholeSec: number
-  
+
   public onTick?: (remaining: number, elapsed: number) => void
   public onStatusChange?: (status: TimerStatus) => void
 

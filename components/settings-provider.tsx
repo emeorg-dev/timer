@@ -1,21 +1,16 @@
 "use client"
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react"
-import type { LangCode } from "@/lib/i18n"
-import { Settings, DEFAULT_SETTINGS, AnnouncementMode, ThemePref } from "@/lib/settings/types"
-import { SettingsRepository } from "@/lib/settings/settings-repository"
+import { createContext, type ReactNode, useContext, useEffect, useState } from "react"
 
-export type { AnnouncementMode, ThemePref, Settings }
+import { SettingsRepository } from "@/lib/settings/settings-repository"
+import type { AnnouncementMode, Settings, ThemePref } from "@/lib/settings/types"
+import { DEFAULT_SETTINGS } from "@/lib/settings/types"
+
+export type { AnnouncementMode, Settings, ThemePref }
 
 interface SettingsContextValue {
   settings: Settings
-  ready: boolean
+  isReady: boolean
   update: <K extends keyof Settings>(key: K, value: Settings[K]) => void
 }
 
@@ -24,26 +19,26 @@ const repo = new SettingsRepository()
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
-  const [ready, setReady] = useState(false)
+  const [isReady, setIsReady] = useState(false)
 
   // Load persisted settings on mount.
   useEffect(() => {
     setSettings(repo.load())
-    setReady(true)
+    setIsReady(true)
   }, [])
 
   // Persist whenever settings change (after initial load).
   useEffect(() => {
-    if (!ready) return
+    if (!isReady) return
     repo.save(settings)
-  }, [settings, ready])
+  }, [settings, isReady])
 
   const update: SettingsContextValue["update"] = (key, value) => {
-    setSettings((prev) => ({ ...prev, [key]: value }))
+    setSettings(prev => ({ ...prev, [key]: value }))
   }
 
   return (
-    <SettingsContext.Provider value={{ settings, ready, update }}>
+    <SettingsContext.Provider value={{ settings, isReady, update }}>
       {children}
     </SettingsContext.Provider>
   )

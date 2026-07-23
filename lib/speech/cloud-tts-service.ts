@@ -1,7 +1,8 @@
-import { tryCatchSync } from "../try-catch"
-import { createLogger } from "../logger"
-import { ISpeaker } from "./interfaces"
 import { duckingBus } from "../audio/audio-ducking-bus"
+import { createLogger } from "../logger"
+import { tryCatchSync } from "../try-catch"
+
+import type { ISpeaker } from "./interfaces"
 
 const logger = createLogger("CloudTTSService")
 
@@ -18,7 +19,8 @@ export class CloudTTSService implements ISpeaker {
     if (!this.audio) return
     tryCatchSync(() => {
       // Reproduce 1 segundo de silencio absoluto en base64
-      this.audio!.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"
+      this.audio!.src =
+        "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"
       this.audio!.play().catch(() => {})
       logger.debug("Cloud Audio desbloqueado")
     }, "Error intentando desbloquear Cloud Audio")
@@ -29,7 +31,7 @@ export class CloudTTSService implements ISpeaker {
 
     logger.info("Activando Cloud TTS (vía Proxy Interno)", { text, lang })
     this.audio.src = `/api/tts?text=${encodeURIComponent(text)}&lang=${lang}`
-    
+
     this.audio.onended = () => {
       this.cleanup()
     }
@@ -40,7 +42,7 @@ export class CloudTTSService implements ISpeaker {
     }
 
     duckingBus.requestDuck()
-    this.audio.play().catch((e) => {
+    this.audio.play().catch(e => {
       logger.error("Cloud TTS Promise bloqueada", { error: e })
       this.cleanup()
     })

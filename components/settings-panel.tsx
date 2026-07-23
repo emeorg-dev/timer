@@ -1,9 +1,11 @@
 "use client"
 
-import { Volume2, Languages, Bell, Music } from "lucide-react"
+import type { ReactNode } from "react"
+import { Bell, Languages, Music, Volume2 } from "lucide-react"
+
+import { type AnnouncementMode, useSettings } from "@/components/settings-provider"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
@@ -12,12 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useSettings, type AnnouncementMode } from "@/components/settings-provider"
+import { Switch } from "@/components/ui/switch"
 import { useSpeech } from "@/hooks/use-speech"
-import { LANGUAGES, t, type LangCode } from "@/lib/i18n"
-import { ReactNode } from "react"
+import { type LangCode, LANGUAGES, t } from "@/lib/i18n"
 
-const INTERVALS: { value: number; key: "smart" | "every10s" | "every30s" | "everyMinute" | "every5min" | "onlyAtEnd" }[] = [
+const INTERVALS: {
+  value: number
+  key: "smart" | "every10s" | "every30s" | "everyMinute" | "every5min" | "onlyAtEnd"
+}[] = [
   { value: -1, key: "smart" },
   { value: 10, key: "every10s" },
   { value: 30, key: "every30s" },
@@ -35,11 +39,11 @@ function SectionHeader({ icon, children }: { icon: React.ReactNode; children: Re
   )
 }
 
-function SettingSection({ 
-  icon, 
-  title, 
+function SettingSection({
+  icon,
+  title,
   children,
-}: { 
+}: {
   icon?: ReactNode
   title?: string
   children: ReactNode
@@ -74,7 +78,7 @@ export function SettingsPanel() {
           <Switch
             id="voice-switch"
             checked={settings.voiceEnabled}
-            onCheckedChange={(v) => update("voiceEnabled", v)}
+            onCheckedChange={v => update("voiceEnabled", v)}
           />
         </div>
         <Button
@@ -91,18 +95,16 @@ export function SettingsPanel() {
       </SettingSection>
 
       {/* Language */}
-      <SettingSection 
+      <SettingSection
         icon={<Languages className="size-4" aria-hidden="true" />}
         title={t(lang, "language")}
       >
-        <Select value={settings.language} onValueChange={(v) => update("language", v as LangCode)}>
+        <Select value={settings.language} onValueChange={v => update("language", v as LangCode)}>
           <SelectTrigger aria-label={t(lang, "language")}>
-            <SelectValue>
-              {LANGUAGES.find((l) => l.code === settings.language)?.label}
-            </SelectValue>
+            <SelectValue>{LANGUAGES.find(l => l.code === settings.language)?.label}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {LANGUAGES.map((l) => (
+            {LANGUAGES.map(l => (
               <SelectItem key={l.code} value={l.code}>
                 {l.label}
               </SelectItem>
@@ -112,13 +114,13 @@ export function SettingsPanel() {
       </SettingSection>
 
       {/* Announcement type */}
-      <SettingSection 
+      <SettingSection
         icon={<Bell className="size-4" aria-hidden="true" />}
         title={t(lang, "announcementType")}
       >
         <RadioGroup
           value={settings.announcementMode}
-          onValueChange={(v) => {
+          onValueChange={v => {
             update("announcementMode", v as AnnouncementMode)
             if (v === "elapsed" && settings.announcementInterval === -1) {
               update("announcementInterval", 60)
@@ -144,16 +146,18 @@ export function SettingsPanel() {
       </SettingSection>
 
       {/* Frequency */}
-      <SettingSection 
+      <SettingSection
         icon={<Bell className="size-4" aria-hidden="true" />}
         title={t(lang, "frequency")}
       >
         <RadioGroup
           value={String(settings.announcementInterval)}
-          onValueChange={(v) => update("announcementInterval", Number.parseInt(v, 10))}
+          onValueChange={v => update("announcementInterval", Number.parseInt(v, 10))}
           className="grid grid-cols-1 gap-2"
         >
-          {INTERVALS.filter((opt) => opt.key !== "smart" || settings.announcementMode === "remaining").map((opt) => (
+          {INTERVALS.filter(
+            opt => opt.key !== "smart" || settings.announcementMode === "remaining"
+          ).map(opt => (
             <label
               key={opt.value}
               className="flex cursor-pointer items-center gap-3 px-1 py-1.5 text-sm hover:text-foreground text-muted-foreground has-[:checked]:text-primary transition-colors"
@@ -175,7 +179,7 @@ export function SettingsPanel() {
           <Switch
             id="sound-switch"
             checked={settings.soundEnabled}
-            onCheckedChange={(v) => update("soundEnabled", v)}
+            onCheckedChange={v => update("soundEnabled", v)}
           />
         </div>
       </SettingSection>
@@ -190,7 +194,7 @@ export function SettingsPanel() {
           <Switch
             id="music-switch"
             checked={settings.musicEnabled}
-            onCheckedChange={(v) => update("musicEnabled", v)}
+            onCheckedChange={v => update("musicEnabled", v)}
           />
         </div>
       </SettingSection>

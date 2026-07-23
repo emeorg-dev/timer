@@ -17,7 +17,7 @@ function SheetBackdrop({ className, ...props }: DialogPrimitive.Backdrop.Props) 
       data-slot="sheet-backdrop"
       className={cn(
         "fixed inset-0 z-50 bg-black/40 transition-opacity duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
-        className,
+        className
       )}
       {...props}
     />
@@ -46,7 +46,7 @@ function SheetContent({
           side === "left"
             ? "left-0 border-r border-border data-[ending-style]:-translate-x-full data-[starting-style]:-translate-x-full"
             : "right-0 border-l border-border data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full",
-          className,
+          className
         )}
         {...props}
       >
@@ -84,11 +84,4 @@ function SheetDescription({ className, ...props }: DialogPrimitive.Description.P
   )
 }
 
-export {
-  Sheet,
-  SheetTrigger,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetDescription,
-}
+export { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle, SheetTrigger }

@@ -1,4 +1,5 @@
 import { Minus, Plus } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 
@@ -30,7 +31,7 @@ export function Stepper({ label, value, max, onChange }: StepperProps) {
           value={value}
           min={0}
           max={max}
-          onChange={(e) => onChange(clamp(Number.parseInt(e.target.value || "0", 10)))}
+          onChange={e => onChange(clamp(Number.parseInt(e.target.value || "0", 10)))}
           aria-label={label}
           className="w-16 rounded-lg border border-border bg-card py-2 text-center font-mono text-2xl tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-ring [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />

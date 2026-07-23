@@ -1,7 +1,8 @@
-import { ISoundGenerator, SoundType } from "./interfaces"
-import { tryCatchSync } from "../try-catch"
 import { createLogger } from "../logger"
+import { tryCatchSync } from "../try-catch"
+
 import { duckingBus } from "./audio-ducking-bus"
+import type { ISoundGenerator, SoundType } from "./interfaces"
 
 const logger = createLogger("SoundEffectPlayer")
 
@@ -11,7 +12,7 @@ export class SoundEffectPlayer implements ISoundGenerator {
   private getContext(): AudioContext | null {
     if (typeof window === "undefined") return null
     if (!this.ctx) {
-      const AC = window.AudioContext || (window as any).webkitAudioContext
+      const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
       if (!AC) return null
       this.ctx = new AC()
     }
@@ -28,14 +29,14 @@ export class SoundEffectPlayer implements ISoundGenerator {
     osc.frequency.value = freq
     osc.connect(gain)
     gain.connect(ctx.destination)
-    
+
     const t0 = ctx.currentTime + startDelay
     gain.gain.setValueAtTime(0.0001, t0)
     gain.gain.exponentialRampToValueAtTime(0.3, t0 + 0.02)
     gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration)
     osc.start(t0)
     osc.stop(t0 + duration)
-    
+
     // Ducking
     duckingBus.requestDuck()
     setTimeout(() => {
@@ -71,7 +72,7 @@ export class SoundEffectPlayer implements ISoundGenerator {
     tryCatchSync(() => {
       const ctx = this.getContext()
       if (!ctx) return
-      
+
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       osc.type = "sine"
@@ -81,12 +82,12 @@ export class SoundEffectPlayer implements ISoundGenerator {
       osc.start()
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6)
       osc.stop(ctx.currentTime + 0.6)
-      
+
       duckingBus.requestDuck()
       setTimeout(() => {
         duckingBus.releaseDuck()
       }, 600)
-      
+
       logger.info("Pitido de emergencia reproducido con éxito")
     }, "Error al reproducir pitido de emergencia")
   }

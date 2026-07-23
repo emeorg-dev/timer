@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, useCallback, useEffect } from "react"
+import { useCallback, useEffect, useMemo } from "react"
+
 import type { LangCode } from "@/lib/i18n"
 import { SpeechOrchestrator } from "@/lib/speech/speech-orchestrator"
 
@@ -12,9 +13,12 @@ export function useSpeech() {
     orchestrator.unlock()
   }, [orchestrator])
 
-  const speak = useCallback((text: string, lang: LangCode) => {
-    orchestrator.speak(text, lang)
-  }, [orchestrator])
+  const speak = useCallback(
+    (text: string, lang: LangCode) => {
+      orchestrator.speak(text, lang)
+    },
+    [orchestrator]
+  )
 
   const cancel = useCallback(() => {
     orchestrator.cancel()

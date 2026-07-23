@@ -1,8 +1,9 @@
-import { ISpeaker } from "./interfaces"
-import { VoiceResolver } from "./voice-resolver"
-import { CloudTTSService } from "./cloud-tts-service"
-import { createLogger } from "../logger"
 import { duckingBus } from "../audio/audio-ducking-bus"
+import { createLogger } from "../logger"
+
+import { CloudTTSService } from "./cloud-tts-service"
+import type { ISpeaker } from "./interfaces"
+import { VoiceResolver } from "./voice-resolver"
 
 const logger = createLogger("SpeechOrchestrator")
 const NATIVE_VOICE_TIMEOUT_MS = 2000
@@ -29,10 +30,11 @@ export class SpeechOrchestrator implements ISpeaker {
     const synth = window.speechSynthesis
     const loadVoices = () => {
       const voices = synth.getVoices()
-      if (voices.length > 0 || this.voicesLoaded) { // if already loaded or has voices
-         this.voicesLoaded = true
-         logger.debug("Voces cargadas", { count: voices.length })
-         this.processPending()
+      if (voices.length > 0 || this.voicesLoaded) {
+        // if already loaded or has voices
+        this.voicesLoaded = true
+        logger.debug("Voces cargadas", { count: voices.length })
+        this.processPending()
       }
     }
     synth.onvoiceschanged = loadVoices
@@ -71,9 +73,12 @@ export class SpeechOrchestrator implements ISpeaker {
 
     // Determine target dialect
     const baseUiLang = lang.split("-")[0]
-    const userLanguage = (typeof navigator !== "undefined" && navigator.languages && navigator.languages.length > 0) 
-      ? navigator.languages[0] 
-      : (typeof navigator !== "undefined" ? navigator.language : lang)
+    const userLanguage =
+      typeof navigator !== "undefined" && navigator.languages && navigator.languages.length > 0
+        ? navigator.languages[0]
+        : typeof navigator !== "undefined"
+          ? navigator.language
+          : lang
     const baseUserLang = userLanguage.split("-")[0]
     const targetLang = baseUiLang === baseUserLang ? userLanguage : lang
 
@@ -119,12 +124,12 @@ export class SpeechOrchestrator implements ISpeaker {
     utterance.onstart = () => {
       duckingBus.requestDuck()
     }
-    
+
     utterance.onend = () => {
       duckingBus.releaseDuck()
     }
 
-    utterance.onerror = (e) => {
+    utterance.onerror = e => {
       if (e.error !== "interrupted" && e.error !== "canceled") {
         logger.error("Error nativo TTS", { error: e.error })
       }

@@ -17,32 +17,34 @@ class Logger {
     this.module = options.module
   }
 
-  private formatMessage(level: LogLevel, message: string, data?: any) {
+  private formatMessage(level: LogLevel, message: string, data?: unknown) {
     const timestamp = new Date().toISOString()
     const prefix = `[${timestamp}] [${level.toUpperCase()}] [${this.module}]`
-    
+
     // Solo logueamos data si existe para mantener la consola limpia
-    return data !== undefined ? `${prefix}: ${message}\nData: ${JSON.stringify(data, null, 2)}` : `${prefix}: ${message}`
+    return data !== undefined
+      ? `${prefix}: ${message}\nData: ${JSON.stringify(data, null, 2)}`
+      : `${prefix}: ${message}`
   }
 
   // Habilitado solo si estamos en entorno de desarrollo o si forzamos debug
   private isDevelopment = process.env.NODE_ENV === "development"
 
-  debug(message: string, data?: any) {
+  debug(message: string, data?: unknown) {
     if (!this.isDevelopment) return
     console.debug(this.formatMessage("debug", message, data))
   }
 
-  info(message: string, data?: any) {
+  info(message: string, data?: unknown) {
     if (!this.isDevelopment) return
     console.info(this.formatMessage("info", message, data))
   }
 
-  warn(message: string, data?: any) {
+  warn(message: string, data?: unknown) {
     console.warn(this.formatMessage("warn", message, data))
   }
 
-  error(message: string, data?: any) {
+  error(message: string, data?: unknown) {
     console.error(this.formatMessage("error", message, data))
   }
 }

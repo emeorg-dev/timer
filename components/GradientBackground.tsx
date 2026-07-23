@@ -2,9 +2,10 @@
 
 import { useMemo } from "react"
 import { GrainGradient } from "@paper-design/shaders-react"
-import { TimerStatus } from "@/hooks/use-timer"
+
 import { useSettings } from "@/components/settings-provider"
 import { useTheme } from "@/hooks/use-theme"
+import type { TimerStatus } from "@/hooks/use-timer"
 
 function interpolateColor(color1: string, color2: string, factor: number) {
   const hex = (x: number) => {
@@ -38,15 +39,17 @@ export function GradientBackground({
   const isDark = useTheme(settings.theme)
 
   const runningColors = useMemo(() => {
-    const palettes = isDark ? {
-      green: ["#000000", "#004400", "#008800", "#22cc22"],
-      yellow: ["#000000", "#78350f", "#b45309", "#fef08a"],
-      red: ["#000000", "#7f1d1d", "#b91c1c", "#fbbf24"],
-    } : {
-      green: ["#ffffff", "#bbf7d0", "#86efac", "#22c55e"],
-      yellow: ["#ffffff", "#fef08a", "#fde047", "#eab308"],
-      red: ["#ffffff", "#fecaca", "#fca5a5", "#ef4444"],
-    }
+    const palettes = isDark
+      ? {
+          green: ["#000000", "#004400", "#008800", "#22cc22"],
+          yellow: ["#000000", "#78350f", "#b45309", "#fef08a"],
+          red: ["#000000", "#7f1d1d", "#b91c1c", "#fbbf24"],
+        }
+      : {
+          green: ["#ffffff", "#bbf7d0", "#86efac", "#22c55e"],
+          yellow: ["#ffffff", "#fef08a", "#fde047", "#eab308"],
+          red: ["#ffffff", "#fecaca", "#fca5a5", "#ef4444"],
+        }
 
     if (status === "finished") return palettes.red
 
@@ -79,7 +82,7 @@ export function GradientBackground({
 
   let currentSpeed = 0.2
   if (status === "running") {
-    currentSpeed = 0.5 + (progress * 2.0)
+    currentSpeed = 0.5 + progress * 2.0
   } else if (status === "finished") {
     currentSpeed = 3.0
   }

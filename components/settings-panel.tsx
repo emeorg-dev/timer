@@ -121,7 +121,7 @@ export function SettingsPanel() {
         <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-6">
           {/* Voice toggle */}
           <SettingSection>
-            <div className="flex flex-col gap-3 p-3 rounded-xl border border-border/10 bg-secondary/20 shadow-sm transition-colors">
+            <div className="flex flex-col gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors">
               <div className="flex items-center justify-between gap-3">
                 <Label
                   htmlFor="voice-switch"
@@ -168,14 +168,14 @@ export function SettingsPanel() {
               }}
               className="gap-2"
             >
-              <label className="flex cursor-pointer items-start gap-3 p-3 rounded-xl border border-border/10 bg-secondary/10 hover:bg-secondary/30 text-muted-foreground has-[:checked]:text-primary has-[:checked]:border-primary/30 has-[:checked]:bg-primary/5 transition-all shadow-sm">
+              <label className="flex cursor-pointer items-start gap-3 p-3 rounded-xl hover:bg-secondary/30 text-muted-foreground has-[:checked]:text-primary has-[:checked]:bg-secondary/10 transition-all">
                 <RadioGroupItem value="remaining" className="mt-0.5 shrink-0" />
                 <span className="flex flex-col gap-0.5 flex-1 min-w-0">
                   <span className="font-medium text-foreground truncate">{t(lang, "remaining")}</span>
                   <span className="text-xs leading-tight text-balance">&ldquo;{t(lang, "remainingExample")}&rdquo;</span>
                 </span>
               </label>
-              <label className="flex cursor-pointer items-start gap-3 p-3 rounded-xl border border-border/10 bg-secondary/10 hover:bg-secondary/30 text-muted-foreground has-[:checked]:text-primary has-[:checked]:border-primary/30 has-[:checked]:bg-primary/5 transition-all shadow-sm">
+              <label className="flex cursor-pointer items-start gap-3 p-3 rounded-xl hover:bg-secondary/30 text-muted-foreground has-[:checked]:text-primary has-[:checked]:bg-secondary/10 transition-all">
                 <RadioGroupItem value="elapsed" className="mt-0.5 shrink-0" />
                 <span className="flex flex-col gap-0.5 flex-1 min-w-0">
                   <span className="font-medium text-foreground truncate">{t(lang, "elapsed")}</span>
@@ -220,7 +220,7 @@ export function SettingsPanel() {
         </AccordionTrigger>
         <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-3">
           {/* Sound */}
-          <div className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border/10 bg-secondary/20 hover:bg-secondary/30 transition-colors shadow-sm">
+          <div className="flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors">
             <Label
               htmlFor="sound-switch"
               className="flex items-center gap-2.5 text-sm font-medium cursor-pointer flex-1"
@@ -237,7 +237,7 @@ export function SettingsPanel() {
           </div>
 
           {/* Background Music */}
-          <div className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border/10 bg-secondary/20 hover:bg-secondary/30 transition-colors shadow-sm">
+          <div className="flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors">
             <Label
               htmlFor="music-switch"
               className="flex items-center gap-2.5 text-sm font-medium cursor-pointer flex-1"

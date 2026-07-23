@@ -59,8 +59,14 @@ export class SpeechOrchestrator implements ISpeaker {
     }
 
     if (!this.voicesLoaded) {
-      this.pendingCallbacks.push(doUnlock)
-      setTimeout(doUnlock, UNLOCK_TIMEOUT_MS)
+      let isResolved = false
+      const taskWrapper = () => {
+        if (isResolved) return
+        isResolved = true
+        doUnlock()
+      }
+      this.pendingCallbacks.push(taskWrapper)
+      setTimeout(taskWrapper, UNLOCK_TIMEOUT_MS)
     } else {
       doUnlock()
     }
@@ -104,7 +110,7 @@ export class SpeechOrchestrator implements ISpeaker {
       setTimeout(() => {
         if (!isResolved) {
           isResolved = true
-          logger.error("Timeout esperando voces, activando Fallback")
+          logger.warn("Timeout esperando voces nativas, activando Fallback")
           this.cloudFallback.speak(text, targetLang)
         }
       }, NATIVE_VOICE_TIMEOUT_MS)

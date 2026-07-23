@@ -98,11 +98,24 @@ export function useSpeech() {
 
         // Usar las voces globales
         const voices = globalVoices.length > 0 ? globalVoices : synth.getVoices()
-        const prefix = lang.split("-")[0]
-        const voice =
-          voices.find((v) => v.lang === lang) ??
-          voices.find((v) => v.lang.replace("_", "-") === lang) ??
-          voices.find((v) => v.lang.toLowerCase().startsWith(prefix))
+        let voice: SpeechSynthesisVoice | undefined
+
+        if (lang === "es-ES") {
+          // Nombres conocidos de voces femeninas de Latinoamérica en macOS, Windows y Chrome
+          const preferredNames = ["paulina", "sabina", "google español de estados unidos"]
+          voice = voices.find((v) => 
+            v.lang.replace("_", "-").startsWith("es") && 
+            preferredNames.some(name => v.name.toLowerCase().includes(name))
+          )
+        }
+
+        if (!voice) {
+          const prefix = lang.split("-")[0]
+          voice =
+            voices.find((v) => v.lang === lang) ??
+            voices.find((v) => v.lang.replace("_", "-") === lang) ??
+            voices.find((v) => v.lang.toLowerCase().startsWith(prefix))
+        }
 
         if (voice) {
           utterance.voice = voice

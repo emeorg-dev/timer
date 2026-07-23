@@ -19,6 +19,7 @@ export interface Settings {
   announcementMode: AnnouncementMode
   soundEnabled: boolean
   theme: ThemePref
+  musicEnabled: boolean
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -28,6 +29,7 @@ const DEFAULT_SETTINGS: Settings = {
   announcementMode: "remaining",
   soundEnabled: true,
   theme: "system",
+  musicEnabled: true,
 }
 
 const STORAGE_KEY = "voice-timer-settings"

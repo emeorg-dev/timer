@@ -6,6 +6,7 @@ import { useTheme } from "@/hooks/use-theme"
 import { useTimer } from "@/hooks/use-timer"
 import { useSpeech } from "@/hooks/use-speech"
 import { useSound } from "@/hooks/use-sound"
+import { useBackgroundMusic } from "@/hooks/use-background-music"
 import { useShortcuts } from "@/hooks/use-shortcuts"
 import { useAnnouncer } from "@/hooks/use-announcer"
 import { buildAnnouncement } from "@/lib/announcements"
@@ -42,6 +43,13 @@ export function VoiceTimer() {
     remaining: timer.remaining,
     elapsed: timer.elapsed,
     status: timer.status,
+  })
+
+  // 2.5 El DJ (música de fondo que acelera con el tiempo)
+  useBackgroundMusic({
+    status: timer.status,
+    remaining: timer.remaining,
+    durationSec,
   })
 
   // 3. El Director de Escena (reacciona al final de la obra)

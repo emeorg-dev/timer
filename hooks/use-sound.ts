@@ -26,6 +26,13 @@ export const playEmergencyBeep = () => {
     osc.start()
     gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6)
     osc.stop(ctx.currentTime + 0.6)
+    
+    // Ducking
+    window.dispatchEvent(new CustomEvent("audio-ducking", { detail: true }))
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("audio-ducking", { detail: false }))
+    }, 600)
+    
     logger.info("Pitido de emergencia reproducido con éxito")
   }, "Error al reproducir pitido de emergencia")
 }
@@ -61,6 +68,12 @@ export function useSound() {
       gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration)
       osc.start(t0)
       osc.stop(t0 + duration)
+      
+      // Ducking de la música de fondo durante el sonido
+      window.dispatchEvent(new CustomEvent("audio-ducking", { detail: true }))
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("audio-ducking", { detail: false }))
+      }, duration * 1000)
     },
     [],
   )

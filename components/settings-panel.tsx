@@ -179,6 +179,21 @@ export function SettingsPanel() {
           />
         </div>
       </SettingSection>
+
+      {/* Background Music */}
+      <SettingSection>
+        <div className="flex items-center justify-between gap-4">
+          <Label htmlFor="music-switch" className="flex items-center gap-2 text-sm font-medium">
+            <Music className="size-4 text-primary" aria-hidden="true" />
+            {t(lang, "enableMusic")}
+          </Label>
+          <Switch
+            id="music-switch"
+            checked={settings.musicEnabled}
+            onCheckedChange={(v) => update("musicEnabled", v)}
+          />
+        </div>
+      </SettingSection>
     </div>
   )
 }

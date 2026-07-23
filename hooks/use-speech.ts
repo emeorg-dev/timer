@@ -146,8 +146,24 @@ export function useSpeech() {
         utterance.rate = 1
         utterance.pitch = 1
 
-        utterance.onend = () => logger.debug("Speech finalizado con éxito")
-        utterance.onerror = (e) => logger.error("Error reproduciendo speech", { error: e.error })
+        utterance.onstart = () => {
+          logger.debug("Speech iniciado")
+          window.dispatchEvent(new CustomEvent("audio-ducking", { detail: true }))
+        }
+
+        utterance.onend = () => {
+          logger.debug("Speech finalizado con éxito")
+          window.dispatchEvent(new CustomEvent("audio-ducking", { detail: false }))
+        }
+        
+        utterance.onerror = (e) => {
+          if (e.error === "interrupted" || e.error === "canceled") {
+            logger.debug("Speech interrumpido (esperado)")
+          } else {
+            logger.error("Error reproduciendo speech", { error: e.error })
+          }
+          window.dispatchEvent(new CustomEvent("audio-ducking", { detail: false }))
+        }
 
         synth.resume()
         synth.speak(utterance)

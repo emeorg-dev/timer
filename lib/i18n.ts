@@ -51,6 +51,7 @@ type UIKey =
   | "theme"
   | "finished"
   | "smart"
+  | "enableMusic"
 
 type UIStrings = Record<UIKey, string>
 
@@ -92,6 +93,7 @@ export const UI: Record<LangCode, UIStrings> = {
     finished: "Tiempo finalizado",
     theme: "Tema",
     smart: "Progresivo (Inteligente)",
+    enableMusic: "Música de fondo",
   },
   "en-US": {
     appName: "Voice Timer",
@@ -130,6 +132,7 @@ export const UI: Record<LangCode, UIStrings> = {
     finished: "Time is up",
     theme: "Theme",
     smart: "Progressive (Smart)",
+    enableMusic: "Background music",
   },
   "pt-BR": {
     appName: "Voice Timer",
@@ -168,6 +171,7 @@ export const UI: Record<LangCode, UIStrings> = {
     finished: "Tempo esgotado",
     theme: "Tema",
     smart: "Progressivo (Inteligente)",
+    enableMusic: "Música de fundo",
   },
   "fr-FR": {
     appName: "Voice Timer",
@@ -206,6 +210,7 @@ export const UI: Record<LangCode, UIStrings> = {
     finished: "Temps écoulé",
     theme: "Thème",
     smart: "Progressif (Intelligent)",
+    enableMusic: "Musique de fond",
   },
   "de-DE": {
     appName: "Voice Timer",
@@ -244,6 +249,7 @@ export const UI: Record<LangCode, UIStrings> = {
     finished: "Zeit abgelaufen",
     theme: "Thema",
     smart: "Progressiv (Intelligent)",
+    enableMusic: "Hintergrundmusik",
   },
   "it-IT": {
     appName: "Voice Timer",
@@ -282,6 +288,7 @@ export const UI: Record<LangCode, UIStrings> = {
     finished: "Tempo scaduto",
     theme: "Tema",
     smart: "Progressivo (Intelligente)",
+    enableMusic: "Musica di sottofondo",
   },
 }
 

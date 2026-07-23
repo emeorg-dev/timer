@@ -37,17 +37,21 @@ export const TTSService = {
       cloudAudio.onended = () => {
         cloudAudio.onended = null
         cloudAudio.onerror = null
+        window.dispatchEvent(new CustomEvent("audio-ducking", { detail: false }))
         resolve()
       }
 
       cloudAudio.onerror = (e) => {
         cloudAudio.onended = null
         cloudAudio.onerror = null
+        window.dispatchEvent(new CustomEvent("audio-ducking", { detail: false }))
         reject(new Error("Cloud TTS play failed or was blocked"))
       }
 
+      window.dispatchEvent(new CustomEvent("audio-ducking", { detail: true }))
       cloudAudio.play().catch((e) => {
         logger.error("Cloud TTS Promise bloqueada", { error: e })
+        window.dispatchEvent(new CustomEvent("audio-ducking", { detail: false }))
         reject(e)
       })
     })

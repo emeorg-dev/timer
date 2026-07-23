@@ -75,11 +75,21 @@ function unitPhrase(value: number, unit: [string, string]): string {
 }
 
 /** Builds a localized spoken phrase from a total number of seconds. */
-export function buildAnnouncement(totalSeconds: number, lang: LangCode, mode: AnnouncementMode): string {
+export function buildAnnouncement(
+  totalSeconds: number,
+  lang: LangCode,
+  mode: AnnouncementMode,
+  isSmart: boolean = false
+): string {
   const p = PHRASES[lang]
 
   if (totalSeconds <= 0) {
     return p.finished
+  }
+
+  // Cuenta regresiva simple en modo inteligente para los últimos 10 segundos
+  if (isSmart && mode === "remaining" && totalSeconds <= 10) {
+    return totalSeconds.toString()
   }
 
   const hours = Math.floor(totalSeconds / 3600)

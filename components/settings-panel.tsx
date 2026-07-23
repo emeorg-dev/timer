@@ -17,7 +17,8 @@ import { useSpeech } from "@/hooks/use-speech"
 import { LANGUAGES, t, type LangCode } from "@/lib/i18n"
 import { ReactNode } from "react"
 
-const INTERVALS: { value: number; key: "every10s" | "every30s" | "everyMinute" | "every5min" | "onlyAtEnd" }[] = [
+const INTERVALS: { value: number; key: "smart" | "every10s" | "every30s" | "everyMinute" | "every5min" | "onlyAtEnd" }[] = [
+  { value: -1, key: "smart" },
   { value: 10, key: "every10s" },
   { value: 30, key: "every30s" },
   { value: 60, key: "everyMinute" },
@@ -117,7 +118,12 @@ export function SettingsPanel() {
       >
         <RadioGroup
           value={settings.announcementMode}
-          onValueChange={(v) => update("announcementMode", v as AnnouncementMode)}
+          onValueChange={(v) => {
+            update("announcementMode", v as AnnouncementMode)
+            if (v === "elapsed" && settings.announcementInterval === -1) {
+              update("announcementInterval", 60)
+            }
+          }}
           className="gap-2"
         >
           <label className="flex cursor-pointer items-start gap-3 px-1 py-1.5 text-sm hover:text-foreground text-muted-foreground has-[:checked]:text-primary transition-colors">
@@ -147,7 +153,7 @@ export function SettingsPanel() {
           onValueChange={(v) => update("announcementInterval", Number.parseInt(v, 10))}
           className="grid grid-cols-1 gap-2"
         >
-          {INTERVALS.map((opt) => (
+          {INTERVALS.filter((opt) => opt.key !== "smart" || settings.announcementMode === "remaining").map((opt) => (
             <label
               key={opt.value}
               className="flex cursor-pointer items-center gap-3 px-1 py-1.5 text-sm hover:text-foreground text-muted-foreground has-[:checked]:text-primary transition-colors"

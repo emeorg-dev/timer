@@ -50,6 +50,7 @@ type UIKey =
   | "systemMode"
   | "theme"
   | "finished"
+  | "smart"
 
 type UIStrings = Record<UIKey, string>
 
@@ -90,6 +91,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "Sistema",
     finished: "Tiempo finalizado",
     theme: "Tema",
+    smart: "Progresivo (Inteligente)",
   },
   "en-US": {
     appName: "Voice Timer",
@@ -127,6 +129,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "System",
     finished: "Time is up",
     theme: "Theme",
+    smart: "Progressive (Smart)",
   },
   "pt-BR": {
     appName: "Voice Timer",
@@ -164,6 +167,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "Sistema",
     finished: "Tempo esgotado",
     theme: "Tema",
+    smart: "Progressivo (Inteligente)",
   },
   "fr-FR": {
     appName: "Voice Timer",
@@ -201,6 +205,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "Système",
     finished: "Temps écoulé",
     theme: "Thème",
+    smart: "Progressif (Intelligent)",
   },
   "de-DE": {
     appName: "Voice Timer",
@@ -238,6 +243,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "System",
     finished: "Zeit abgelaufen",
     theme: "Thema",
+    smart: "Progressiv (Intelligent)",
   },
   "it-IT": {
     appName: "Voice Timer",
@@ -275,6 +281,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "Sistema",
     finished: "Tempo scaduto",
     theme: "Tema",
+    smart: "Progressivo (Intelligente)",
   },
 }
 

@@ -5,6 +5,7 @@ import { PanelLeftClose, PanelLeftOpen, PanelRightClose, Settings2 } from "lucid
 
 import { SettingsPanel, ThemeToggle, useSettings } from "@/components/"
 import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { useShortcuts } from "@/hooks/use-shortcuts"
 import { t } from "@/lib/i18n"
@@ -40,9 +41,9 @@ export function SettingsSidebar() {
         <SheetContent
           side="left"
           showClose={false}
-          className="w-[80vw] max-w-[288px] border-r border-border/5 bg-background/40 p-0 backdrop-blur-2xl shadow-2xl"
+          className="flex flex-col w-[80vw] max-w-[288px] border-r border-border/10 bg-background/60 p-0 backdrop-blur-2xl shadow-2xl"
         >
-          <div className="flex h-14 items-center justify-between px-4">
+          <div className="flex h-16 shrink-0 items-center justify-between px-4 border-b border-border/10">
             <div className="flex items-center gap-2">
               <Settings2 className="size-4 shrink-0 text-primary" aria-hidden="true" />
               <SheetTitle className="font-semibold">{t(lang, "settings")}</SheetTitle>
@@ -63,12 +64,13 @@ export function SettingsSidebar() {
             </Button>
           </div>
 
-          <div className="flex flex-col gap-4 p-4 pt-2 overflow-y-auto h-[calc(100%-3.5rem)]">
+          <ScrollArea className="flex-1 w-full px-4 py-4">
             <SettingsPanel />
-            <div className="flex items-center justify-between px-1">
-              <span className="text-sm font-medium text-muted-foreground">{t(lang, "theme")}</span>
-              <ThemeToggle />
-            </div>
+          </ScrollArea>
+
+          <div className="flex items-center justify-between p-4 border-t border-border/10 shrink-0 bg-secondary/10">
+            <span className="text-sm font-medium text-muted-foreground">{t(lang, "theme")}</span>
+            <ThemeToggle />
           </div>
         </SheetContent>
       </Sheet>

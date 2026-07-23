@@ -12,7 +12,9 @@ export class SoundEffectPlayer implements ISoundGenerator {
   private getContext(): AudioContext | null {
     if (typeof window === "undefined") return null
     if (!this.ctx) {
-      const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+      const AC =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
       if (!AC) return null
       this.ctx = new AC()
     }

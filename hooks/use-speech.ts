@@ -81,47 +81,66 @@ export function useSpeech() {
         logger.error("Intento de speak() fallido: SpeechSynthesis no está soportado")
         return
       }
+      
+      // Detección del dialecto del usuario (Capa 0)
+      const baseUiLang = lang.split("-")[0]
+      const userLanguage = (typeof navigator !== 'undefined' && navigator.languages && navigator.languages.length > 0) 
+        ? navigator.languages[0] 
+        : (typeof navigator !== 'undefined' ? navigator.language : lang)
+      const baseUserLang = userLanguage.split("-")[0]
+      
+      // Si el idioma base de la UI coincide con el del sistema, usamos el dialecto específico del usuario (ej: es-CL).
+      // Si no, respetamos el idioma de la UI estrictamente.
+      const targetLang = baseUiLang === baseUserLang ? userLanguage : lang
 
       const doFallback = () => {
-        logger.info("Delegando habla al Fallback en la Nube (Cloud TTS).")
-        TTSService.playCloudVoice(text, lang).catch(() => {
+        logger.info("Delegando habla al Fallback en la Nube (Cloud TTS).", { targetLang })
+        TTSService.playCloudVoice(text, targetLang).catch(() => {
           playEmergencyBeep()
         })
       }
 
       const doSpeakNative = () => {
         const synth = window.speechSynthesis
-        logger.debug("Preparando speech", { text, lang, speaking: synth.speaking, pending: synth.pending })
+        logger.debug("Preparando speech", { text, targetLang, speaking: synth.speaking, pending: synth.pending })
 
         const utterance = new SpeechSynthesisUtterance(text)
-        utterance.lang = lang
+        utterance.lang = targetLang
 
         // Usar las voces globales
         const voices = globalVoices.length > 0 ? globalVoices : synth.getVoices()
         let voice: SpeechSynthesisVoice | undefined
+        
+        const baseLang = targetLang.split("-")[0]
+        const normalizedTargetLang = targetLang.replace("_", "-")
 
-        if (lang === "es-ES") {
-          // Nombres conocidos de voces femeninas de Latinoamérica en macOS, Windows y Chrome
-          const preferredNames = ["paulina", "sabina", "google español de estados unidos"]
+        // Capa 1: Coincidencia Exacta
+        voice = voices.find((v) => v.lang.replace("_", "-") === normalizedTargetLang)
+
+        // Capa 2: Preferencias Regionales (Afinidad)
+        if (!voice && baseLang === "es") {
+          const isLatam = normalizedTargetLang !== "es-ES" && normalizedTargetLang !== "es"
+          const latamNames = ["paulina", "sabina", "google español de estados unidos", "sofia", "luciana", "mia", "angélica", "carmit", "diego"] // Diego y Carmit en iOS/Mac
+          const spainNames = ["monica", "jorge", "lucia", "marisa", "google español"]
+          
+          const preferredNames = isLatam ? latamNames : spainNames
+          
           voice = voices.find((v) => 
             v.lang.replace("_", "-").startsWith("es") && 
             preferredNames.some(name => v.name.toLowerCase().includes(name))
           )
         }
 
+        // Capa 3: Coincidencia de Idioma Base (Respaldo)
         if (!voice) {
-          const prefix = lang.split("-")[0]
-          voice =
-            voices.find((v) => v.lang === lang) ??
-            voices.find((v) => v.lang.replace("_", "-") === lang) ??
-            voices.find((v) => v.lang.toLowerCase().startsWith(prefix))
+          voice = voices.find((v) => v.lang.toLowerCase().startsWith(baseLang))
         }
 
         if (voice) {
           utterance.voice = voice
           logger.debug("Voz asignada", { voiceURI: voice.voiceURI, lang: voice.lang })
         } else {
-          logger.warn("No se encontró voz nativa para el idioma, usando por defecto", { lang, availableVoicesCount: voices.length })
+          logger.warn("No se encontró voz nativa para el idioma, usando por defecto", { targetLang, availableVoicesCount: voices.length })
         }
 
         utterance.rate = 1

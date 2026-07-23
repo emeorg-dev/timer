@@ -18,15 +18,18 @@ export async function GET(request: Request) {
       try {
         const cloudTtsUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`
         
-        let voiceName = "es-US-Neural2-A" // Voz femenina premium de Latinoamérica
-        if (lang !== "es-ES") {
-          // Fallback básico para otros idiomas si se usan
-          voiceName = `${lang}-Standard-A` 
-        }
+        let targetLang = lang;
+        if (targetLang === "es") targetLang = "es-US"; // Fallback por defecto si no hay país
 
-        // Si el idioma original era es-ES (por defecto en la app), para que la API de Cloud use la voz latina 
-        // correctamente, le indicamos languageCode: "es-US"
-        const targetLang = lang === "es-ES" ? "es-US" : lang;
+        // Por defecto intentamos pedir la voz estándar del dialecto detectado (ej: es-CL-Standard-A)
+        let voiceName = `${targetLang}-Standard-A` 
+        
+        // Voces Premium (Neural2) para dialectos conocidos y soportados
+        if (targetLang === "es-ES") {
+          voiceName = "es-ES-Neural2-A"
+        } else if (targetLang === "es-US") {
+          voiceName = "es-US-Neural2-A"
+        }
 
         const cloudRes = await fetch(cloudTtsUrl, {
           method: "POST",

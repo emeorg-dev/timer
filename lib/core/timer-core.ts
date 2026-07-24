@@ -1,6 +1,13 @@
+import { EventEmitter } from "./event-emitter"
+
 export type TimerStatus = "idle" | "running" | "paused" | "finished"
 
-export class TimerCore {
+export type TimerEvents = {
+  tick: { remainingSec: number; elapsedSec: number }
+  statusChange: TimerStatus
+}
+
+export class TimerCore extends EventEmitter<TimerEvents> {
   private durationSec: number
   private remainingSec: number
   private status: TimerStatus = "idle"
@@ -9,10 +16,8 @@ export class TimerCore {
   private timerId: ReturnType<typeof setInterval> | null = null
   private lastWholeSec: number
 
-  public onTick?: (remaining: number, elapsed: number) => void
-  public onStatusChange?: (status: TimerStatus) => void
-
   constructor(durationSec: number) {
+    super()
     this.durationSec = durationSec
     this.remainingSec = durationSec
     this.lastWholeSec = durationSec
@@ -23,13 +28,13 @@ export class TimerCore {
       this.durationSec = durationSec
       this.remainingSec = durationSec
       this.lastWholeSec = durationSec
-      if (this.onTick) this.onTick(this.remainingSec, 0)
+      this.emit("tick", { remainingSec: this.remainingSec, elapsedSec: 0 })
     }
   }
 
   private setStatus(newStatus: TimerStatus): void {
     this.status = newStatus
-    if (this.onStatusChange) this.onStatusChange(newStatus)
+    this.emit("statusChange", newStatus)
   }
 
   private stopLoop(): void {
@@ -48,13 +53,16 @@ export class TimerCore {
     if (secLeft !== this.lastWholeSec) {
       this.lastWholeSec = secLeft
       this.remainingSec = secLeft
-      if (this.onTick) this.onTick(this.remainingSec, this.durationSec - this.remainingSec)
+      this.emit("tick", {
+        remainingSec: this.remainingSec,
+        elapsedSec: this.durationSec - this.remainingSec,
+      })
     }
 
     if (msLeft <= 0) {
       this.remainingSec = 0
       this.setStatus("finished")
-      if (this.onTick) this.onTick(0, this.durationSec)
+      this.emit("tick", { remainingSec: 0, elapsedSec: this.durationSec })
       this.stopLoop()
       return
     }
@@ -75,7 +83,10 @@ export class TimerCore {
     this.stopLoop()
     const secLeft = Math.max(0, Math.ceil((this.deadlineMs - Date.now()) / 1000))
     this.remainingSec = secLeft
-    if (this.onTick) this.onTick(this.remainingSec, this.durationSec - this.remainingSec)
+    this.emit("tick", {
+      remainingSec: this.remainingSec,
+      elapsedSec: this.durationSec - this.remainingSec,
+    })
     this.setStatus("paused")
   }
 
@@ -93,11 +104,12 @@ export class TimerCore {
     this.stopLoop()
     this.lastWholeSec = this.durationSec
     this.remainingSec = this.durationSec
-    if (this.onTick) this.onTick(this.remainingSec, 0)
+    this.emit("tick", { remainingSec: this.remainingSec, elapsedSec: 0 })
     this.setStatus("idle")
   }
 
   destroy(): void {
     this.stopLoop()
+    this.removeAllListeners()
   }
 }

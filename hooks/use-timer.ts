@@ -20,15 +20,17 @@ export function useTimer(durationSec: number) {
     const timer = new TimerCore(durationSec)
     timerRef.current = timer
 
-    timer.onStatusChange = newStatus => {
+    const unsubscribeStatus = timer.on("statusChange", newStatus => {
       setStatus(newStatus)
-    }
+    })
 
-    timer.onTick = rem => {
-      setRemaining(rem)
-    }
+    const unsubscribeTick = timer.on("tick", ({ remainingSec }) => {
+      setRemaining(remainingSec)
+    })
 
     return () => {
+      unsubscribeStatus()
+      unsubscribeTick()
       timer.destroy()
     }
   }, []) // Empty deps so it's a singleton per mount

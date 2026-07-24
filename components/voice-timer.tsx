@@ -10,6 +10,7 @@ import { TimerDisplay } from "@/components/timer-display"
 import { Button } from "@/components/ui/button"
 import { useAnnouncer } from "@/hooks/use-announcer"
 import { useBackgroundMusic } from "@/hooks/use-background-music"
+import { useMicrowaveInput } from "@/hooks/use-microwave-input"
 import { useShortcuts } from "@/hooks/use-shortcuts"
 import { useSound } from "@/hooks/use-sound"
 import { useSpeech } from "@/hooks/use-speech"
@@ -104,34 +105,12 @@ export function VoiceTimer() {
   const progress = durationSec > 0 ? (durationSec - timer.remaining) / durationSec : 0
 
   // Teclado numérico microondas (magia para PC)
-  useEffect(() => {
-    if (!isIdle) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Si el usuario está escribiendo en el ghost input o configuraciones, el input nativo se encarga
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
-      ) {
-        return
-      }
-
-      if (e.key >= "0" && e.key <= "9") {
-        setInputSequence(prev => {
-          const next = prev === "0" ? e.key : prev + e.key
-          return next.length > 6 ? next.slice(-6) : next
-        })
-      } else if (e.key === "Backspace") {
-        setInputSequence(prev => prev.slice(0, -1))
-      } else if (e.key === "Enter") {
-        e.preventDefault()
-        if (durationSec > 0) handleStart()
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isIdle, durationSec, handleStart])
+  useMicrowaveInput({
+    isIdle,
+    durationSec,
+    setInputSequence,
+    handleStart,
+  })
 
   if (!isReady) {
     return <div className="h-[100dvh] w-full bg-background" aria-hidden="true" />

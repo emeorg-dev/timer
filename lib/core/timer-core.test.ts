@@ -19,9 +19,9 @@ describe("TimerCore", () => {
     const timer = new TimerCore(60)
 
     let currentStatus = "idle"
-    timer.onStatusChange = status => {
+    timer.on("statusChange", status => {
       currentStatus = status
-    }
+    })
 
     expect(currentStatus).toBe("idle")
   })
@@ -29,14 +29,14 @@ describe("TimerCore", () => {
   it("starts and counts down", () => {
     const timer = new TimerCore(10)
     let lastRemaining = 10
-    timer.onTick = rem => {
-      lastRemaining = rem
-    }
+    timer.on("tick", ({ remainingSec }) => {
+      lastRemaining = remainingSec
+    })
 
     let currentStatus = "idle"
-    timer.onStatusChange = status => {
+    timer.on("statusChange", status => {
       currentStatus = status
-    }
+    })
 
     timer.start()
     expect(currentStatus).toBe("running")
@@ -51,14 +51,14 @@ describe("TimerCore", () => {
   it("pauses and resumes", () => {
     const timer = new TimerCore(10)
     let lastRemaining = 10
-    timer.onTick = rem => {
-      lastRemaining = rem
-    }
+    timer.on("tick", ({ remainingSec }) => {
+      lastRemaining = remainingSec
+    })
 
     let currentStatus = "idle"
-    timer.onStatusChange = status => {
+    timer.on("statusChange", status => {
       currentStatus = status
-    }
+    })
 
     timer.start()
     vi.advanceTimersByTime(2000) // 8 seconds left
@@ -81,9 +81,9 @@ describe("TimerCore", () => {
   it("finishes at zero", () => {
     const timer = new TimerCore(2)
     let currentStatus = "idle"
-    timer.onStatusChange = status => {
+    timer.on("statusChange", status => {
       currentStatus = status
-    }
+    })
 
     timer.start()
     vi.advanceTimersByTime(2500) // Over 2 seconds

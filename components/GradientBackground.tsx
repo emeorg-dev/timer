@@ -6,7 +6,6 @@ import { GrainGradient } from "@paper-design/shaders-react"
 import { useSettings } from "@/components/settings-provider"
 import { useTheme } from "@/hooks/use-theme"
 import type { TimerStatus } from "@/hooks/use-timer"
-
 import { interpolateColor } from "@/lib/color-utils"
 export function GradientBackground({
   status,

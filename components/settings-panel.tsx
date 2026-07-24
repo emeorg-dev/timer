@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { Bell, Languages, Speech, AudioLines, Disc, Play } from "lucide-react"
+import { AudioLines, Bell, Disc, Languages, Play, Speech } from "lucide-react"
 
 import { type AnnouncementMode, useSettings } from "@/components/settings-provider"
 import {
@@ -29,13 +29,13 @@ const INTERVALS: {
   value: number
   key: "smart" | "every10s" | "every30s" | "everyMinute" | "every5min" | "onlyAtEnd"
 }[] = [
-    { value: -1, key: "smart" },
-    { value: 10, key: "every10s" },
-    { value: 30, key: "every30s" },
-    { value: 60, key: "everyMinute" },
-    { value: 300, key: "every5min" },
-    { value: 0, key: "onlyAtEnd" },
-  ]
+  { value: -1, key: "smart" },
+  { value: 10, key: "every10s" },
+  { value: 30, key: "every30s" },
+  { value: 60, key: "everyMinute" },
+  { value: 300, key: "every5min" },
+  { value: 0, key: "onlyAtEnd" },
+]
 
 function SectionHeader({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -171,15 +171,21 @@ export function SettingsPanel() {
               <label className="flex cursor-pointer items-start gap-3 p-3 rounded-xl hover:bg-secondary/30 text-muted-foreground has-[:checked]:text-primary has-[:checked]:bg-secondary/10 transition-all">
                 <RadioGroupItem value="remaining" className="mt-0.5 shrink-0" />
                 <span className="flex flex-col gap-0.5 flex-1 min-w-0">
-                  <span className="font-medium text-foreground truncate">{t(lang, "remaining")}</span>
-                  <span className="text-xs leading-tight text-balance">&ldquo;{t(lang, "remainingExample")}&rdquo;</span>
+                  <span className="font-medium text-foreground truncate">
+                    {t(lang, "remaining")}
+                  </span>
+                  <span className="text-xs leading-tight text-balance">
+                    &ldquo;{t(lang, "remainingExample")}&rdquo;
+                  </span>
                 </span>
               </label>
               <label className="flex cursor-pointer items-start gap-3 p-3 rounded-xl hover:bg-secondary/30 text-muted-foreground has-[:checked]:text-primary has-[:checked]:bg-secondary/10 transition-all">
                 <RadioGroupItem value="elapsed" className="mt-0.5 shrink-0" />
                 <span className="flex flex-col gap-0.5 flex-1 min-w-0">
                   <span className="font-medium text-foreground truncate">{t(lang, "elapsed")}</span>
-                  <span className="text-xs leading-tight text-balance">&ldquo;{t(lang, "elapsedExample")}&rdquo;</span>
+                  <span className="text-xs leading-tight text-balance">
+                    &ldquo;{t(lang, "elapsedExample")}&rdquo;
+                  </span>
                 </span>
               </label>
             </RadioGroup>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import type { LangCode } from "@/lib/i18n"
 import { SpeechOrchestrator } from "@/lib/speech/speech-orchestrator"

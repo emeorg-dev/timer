@@ -2,10 +2,9 @@
 
 import { useMemo } from "react"
 
+import { interpolateColor } from "@/lib/color-utils"
 import { pad, secondsToTime } from "@/lib/time-utils"
 import { cn } from "@/lib/utils"
-
-import { interpolateColor } from "@/lib/color-utils"
 export function TimerDisplay({
   remaining,
   duration,

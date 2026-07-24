@@ -81,6 +81,20 @@ function SettingSection({
   )
 }
 
+function SettingCard({
+  children,
+  className,
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={cn("flex flex-col gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors", className)}>
+      {children}
+    </div>
+  )
+}
+
 export function SettingsPanel() {
   const { settings, update } = useSettings()
   const { speak, unlock } = useSpeech()
@@ -138,7 +152,7 @@ export function SettingsPanel() {
         <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-6">
           {/* Voice toggle */}
           <SettingSection>
-            <div className="flex flex-col gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors">
+            <SettingCard>
               <div className="flex items-center justify-between gap-3">
                 <Label
                   htmlFor="voice-switch"
@@ -165,7 +179,7 @@ export function SettingsPanel() {
                 <Play className="size-3.5 shrink-0" aria-hidden="true" />
                 <span className="truncate">{t(lang, "testVoice")}</span>
               </Button>
-            </div>
+            </SettingCard>
           </SettingSection>
 
           <Separator className="opacity-50" />
@@ -243,7 +257,7 @@ export function SettingsPanel() {
         </AccordionTrigger>
         <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-3">
           {/* Sound */}
-          <div className="flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors">
+          <SettingCard className="flex-row items-center justify-between">
             <Label
               htmlFor="sound-switch"
               className="flex items-center gap-2.5 text-sm font-medium cursor-pointer flex-1"
@@ -257,10 +271,10 @@ export function SettingsPanel() {
               onCheckedChange={v => update("soundEnabled", v)}
               className="shrink-0"
             />
-          </div>
+          </SettingCard>
 
           {/* Background Music */}
-          <div className="flex flex-col gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors">
+          <SettingCard>
             <div className="flex items-center justify-between gap-3">
               <Label
                 htmlFor="music-switch"
@@ -349,7 +363,7 @@ export function SettingsPanel() {
                 </div>
               </div>
             )}
-          </div>
+          </SettingCard>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

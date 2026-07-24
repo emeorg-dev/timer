@@ -8,10 +8,12 @@ import { VoiceSettings } from "./settings/voice-settings"
 
 export function SettingsPanel() {
   return (
-    <Accordion defaultValue={["item-1"]} className="w-full">
+    <div className="w-full">
       <GeneralSettings />
-      <VoiceSettings />
-      <AudioSettings />
-    </Accordion>
+      <Accordion defaultValue={["item-2"]} className="w-full">
+        <VoiceSettings />
+        <AudioSettings />
+      </Accordion>
+    </div>
   )
 }

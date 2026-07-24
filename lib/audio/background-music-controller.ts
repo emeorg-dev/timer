@@ -5,21 +5,37 @@ export class BackgroundMusicController {
   private player: IFilePlayer
   private sfx: ISoundGenerator
   private currentStage = 0
-  private readonly BASE_VOLUME = 0.4
-  private readonly DUCK_VOLUME = 0.1
+  private baseVolume = 0.4
+  private duckVolume = 0.1
+  private currentTrack = "/bg-music.ogg"
+  private isDucking = false
   private unsubscribeDucking: (() => void) | null = null
 
   constructor(player: IFilePlayer, sfx: ISoundGenerator) {
     this.player = player
     this.sfx = sfx
 
-    this.player.setSource("/bg-music.ogg")
+    this.player.setSource(this.currentTrack)
     this.player.setLoop(true)
-    this.player.setVolume(this.BASE_VOLUME)
+    this.player.setVolume(this.baseVolume)
 
     this.unsubscribeDucking = duckingBus.subscribe(isDucking => {
-      this.player.setVolume(isDucking ? this.DUCK_VOLUME : this.BASE_VOLUME)
+      this.isDucking = isDucking
+      this.player.setVolume(isDucking ? this.duckVolume : this.baseVolume)
     })
+  }
+
+  setTrack(trackUrl: string): void {
+    if (this.currentTrack !== trackUrl) {
+      this.currentTrack = trackUrl
+      this.player.setSource(trackUrl)
+    }
+  }
+
+  setVolume(volume: number): void {
+    this.baseVolume = volume
+    this.duckVolume = volume * 0.25
+    this.player.setVolume(this.isDucking ? this.duckVolume : this.baseVolume)
   }
 
   start(): void {

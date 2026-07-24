@@ -31,6 +31,9 @@ export function useBackgroundMusic({ status, remaining, durationSec }: UseBackgr
     const controller = controllerRef.current
     if (!controller) return
 
+    controller.setTrack(settings.musicTrack)
+    controller.setVolume(settings.musicVolume / 100)
+
     if (status === "running" && settings.musicEnabled) {
       controller.start()
       controller.updatePace(remaining, durationSec)
@@ -39,5 +42,12 @@ export function useBackgroundMusic({ status, remaining, durationSec }: UseBackgr
     } else if (status === "idle" || status === "finished") {
       controller.stop()
     }
-  }, [status, remaining, durationSec, settings.musicEnabled])
+  }, [
+    status,
+    remaining,
+    durationSec,
+    settings.musicEnabled,
+    settings.musicTrack,
+    settings.musicVolume,
+  ])
 }

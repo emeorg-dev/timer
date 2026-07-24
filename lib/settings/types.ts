@@ -11,6 +11,8 @@ export interface Settings {
   soundEnabled: boolean
   theme: ThemePref
   musicEnabled: boolean
+  musicTrack: string
+  musicVolume: number
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -21,4 +23,6 @@ export const DEFAULT_SETTINGS: Settings = {
   soundEnabled: true,
   theme: "system",
   musicEnabled: true,
+  musicTrack: "/bg-music.ogg",
+  musicVolume: 40,
 }

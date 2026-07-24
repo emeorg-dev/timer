@@ -29,7 +29,7 @@ export class CloudTTSService implements ISpeaker {
   speak(text: string, lang: string): void {
     if (!this.audio) return
 
-    logger.info("Activando Cloud TTS (vía Proxy Interno)", { text, lang })
+    logger.info("Activando Cloud TTS (vía Proxy Interno)", { textLength: text.length, lang })
     this.audio.src = `/api/tts?text=${encodeURIComponent(text)}&lang=${lang}`
 
     this.audio.onended = () => {

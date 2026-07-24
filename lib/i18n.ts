@@ -92,7 +92,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "Sistema",
     finished: "Tiempo finalizado",
     theme: "Tema",
-    smart: "Progresivo (Inteligente)",
+    smart: "Inteligente",
     enableMusic: "Música de fondo",
   },
   "en-US": {
@@ -131,7 +131,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "System",
     finished: "Time is up",
     theme: "Theme",
-    smart: "Progressive (Smart)",
+    smart: "Smart",
     enableMusic: "Background music",
   },
   "pt-BR": {
@@ -170,7 +170,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "Sistema",
     finished: "Tempo esgotado",
     theme: "Tema",
-    smart: "Progressivo (Inteligente)",
+    smart: "Inteligente",
     enableMusic: "Música de fundo",
   },
   "fr-FR": {
@@ -209,7 +209,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "Système",
     finished: "Temps écoulé",
     theme: "Thème",
-    smart: "Progressif (Intelligent)",
+    smart: "Intelligent",
     enableMusic: "Musique de fond",
   },
   "de-DE": {
@@ -248,7 +248,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "System",
     finished: "Zeit abgelaufen",
     theme: "Thema",
-    smart: "Progressiv (Intelligent)",
+    smart: "Intelligent",
     enableMusic: "Hintergrundmusik",
   },
   "it-IT": {
@@ -287,7 +287,7 @@ export const UI: Record<LangCode, UIStrings> = {
     systemMode: "Sistema",
     finished: "Tempo scaduto",
     theme: "Tema",
-    smart: "Progressivo (Intelligente)",
+    smart: "Intelligente",
     enableMusic: "Musica di sottofondo",
   },
 }

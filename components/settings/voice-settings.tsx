@@ -1,14 +1,15 @@
-import { Bell, Play, Speech } from "lucide-react"
+import { Bell, ChevronLeft, ChevronRight, Play, Speech } from "lucide-react"
 
 import { type AnnouncementMode, useSettings } from "@/components/settings-provider"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { useSpeech } from "@/hooks/use-speech"
 import { t } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
 
 import { SettingCard } from "./setting-card"
 import { SettingSection } from "./setting-section"
@@ -29,6 +30,14 @@ export function VoiceSettings() {
   const { settings, update } = useSettings()
   const { speak, unlock } = useSpeech()
   const lang = settings.language
+
+  // Computed state for Stepper frequency
+  const availableIntervals = INTERVALS.filter(
+    opt => opt.key !== "smart" || settings.announcementMode === "remaining"
+  )
+  const currentIndex = availableIntervals.findIndex(i => i.value === settings.announcementInterval)
+  const actualIndex = currentIndex === -1 ? 3 : currentIndex
+  const currentIntervalOption = availableIntervals[actualIndex]
 
   const handleTestVoice = () => {
     unlock()
@@ -82,35 +91,32 @@ export function VoiceSettings() {
           icon={<Bell className="size-4" aria-hidden="true" />}
           title={t(lang, "announcementType")}
         >
-          <RadioGroup
-            value={settings.announcementMode}
-            onValueChange={v => {
-              update("announcementMode", v as AnnouncementMode)
-              if (v === "elapsed" && settings.announcementInterval === -1) {
-                update("announcementInterval", 60)
-              }
-            }}
-            className="gap-2"
-          >
-            <label className="flex cursor-pointer items-start gap-3 p-3 rounded-xl hover:bg-secondary/30 text-muted-foreground has-[:checked]:text-primary has-[:checked]:bg-secondary/10 transition-all">
-              <RadioGroupItem value="remaining" className="mt-0.5 shrink-0" />
-              <span className="flex flex-col gap-0.5 flex-1 min-w-0">
-                <span className="font-medium text-foreground truncate">{t(lang, "remaining")}</span>
-                <span className="text-xs leading-tight text-balance">
-                  &ldquo;{t(lang, "remainingExample")}&rdquo;
-                </span>
-              </span>
-            </label>
-            <label className="flex cursor-pointer items-start gap-3 p-3 rounded-xl hover:bg-secondary/30 text-muted-foreground has-[:checked]:text-primary has-[:checked]:bg-secondary/10 transition-all">
-              <RadioGroupItem value="elapsed" className="mt-0.5 shrink-0" />
-              <span className="flex flex-col gap-0.5 flex-1 min-w-0">
-                <span className="font-medium text-foreground truncate">{t(lang, "elapsed")}</span>
-                <span className="text-xs leading-tight text-balance">
-                  &ldquo;{t(lang, "elapsedExample")}&rdquo;
-                </span>
-              </span>
-            </label>
-          </RadioGroup>
+          <div className="flex flex-col gap-2">
+            <Tabs
+              value={settings.announcementMode}
+              onValueChange={v => {
+                update("announcementMode", v as AnnouncementMode)
+                if (v === "elapsed" && settings.announcementInterval === -1) {
+                  update("announcementInterval", 60)
+                }
+              }}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
+                <TabsTrigger value="remaining" className="text-xs">
+                  {t(lang, "remaining")}
+                </TabsTrigger>
+                <TabsTrigger value="elapsed" className="text-xs">
+                  {t(lang, "elapsed")}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <p className="text-xs text-muted-foreground text-center italic">
+              {settings.announcementMode === "remaining"
+                ? `"${t(lang, "remainingExample")}"`
+                : `"${t(lang, "elapsedExample")}"`}
+            </p>
+          </div>
         </SettingSection>
 
         {/* Frequency */}
@@ -118,23 +124,45 @@ export function VoiceSettings() {
           icon={<Bell className="size-4" aria-hidden="true" />}
           title={t(lang, "frequency")}
         >
-          <RadioGroup
-            value={String(settings.announcementInterval)}
-            onValueChange={v => update("announcementInterval", Number.parseInt(v, 10))}
-            className="grid grid-cols-1 gap-1.5"
-          >
-            {INTERVALS.filter(
-              opt => opt.key !== "smart" || settings.announcementMode === "remaining"
-            ).map(opt => (
-              <label
-                key={opt.value}
-                className="flex cursor-pointer items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/30 text-sm text-muted-foreground has-[:checked]:text-primary has-[:checked]:bg-primary/5 transition-colors"
+          <SettingCard>
+            <div className="flex items-center justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="size-8 shrink-0 rounded-full"
+                onClick={() => {
+                  if (actualIndex > 0) {
+                    update("announcementInterval", availableIntervals[actualIndex - 1].value)
+                  }
+                }}
+                disabled={actualIndex <= 0}
               >
-                <RadioGroupItem value={String(opt.value)} className="shrink-0" />
-                <span className="font-medium text-foreground truncate">{t(lang, opt.key)}</span>
-              </label>
-            ))}
-          </RadioGroup>
+                <ChevronLeft className="size-4" />
+              </Button>
+
+              <div className="flex flex-col items-center justify-center flex-1 min-w-0 px-2 text-center">
+                <span className="text-sm font-medium text-foreground truncate w-full leading-tight">
+                  {t(lang, currentIntervalOption.key)}
+                </span>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="size-8 shrink-0 rounded-full"
+                onClick={() => {
+                  if (actualIndex < availableIntervals.length - 1) {
+                    update("announcementInterval", availableIntervals[actualIndex + 1].value)
+                  }
+                }}
+                disabled={actualIndex >= availableIntervals.length - 1}
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          </SettingCard>
         </SettingSection>
       </AccordionContent>
     </AccordionItem>

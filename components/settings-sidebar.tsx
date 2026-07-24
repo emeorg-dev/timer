@@ -41,7 +41,7 @@ export function SettingsSidebar() {
         <SheetContent
           side="left"
           showClose={false}
-          className="flex flex-col w-[80vw] max-w-[288px] border-r border-border/10 bg-background/60 p-0 backdrop-blur-2xl shadow-2xl"
+          className="flex flex-col w-[85vw] max-w-[340px] border-r border-border/10 bg-background/60 p-0 backdrop-blur-2xl shadow-2xl"
         >
           <div className="flex h-16 shrink-0 items-center justify-between px-4 border-b border-border/10">
             <div className="flex items-center gap-2">

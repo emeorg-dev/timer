@@ -6,7 +6,7 @@ export class TimerCore {
   private status: TimerStatus = "idle"
 
   private deadlineMs: number = 0
-  private rafId: number | null = null
+  private timerId: ReturnType<typeof setInterval> | null = null
   private lastWholeSec: number
 
   public onTick?: (remaining: number, elapsed: number) => void
@@ -33,11 +33,9 @@ export class TimerCore {
   }
 
   private stopLoop(): void {
-    if (this.rafId !== null) {
-      if (typeof window !== "undefined") {
-        cancelAnimationFrame(this.rafId)
-      }
-      this.rafId = null
+    if (this.timerId !== null) {
+      clearInterval(this.timerId)
+      this.timerId = null
     }
   }
 
@@ -57,11 +55,8 @@ export class TimerCore {
       this.remainingSec = 0
       this.setStatus("finished")
       if (this.onTick) this.onTick(0, this.durationSec)
+      this.stopLoop()
       return
-    }
-
-    if (typeof window !== "undefined") {
-      this.rafId = requestAnimationFrame(this.tick)
     }
   }
 
@@ -71,9 +66,8 @@ export class TimerCore {
     this.lastWholeSec = this.durationSec
     this.setStatus("running")
     this.stopLoop()
-    if (typeof window !== "undefined") {
-      this.rafId = requestAnimationFrame(this.tick)
-    }
+    this.timerId = setInterval(this.tick, 100)
+    this.tick()
   }
 
   pause(): void {
@@ -90,10 +84,9 @@ export class TimerCore {
     this.deadlineMs = Date.now() + this.remainingSec * 1000
     this.lastWholeSec = this.remainingSec
     this.stopLoop()
-    if (typeof window !== "undefined") {
-      this.rafId = requestAnimationFrame(this.tick)
-    }
     this.setStatus("running")
+    this.timerId = setInterval(this.tick, 100)
+    this.tick()
   }
 
   reset(): void {

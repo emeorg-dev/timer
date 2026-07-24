@@ -64,8 +64,10 @@ export function SettingsSidebar() {
             </Button>
           </div>
 
-          <ScrollArea className="flex-1 w-full px-4 py-4">
-            <SettingsPanel />
+          <ScrollArea className="flex-1 w-full">
+            <div className="p-4">
+              <SettingsPanel />
+            </div>
           </ScrollArea>
 
           <div className="flex items-center justify-between p-4 border-t border-border/10 shrink-0 bg-secondary/10">

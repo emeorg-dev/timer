@@ -6,6 +6,23 @@ import { interpolateColor } from "@/lib/color-utils"
 import { pad, secondsToTime } from "@/lib/time-utils"
 import { cn } from "@/lib/utils"
 
+function getProgressColor(status: "idle" | "running" | "paused" | "finished", progress: number): string {
+  if (status === "idle" || status === "paused") return "var(--color-primary)"
+  if (status === "finished") return "#ef4444"
+
+  if (progress < 0.5) {
+    const factor = progress / 0.5
+    return interpolateColor("#10b981", "#eab308", factor)
+  }
+
+  const factor = (progress - 0.5) / 0.5
+  return interpolateColor("#eab308", "#ef4444", factor)
+}
+
+function sanitizeMicrowaveInput(rawValue: string): string {
+  return rawValue.replace(/\D/g, "").slice(-6)
+}
+
 export const TimerDisplay = memo(function TimerDisplay({
   remaining,
   duration,
@@ -33,18 +50,7 @@ export const TimerDisplay = memo(function TimerDisplay({
   const circumference = 2 * Math.PI * radius
   const dashOffset = circumference * (1 - progress)
 
-  const dynamicColor = useMemo(() => {
-    if (status === "idle" || status === "paused") return "var(--color-primary)"
-    if (status === "finished") return "#ef4444"
-
-    if (progress < 0.5) {
-      const factor = progress / 0.5
-      return interpolateColor("#10b981", "#eab308", factor)
-    } else {
-      const factor = (progress - 0.5) / 0.5
-      return interpolateColor("#eab308", "#ef4444", factor)
-    }
-  }, [status, progress])
+  const dynamicColor = useMemo(() => getProgressColor(status, progress), [status, progress])
 
   return (
     <div
@@ -88,8 +94,7 @@ export const TimerDisplay = memo(function TimerDisplay({
             className="absolute inset-0 z-10 w-full h-full opacity-0 cursor-text"
             value={inputValue || ""}
             onChange={e => {
-              // Limpiar todo lo que no sea número y tomar los últimos 6
-              const val = e.target.value.replace(/\D/g, "").slice(-6)
+              const val = sanitizeMicrowaveInput(e.target.value)
               onInputChange(val)
             }}
             onKeyDown={e => {

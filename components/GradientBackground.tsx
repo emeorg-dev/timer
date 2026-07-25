@@ -35,6 +35,34 @@ function getShaderSpeed(
   return 0
 }
 
+function interpolatePalette(paletteA: string[], paletteB: string[], factor: number): string[] {
+  return paletteA.map((color, i) => interpolateColor(color, paletteB[i], factor))
+}
+
+function getRunningColors(status: TimerStatus, progress: number, isDark: boolean): string[] {
+  const palettes = isDark
+    ? {
+        green: ["#000000", "#004400", "#008800", "#22cc22"],
+        yellow: ["#000000", "#78350f", "#b45309", "#fef08a"],
+        red: ["#000000", "#7f1d1d", "#b91c1c", "#fbbf24"],
+      }
+    : {
+        green: ["#ffffff", "#bbf7d0", "#86efac", "#22c55e"],
+        yellow: ["#ffffff", "#fef08a", "#fde047", "#eab308"],
+        red: ["#ffffff", "#fecaca", "#fca5a5", "#ef4444"],
+      }
+
+  if (status === "finished") return palettes.red
+
+  if (progress < 0.5) {
+    const factor = progress / 0.5
+    return interpolatePalette(palettes.green, palettes.yellow, factor)
+  }
+
+  const factor = (progress - 0.5) / 0.5
+  return interpolatePalette(palettes.yellow, palettes.red, factor)
+}
+
 export function GradientBackground({
   status,
   progress,
@@ -59,40 +87,10 @@ export function GradientBackground({
 
   const visualProgress = Math.round(progress * 100) / 100
 
-  const runningColors = useMemo(() => {
-    const palettes = isDark
-      ? {
-          green: ["#000000", "#004400", "#008800", "#22cc22"],
-          yellow: ["#000000", "#78350f", "#b45309", "#fef08a"],
-          red: ["#000000", "#7f1d1d", "#b91c1c", "#fbbf24"],
-        }
-      : {
-          green: ["#ffffff", "#bbf7d0", "#86efac", "#22c55e"],
-          yellow: ["#ffffff", "#fef08a", "#fde047", "#eab308"],
-          red: ["#ffffff", "#fecaca", "#fca5a5", "#ef4444"],
-        }
-
-    if (status === "finished") return palettes.red
-
-    // Interpolar según el progreso si está corriendo
-    if (visualProgress < 0.5) {
-      const factor = visualProgress / 0.5
-      return [
-        interpolateColor(palettes.green[0], palettes.yellow[0], factor),
-        interpolateColor(palettes.green[1], palettes.yellow[1], factor),
-        interpolateColor(palettes.green[2], palettes.yellow[2], factor),
-        interpolateColor(palettes.green[3], palettes.yellow[3], factor),
-      ]
-    } else {
-      const factor = (visualProgress - 0.5) / 0.5
-      return [
-        interpolateColor(palettes.yellow[0], palettes.red[0], factor),
-        interpolateColor(palettes.yellow[1], palettes.red[1], factor),
-        interpolateColor(palettes.yellow[2], palettes.red[2], factor),
-        interpolateColor(palettes.yellow[3], palettes.red[3], factor),
-      ]
-    }
-  }, [status, visualProgress, isDark])
+  const runningColors = useMemo(
+    () => getRunningColors(status, visualProgress, isDark),
+    [status, visualProgress, isDark]
+  )
 
   const idleColors = isDark
     ? ["#000000", "#18181b", "#3f3f46", "#d4d4d8"]

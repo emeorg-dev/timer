@@ -27,6 +27,39 @@ import { useTimer } from "@/hooks/use-timer"
 import { buildAnnouncement } from "@/lib/announcements"
 import { InputParser } from "@/lib/core/input-parser"
 
+const PRESET_BUTTONS = [
+  { label: "1m", seq: "0100" },
+  { label: "5m", seq: "0500" },
+  { label: "15m", seq: "1500" },
+  { label: "25m", seq: "2500" },
+] as const
+
+function QuickPresets({
+  onSelect,
+  onClear,
+}: {
+  onSelect: (seq: string) => void
+  onClear: () => void
+}) {
+  return (
+    <div className="flex w-full max-w-md shrink-0 flex-wrap justify-center gap-2">
+      {PRESET_BUTTONS.map(preset => (
+        <Button
+          key={preset.label}
+          variant="outline"
+          className="w-16 font-mono"
+          onClick={() => onSelect(preset.seq)}
+        >
+          {preset.label}
+        </Button>
+      ))}
+      <Button variant="ghost" className="w-16 text-muted-foreground" onClick={onClear}>
+        CLR
+      </Button>
+    </div>
+  )
+}
+
 /**
  * Orquestador Principal de la interfaz reactiva y del ciclo de vida del temporizador vocal.
  *
@@ -68,23 +101,17 @@ export function VoiceTimer() {
     durationSec,
   })
 
+  const handleTimerFinish = useCallback(() => {
+    if (settings.soundEnabled) play("finish")
+    if (settings.voiceEnabled) {
+      speak(buildAnnouncement(0, settings.language, settings.announcementMode), settings.language)
+    }
+  }, [settings.soundEnabled, settings.voiceEnabled, settings.language, settings.announcementMode, play, speak])
+
   // 3. El Director de Escena (reacciona al final de la obra)
   useEffect(() => {
-    if (timer.status === "finished") {
-      if (settings.soundEnabled) play("finish")
-      if (settings.voiceEnabled) {
-        speak(buildAnnouncement(0, settings.language, settings.announcementMode), settings.language)
-      }
-    }
-  }, [
-    timer.status,
-    settings.soundEnabled,
-    settings.voiceEnabled,
-    settings.language,
-    settings.announcementMode,
-    play,
-    speak,
-  ])
+    if (timer.status === "finished") handleTimerFinish()
+  }, [timer.status, handleTimerFinish])
 
   const handleStart = useCallback(() => {
     if (settings.voiceEnabled) unlock()
@@ -171,43 +198,7 @@ export function VoiceTimer() {
         />
 
         {isIdle && (
-          <div className="flex w-full max-w-md shrink-0 flex-wrap justify-center gap-2">
-            <Button
-              variant="outline"
-              className="w-16 font-mono"
-              onClick={() => setInputSequence("0100")}
-            >
-              1m
-            </Button>
-            <Button
-              variant="outline"
-              className="w-16 font-mono"
-              onClick={() => setInputSequence("0500")}
-            >
-              5m
-            </Button>
-            <Button
-              variant="outline"
-              className="w-16 font-mono"
-              onClick={() => setInputSequence("1500")}
-            >
-              15m
-            </Button>
-            <Button
-              variant="outline"
-              className="w-16 font-mono"
-              onClick={() => setInputSequence("2500")}
-            >
-              25m
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-16 text-muted-foreground"
-              onClick={() => setInputSequence("")}
-            >
-              CLR
-            </Button>
-          </div>
+          <QuickPresets onSelect={setInputSequence} onClear={() => setInputSequence("")} />
         )}
       </div>
     </main>

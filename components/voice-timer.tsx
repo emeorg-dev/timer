@@ -26,6 +26,17 @@ import { useTheme } from "@/hooks/use-theme"
 import { useTimer } from "@/hooks/use-timer"
 import { buildAnnouncement } from "@/lib/announcements"
 import { InputParser } from "@/lib/core/input-parser"
+
+/**
+ * Orquestador Principal de la interfaz reactiva y del ciclo de vida del temporizador vocal.
+ *
+ * Sigue una arquitectura teatral y modular coordinando a los distintos actores del sistema:
+ * - El Relojero (`useTimer`): Mide el tiempo con precisión absoluta mediante un motor independiente.
+ * - El Guionista (`useAnnouncer`): Decide cuándo pronunciar locuciones durante la carrera.
+ * - El DJ (`useBackgroundMusic`): Regula la música ambiental acelerando el ritmo al acercarse al final.
+ * - El Director de Escena (`useEffect`): Reacciona al epílogo de la cuenta ejecutando sonidos y avisos finales.
+ * - El Microondas (`useMicrowaveInput`): Procesa secuencias numéricas rápidas e intuitivas desde el teclado.
+ */
 export function VoiceTimer() {
   const { settings, isReady, update } = useSettings()
   useTheme(settings.theme)
@@ -97,13 +108,13 @@ export function VoiceTimer() {
   }, [cancel, timer])
 
   const handlePlayPause = useCallback(() => {
-    if (timer.status === "idle" && durationSec > 0) {
-      handleStart()
-    } else if (timer.status === "running") {
-      handlePause()
-    } else if (timer.status === "paused") {
-      handleResume()
-    }
+    const canStart = timer.status === "idle" && durationSec > 0
+    const isRunning = timer.status === "running"
+    const isPaused = timer.status === "paused"
+
+    if (canStart) return handleStart()
+    if (isRunning) return handlePause()
+    if (isPaused) return handleResume()
   }, [timer.status, durationSec, handleStart, handlePause, handleResume])
 
   useShortcuts({
@@ -120,7 +131,7 @@ export function VoiceTimer() {
   const isIdle = timer.status === "idle"
   const progress = durationSec > 0 ? (durationSec - timer.remaining) / durationSec : 0
 
-  // Teclado numérico microondas (magia para PC)
+  // Teclado numérico microondas
   useMicrowaveInput({
     isIdle,
     durationSec,

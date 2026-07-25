@@ -1,3 +1,5 @@
+"use client"
+
 import { Bell, ChevronLeft, ChevronRight, Play, Speech } from "lucide-react"
 
 import { type AnnouncementMode, useSettings } from "@/components/settings-provider"

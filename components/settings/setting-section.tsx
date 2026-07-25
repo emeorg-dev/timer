@@ -1,3 +1,5 @@
+"use client"
+
 import type { ReactNode } from "react"
 
 export function SectionHeader({ icon, children }: { icon: ReactNode; children: ReactNode }) {

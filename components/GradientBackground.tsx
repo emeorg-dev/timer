@@ -19,6 +19,22 @@ function getOptimalMaxPixelCount(maxDpr = 2.0, fallback = 3840 * 2160): number {
   )
 }
 
+function getShaderSpeed(
+  status: TimerStatus,
+  isVisible: boolean,
+  isIdle: boolean,
+  progress: number
+): number {
+  const isHiddenOrIdle = !isVisible || isIdle
+  const isRunning = status === "running"
+  const isFinished = status === "finished"
+
+  if (isHiddenOrIdle) return 0
+  if (isRunning) return 0.5 + progress * 2.0
+  if (isFinished) return 3.0
+  return 0
+}
+
 export function GradientBackground({
   status,
   progress,
@@ -85,14 +101,7 @@ export function GradientBackground({
   const isIdle = status === "idle" || status === "paused"
   const currentColors = isIdle ? idleColors : runningColors
 
-  let currentSpeed = 0
-  if (!isVisible || isIdle) {
-    currentSpeed = 0
-  } else if (status === "running") {
-    currentSpeed = 0.5 + visualProgress * 2.0
-  } else if (status === "finished") {
-    currentSpeed = 3.0
-  }
+  const currentSpeed = getShaderSpeed(status, isVisible, isIdle, visualProgress)
 
   const colorBack = isDark ? "#000000" : "#ffffff"
   const maxPixelCount = getOptimalMaxPixelCount()

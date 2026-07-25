@@ -1,3 +1,5 @@
+"use client"
+
 import { Languages } from "lucide-react"
 
 import { useSettings } from "@/components/settings-provider"

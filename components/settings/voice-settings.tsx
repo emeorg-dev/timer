@@ -4,12 +4,11 @@ import { type AnnouncementMode, useSettings } from "@/components/settings-provid
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSpeech } from "@/hooks/use-speech"
 import { t } from "@/lib/i18n"
-import { cn } from "@/lib/utils"
 
 import { SettingCard } from "./setting-card"
 import { SettingSection } from "./setting-section"

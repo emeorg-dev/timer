@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { Pause, Play, RotateCcw } from "lucide-react"
 
 import { useSettings } from "@/components/settings-provider"
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import type { TimerStatus } from "@/hooks/use-timer"
 import { t } from "@/lib/i18n"
 
-export function TimerControls({
+export const TimerControls = memo(function TimerControls({
   status,
   onStart,
   onPause,
@@ -60,4 +61,4 @@ export function TimerControls({
       )}
     </div>
   )
-}
+})

@@ -1,7 +1,6 @@
 import { Languages } from "lucide-react"
 
 import { useSettings } from "@/components/settings-provider"
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import {
   Select,
   SelectContent,

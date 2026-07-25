@@ -1,12 +1,22 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { GrainGradient } from "@paper-design/shaders-react"
 
 import { useSettings } from "@/components/settings-provider"
 import { useTheme } from "@/hooks/use-theme"
 import type { TimerStatus } from "@/hooks/use-timer"
 import { interpolateColor } from "@/lib/color-utils"
+
+/**
+ * Calcula el límite máximo de píxeles para el shader WebGL.
+ * Garantiza nitidez Retina en escritorio mientras limita móviles de altísima densidad (3x/4x DPR) a 2.0x.
+ */
+function getOptimalMaxPixelCount(maxDpr = 2.0, fallback = 3840 * 2160): number {
+  if (typeof window === "undefined") return fallback
+  return Math.round(window.innerWidth * window.innerHeight * Math.min(window.devicePixelRatio, maxDpr) ** 2)
+}
+
 export function GradientBackground({
   status,
   progress,
@@ -16,6 +26,20 @@ export function GradientBackground({
 }) {
   const { settings } = useSettings()
   const isDark = useTheme(settings.theme)
+
+  const [isVisible, setIsVisible] = useState(true)
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsVisible(document.visibilityState === "visible")
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [])
+
+  const visualProgress = Math.round(progress * 100) / 100
 
   const runningColors = useMemo(() => {
     const palettes = isDark
@@ -33,8 +57,8 @@ export function GradientBackground({
     if (status === "finished") return palettes.red
 
     // Interpolar según el progreso si está corriendo
-    if (progress < 0.5) {
-      const factor = progress / 0.5
+    if (visualProgress < 0.5) {
+      const factor = visualProgress / 0.5
       return [
         interpolateColor(palettes.green[0], palettes.yellow[0], factor),
         interpolateColor(palettes.green[1], palettes.yellow[1], factor),
@@ -42,7 +66,7 @@ export function GradientBackground({
         interpolateColor(palettes.green[3], palettes.yellow[3], factor),
       ]
     } else {
-      const factor = (progress - 0.5) / 0.5
+      const factor = (visualProgress - 0.5) / 0.5
       return [
         interpolateColor(palettes.yellow[0], palettes.red[0], factor),
         interpolateColor(palettes.yellow[1], palettes.red[1], factor),
@@ -50,7 +74,7 @@ export function GradientBackground({
         interpolateColor(palettes.yellow[3], palettes.red[3], factor),
       ]
     }
-  }, [status, progress, isDark])
+  }, [status, visualProgress, isDark])
 
   const idleColors = isDark
     ? ["#000000", "#18181b", "#3f3f46", "#d4d4d8"]
@@ -59,14 +83,17 @@ export function GradientBackground({
   const isIdle = status === "idle" || status === "paused"
   const currentColors = isIdle ? idleColors : runningColors
 
-  let currentSpeed = 0.2
-  if (status === "running") {
-    currentSpeed = 0.5 + progress * 2.0
+  let currentSpeed = 0
+  if (!isVisible || isIdle) {
+    currentSpeed = 0
+  } else if (status === "running") {
+    currentSpeed = 0.5 + visualProgress * 2.0
   } else if (status === "finished") {
     currentSpeed = 3.0
   }
 
   const colorBack = isDark ? "#000000" : "#ffffff"
+  const maxPixelCount = getOptimalMaxPixelCount()
 
   return (
     <div className="absolute inset-0 -z-10 pointer-events-none transition-opacity duration-1000">
@@ -83,6 +110,8 @@ export function GradientBackground({
         rotation={0}
         speed={currentSpeed}
         colors={currentColors}
+        maxPixelCount={maxPixelCount}
+        minPixelRatio={1}
       />
     </div>
   )

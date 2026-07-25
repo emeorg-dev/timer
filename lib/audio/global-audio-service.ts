@@ -9,12 +9,25 @@ import { SoundEffectPlayer } from "./sound-effect-player"
 export class GlobalAudioService {
   private static instance: GlobalAudioService | null = null
 
-  private speechOrchestrator: SpeechOrchestrator
-  private soundEffectPlayer: SoundEffectPlayer
+  private _speechOrchestrator: SpeechOrchestrator | null = null
+  private _soundEffectPlayer: SoundEffectPlayer | null = null
 
   private constructor() {
-    this.speechOrchestrator = new SpeechOrchestrator()
-    this.soundEffectPlayer = new SoundEffectPlayer()
+    // Inicialización perezosa (Lazy load): instanciamos solo al invocar
+  }
+
+  private get speechOrchestrator(): SpeechOrchestrator {
+    if (!this._speechOrchestrator) {
+      this._speechOrchestrator = new SpeechOrchestrator()
+    }
+    return this._speechOrchestrator
+  }
+
+  private get soundEffectPlayer(): SoundEffectPlayer {
+    if (!this._soundEffectPlayer) {
+      this._soundEffectPlayer = new SoundEffectPlayer()
+    }
+    return this._soundEffectPlayer
   }
 
   public static getInstance(): GlobalAudioService {

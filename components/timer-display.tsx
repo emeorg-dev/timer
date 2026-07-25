@@ -1,11 +1,12 @@
 "use client"
 
-import { useMemo } from "react"
+import { memo, useMemo } from "react"
 
 import { interpolateColor } from "@/lib/color-utils"
 import { pad, secondsToTime } from "@/lib/time-utils"
 import { cn } from "@/lib/utils"
-export function TimerDisplay({
+
+export const TimerDisplay = memo(function TimerDisplay({
   remaining,
   duration,
   status,
@@ -115,4 +116,4 @@ export function TimerDisplay({
       </div>
     </div>
   )
-}
+})

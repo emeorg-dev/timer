@@ -1,10 +1,18 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
+import dynamic from "next/dynamic"
 
-import { GradientBackground } from "@/components/GradientBackground"
 import { useSettings } from "@/components/settings-provider"
-import { SettingsSidebar } from "@/components/settings-sidebar"
+
+const GradientBackground = dynamic(
+  () => import("@/components/GradientBackground").then(mod => mod.GradientBackground),
+  { ssr: false }
+)
+const SettingsSidebar = dynamic(
+  () => import("@/components/settings-sidebar").then(mod => mod.SettingsSidebar),
+  { ssr: false }
+)
 import { TimerControls } from "@/components/timer-controls"
 import { TimerDisplay } from "@/components/timer-display"
 import { Button } from "@/components/ui/button"

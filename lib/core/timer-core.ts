@@ -45,12 +45,14 @@ export class TimerCore extends EventEmitter<TimerEvents> {
   }
 
   private tick = (): void => {
-    if (this.status !== "running") return
+    const isRunning = this.status === "running"
+    if (!isRunning) return
 
     const msLeft = this.deadlineMs - Date.now()
     const secLeft = Math.max(0, Math.ceil(msLeft / 1000))
 
-    if (secLeft !== this.lastWholeSec) {
+    const hasChangedSecond = secLeft !== this.lastWholeSec
+    if (hasChangedSecond) {
       this.lastWholeSec = secLeft
       this.remainingSec = secLeft
       this.emit("tick", {
@@ -59,7 +61,8 @@ export class TimerCore extends EventEmitter<TimerEvents> {
       })
     }
 
-    if (msLeft <= 0) {
+    const hasDeadlinePassed = msLeft <= 0
+    if (hasDeadlinePassed) {
       this.remainingSec = 0
       this.setStatus("finished")
       this.emit("tick", { remainingSec: 0, elapsedSec: this.durationSec })

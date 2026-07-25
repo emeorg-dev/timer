@@ -1,6 +1,15 @@
+/**
+ * Comprueba si el entorno actual es un navegador web compatible con la API nativa de síntesis de voz (Web Speech API).
+ */
+export function isNativeSpeechSupported(): boolean {
+  const isBrowserEnvironment = typeof window !== "undefined"
+  if (!isBrowserEnvironment) return false
+  return "speechSynthesis" in window
+}
+
 export class VoiceResolver {
   private getVoices(): SpeechSynthesisVoice[] {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return []
+    if (!isNativeSpeechSupported()) return []
     return window.speechSynthesis.getVoices()
   }
 

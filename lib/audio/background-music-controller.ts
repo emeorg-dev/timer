@@ -1,6 +1,40 @@
 import { duckingBus } from "./audio-ducking-bus"
 import type { IFilePlayer, ISoundGenerator } from "./interfaces"
 
+interface PaceConfig {
+  stage: number
+  playbackRate: number
+}
+
+/**
+ * Evalúa en qué etapa de aceleración musical y tensión auditiva se encuentra el temporizador
+ * basándose en el porcentaje de tiempo restante y los segundos críticos finales.
+ */
+function determinePaceStage(remainingSec: number, durationSec: number): PaceConfig {
+  const hasValidDuration = durationSec > 0
+  const remainingPercentage = hasValidDuration ? (remainingSec / durationSec) * 100 : 0
+
+  const isCriticalFinalSeconds = remainingSec <= 15 && durationSec > 30
+  const isCriticalPercentage = remainingPercentage <= 5
+  const isUrgentStage = isCriticalPercentage || isCriticalFinalSeconds
+
+  if (isUrgentStage) {
+    return { stage: 4, playbackRate: 1.5 }
+  }
+
+  const isWarningStage = remainingPercentage <= 25
+  if (isWarningStage) {
+    return { stage: 3, playbackRate: 1.3 }
+  }
+
+  const isNoticeStage = remainingPercentage <= 50
+  if (isNoticeStage) {
+    return { stage: 2, playbackRate: 1.15 }
+  }
+
+  return { stage: 1, playbackRate: 1.0 }
+}
+
 export class BackgroundMusicController {
   private player: IFilePlayer
   private sfx: ISoundGenerator
@@ -53,27 +87,15 @@ export class BackgroundMusicController {
   }
 
   updatePace(remainingSec: number, durationSec: number): void {
-    const percentage = durationSec > 0 ? (remainingSec / durationSec) * 100 : 0
-    let targetRate = 1.0
-    let stage = 1
+    const { stage, playbackRate } = determinePaceStage(remainingSec, durationSec)
 
-    if (percentage <= 5 || (remainingSec <= 15 && durationSec > 30)) {
-      targetRate = 1.5
-      stage = 4
-    } else if (percentage <= 25) {
-      targetRate = 1.3
-      stage = 3
-    } else if (percentage <= 50) {
-      targetRate = 1.15
-      stage = 2
-    }
-
-    if (stage > this.currentStage && this.currentStage !== 0) {
+    const isEscalatingToNewStage = stage > this.currentStage && this.currentStage !== 0
+    if (isEscalatingToNewStage) {
       this.sfx.playTone("emergency")
     }
 
     this.currentStage = stage
-    this.player.setPlaybackRate(targetRate)
+    this.player.setPlaybackRate(playbackRate)
   }
 
   destroy(): void {

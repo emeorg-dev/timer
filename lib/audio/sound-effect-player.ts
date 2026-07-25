@@ -6,6 +6,18 @@ import type { ISoundGenerator, SoundType } from "./interfaces"
 
 const logger = createLogger("SoundEffectPlayer")
 
+/**
+ * Envoltura de orden superior que aplica atenuación temporal de volumen (Audio Ducking)
+ * en la música de fondo mientras se ejecuta una melodía o efecto auditivo.
+ */
+function withAudioDucking(durationSec: number, action: () => void): void {
+  duckingBus.requestDuck()
+  action()
+  setTimeout(() => {
+    duckingBus.releaseDuck()
+  }, durationSec * 1000)
+}
+
 export class SoundEffectPlayer implements ISoundGenerator {
   private ctx: AudioContext | null = null
 
@@ -21,7 +33,7 @@ export class SoundEffectPlayer implements ISoundGenerator {
     return this.ctx
   }
 
-  private tone(freq: number, startDelay: number, duration: number): void {
+  private synthesizeTone(freq: number, startDelay: number, duration: number): void {
     const ctx = this.getContext()
     if (!ctx) return
 
@@ -38,12 +50,48 @@ export class SoundEffectPlayer implements ISoundGenerator {
     gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration)
     osc.start(t0)
     osc.stop(t0 + duration)
+  }
 
-    // Ducking
-    duckingBus.requestDuck()
-    setTimeout(() => {
-      duckingBus.releaseDuck()
-    }, duration * 1000)
+  private playStartMelody = (): void => {
+    withAudioDucking(0.34, () => {
+      this.synthesizeTone(660, 0, 0.15)
+      this.synthesizeTone(880, 0.16, 0.18)
+    })
+  }
+
+  private playPauseBeep = (): void => {
+    withAudioDucking(0.18, () => {
+      this.synthesizeTone(440, 0, 0.18)
+    })
+  }
+
+  private playFinishChime = (): void => {
+    withAudioDucking(0.81, () => {
+      this.synthesizeTone(880, 0, 0.2)
+      this.synthesizeTone(660, 0.22, 0.2)
+      this.synthesizeTone(990, 0.46, 0.35)
+    })
+  }
+
+  private playEmergencyBeep = (): void => {
+    tryCatchSync(() => {
+      const ctx = this.getContext()
+      if (!ctx) return
+
+      withAudioDucking(0.6, () => {
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = "sine"
+        osc.frequency.value = 523.25 // C5
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start()
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6)
+        osc.stop(ctx.currentTime + 0.6)
+      })
+
+      logger.info("Pitido de emergencia reproducido con éxito")
+    }, "Error al reproducir pitido de emergencia")
   }
 
   playTone(type: SoundType): void {
@@ -51,46 +99,17 @@ export class SoundEffectPlayer implements ISoundGenerator {
     if (!ctx) return
     if (ctx.state === "suspended") void ctx.resume()
 
-    switch (type) {
-      case "start":
-        this.tone(660, 0, 0.15)
-        this.tone(880, 0.16, 0.18)
-        break
-      case "pause":
-        this.tone(440, 0, 0.18)
-        break
-      case "finish":
-        this.tone(880, 0, 0.2)
-        this.tone(660, 0.22, 0.2)
-        this.tone(990, 0.46, 0.35)
-        break
-      case "emergency":
-        this.playEmergencyBeep()
-        break
+    // Diccionario declarativo que asocia cada evento del temporizador con su melodía descriptiva
+    const soundActionMap: Record<SoundType, () => void> = {
+      start: this.playStartMelody,
+      pause: this.playPauseBeep,
+      finish: this.playFinishChime,
+      emergency: this.playEmergencyBeep,
     }
-  }
 
-  private playEmergencyBeep(): void {
-    tryCatchSync(() => {
-      const ctx = this.getContext()
-      if (!ctx) return
-
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      osc.type = "sine"
-      osc.frequency.value = 523.25 // C5
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      osc.start()
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6)
-      osc.stop(ctx.currentTime + 0.6)
-
-      duckingBus.requestDuck()
-      setTimeout(() => {
-        duckingBus.releaseDuck()
-      }, 600)
-
-      logger.info("Pitido de emergencia reproducido con éxito")
-    }, "Error al reproducir pitido de emergencia")
+    const soundAction = soundActionMap[type]
+    if (soundAction) {
+      soundAction()
+    }
   }
 }

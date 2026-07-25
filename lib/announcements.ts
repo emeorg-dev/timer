@@ -6,7 +6,6 @@ interface PhraseUnits {
   hour: [string, string] // [singular, plural]
   minute: [string, string]
   second: [string, string]
-  // builder receives the joined unit phrase and a boolean indicating if the leading unit is plural
   remaining: (units: string, isPlural: boolean) => string
   elapsed: (units: string, isPlural: boolean) => string
   finished: string
@@ -70,48 +69,92 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
   },
 }
 
-function unitPhrase(value: number, unit: [string, string]): string {
-  return `${value} ${value === 1 ? unit[0] : unit[1]}`
+interface TimeComponents {
+  hours: number
+  minutes: number
+  seconds: number
 }
 
-/** Builds a localized spoken phrase from a total number of seconds. */
+/** Descompone un total de segundos en sus horas, minutos y segundos exactos. */
+function extractTimeComponents(totalSeconds: number): TimeComponents {
+  return {
+    hours: Math.floor(totalSeconds / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60,
+  }
+}
+
+/** Formatea una cantidad con su unidad gramatical en singular o plural. */
+function formatUnitPhrase(value: number, unit: [string, string]): string {
+  const isSingular = value === 1
+  return `${value} ${isSingular ? unit[0] : unit[1]}`
+}
+
+/** Convierte los componentes de tiempo en una lista de fragmentos verbales (ej: ['1 hora', '20 minutos']). */
+function buildLocalizedTimeParts(components: TimeComponents, phrases: PhraseUnits): string[] {
+  const { hours, minutes, seconds } = components
+  const parts: string[] = []
+
+  if (hours > 0) parts.push(formatUnitPhrase(hours, phrases.hour))
+  if (minutes > 0) parts.push(formatUnitPhrase(minutes, phrases.minute))
+  if (seconds > 0 && hours === 0) parts.push(formatUnitPhrase(seconds, phrases.second))
+
+  if (parts.length === 0) parts.push(formatUnitPhrase(0, phrases.second))
+  return parts
+}
+
+/** Une los fragmentos de tiempo aplicando comas y la conjunción final apropiada del idioma. */
+function joinTimePartsWithConjunction(parts: string[], conjunction: string): string {
+  if (parts.length === 1) return parts[0]
+  const initialParts = parts.slice(0, -1).join(", ")
+  const lastPart = parts[parts.length - 1]
+  return `${initialParts} ${conjunction} ${lastPart}`
+}
+
+/** Determina el primer valor numérico significativo (horas, minutos o segundos) para evaluar la regla gramatical de singular o plural. */
+function getLeadingNumericValue(components: TimeComponents): number {
+  const hasHours = components.hours > 0
+  if (hasHours) return components.hours
+
+  const hasMinutes = components.minutes > 0
+  if (hasMinutes) return components.minutes
+
+  return components.seconds
+}
+
+/**
+ * Construye una frase verbal narrada en lenguaje natural a partir de los segundos restantes o transcurridos.
+ * Sigue el principio SRP dividiendo la extracción de tiempo, traducción gramatical y pluralización en pasos puros.
+ */
 export function buildAnnouncement(
   totalSeconds: number,
   lang: LangCode,
   mode: AnnouncementMode,
   isSmart: boolean = false
 ): string {
-  const p = PHRASES[lang]
+  const phrases = PHRASES[lang]
+  const isFinished = totalSeconds <= 0
 
-  if (totalSeconds <= 0) {
-    return p.finished
+  if (isFinished) {
+    return phrases.finished
   }
 
-  // Cuenta regresiva simple en modo inteligente para los últimos 10 segundos
-  if (isSmart && mode === "remaining" && totalSeconds <= 10) {
+  // Cuenta regresiva simple en modo inteligente para los últimos 10 segundos finales
+  const isFinalSmartCountdown = isSmart && mode === "remaining" && totalSeconds <= 10
+  if (isFinalSmartCountdown) {
     return totalSeconds.toString()
   }
 
-  const hours = Math.floor(totalSeconds / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = totalSeconds % 60
+  const components = extractTimeComponents(totalSeconds)
+  const timeParts = buildLocalizedTimeParts(components, phrases)
+  const joinedTimePhrase = joinTimePartsWithConjunction(timeParts, phrases.and)
 
-  const parts: string[] = []
-  if (hours > 0) parts.push(unitPhrase(hours, p.hour))
-  if (minutes > 0) parts.push(unitPhrase(minutes, p.minute))
-  if (seconds > 0 && hours === 0) parts.push(unitPhrase(seconds, p.second))
+  const leadingNumericValue = getLeadingNumericValue(components)
+  const isPluralGrammar = new Intl.PluralRules(lang).select(leadingNumericValue) !== "one"
 
-  if (parts.length === 0) parts.push(unitPhrase(0, p.second))
-
-  let units: string
-  if (parts.length === 1) {
-    units = parts[0]
-  } else {
-    units = `${parts.slice(0, -1).join(", ")} ${p.and} ${parts[parts.length - 1]}`
+  const isRemainingMode = mode === "remaining"
+  if (isRemainingMode) {
+    return phrases.remaining(joinedTimePhrase, isPluralGrammar)
   }
-
-  const firstValue = hours > 0 ? hours : minutes > 0 ? minutes : seconds
-  const isPlural = new Intl.PluralRules(lang).select(firstValue) !== "one"
-
-  return mode === "remaining" ? p.remaining(units, isPlural) : p.elapsed(units, isPlural)
+  return phrases.elapsed(joinedTimePhrase, isPluralGrammar)
 }

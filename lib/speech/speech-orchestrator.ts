@@ -3,11 +3,28 @@ import { createLogger } from "../logger"
 
 import { CloudTTSService } from "./cloud-tts-service"
 import type { ISpeaker } from "./interfaces"
-import { VoiceResolver } from "./voice-resolver"
+import { isNativeSpeechSupported, VoiceResolver } from "./voice-resolver"
 
 const logger = createLogger("SpeechOrchestrator")
 const NATIVE_VOICE_TIMEOUT_MS = 2000
 const UNLOCK_TIMEOUT_MS = 1500
+
+/**
+ * Resuelve el dialecto y acento exacto a utilizar comparando el idioma solicitado por la app
+ * con las preferencias del sistema operativo y navegador web del usuario.
+ */
+function resolveTargetDialect(requestedLang: string): string {
+  const baseUiLang = requestedLang.split("-")[0]
+  const userLanguage =
+    typeof navigator !== "undefined" && navigator.languages && navigator.languages.length > 0
+      ? navigator.languages[0]
+      : typeof navigator !== "undefined"
+        ? navigator.language
+        : requestedLang
+  const baseUserLang = userLanguage.split("-")[0]
+
+  return baseUiLang === baseUserLang ? userLanguage : requestedLang
+}
 
 export class SpeechOrchestrator implements ISpeaker {
   private resolver: VoiceResolver
@@ -20,8 +37,10 @@ export class SpeechOrchestrator implements ISpeaker {
     this.resolver = new VoiceResolver()
     this.cloudFallback = new CloudTTSService()
 
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      this.supported = true
+    const canUseNativeSpeech = isNativeSpeechSupported()
+    this.supported = canUseNativeSpeech
+
+    if (canUseNativeSpeech) {
       this.setupVoices()
     }
   }
@@ -29,13 +48,15 @@ export class SpeechOrchestrator implements ISpeaker {
   private setupVoices(): void {
     const synth = window.speechSynthesis
     const loadVoices = () => {
-      const voices = synth.getVoices()
-      if (voices.length > 0 || this.voicesLoaded) {
-        // if already loaded or has voices
-        this.voicesLoaded = true
-        logger.debug("Voces cargadas", { count: voices.length })
-        this.processPending()
-      }
+      const availableVoices = synth.getVoices()
+      const hasDetectedVoices = availableVoices.length > 0
+      const isSpeechEngineReady = hasDetectedVoices || this.voicesLoaded
+
+      if (!isSpeechEngineReady) return
+
+      this.voicesLoaded = true
+      logger.debug("Voces nativas cargadas", { count: availableVoices.length })
+      this.processPending()
     }
     synth.onvoiceschanged = loadVoices
     loadVoices()
@@ -50,7 +71,7 @@ export class SpeechOrchestrator implements ISpeaker {
 
   unlock(): void {
     if (!this.supported) return
-    const doUnlock = () => {
+    const executeUnlock = () => {
       const synth = window.speechSynthesis
       const utterance = new SpeechSynthesisUtterance(" ")
       utterance.volume = 0
@@ -58,18 +79,19 @@ export class SpeechOrchestrator implements ISpeaker {
       this.cloudFallback.unlock()
     }
 
-    if (!this.voicesLoaded) {
-      let isResolved = false
-      const taskWrapper = () => {
-        if (isResolved) return
-        isResolved = true
-        doUnlock()
-      }
-      this.pendingCallbacks.push(taskWrapper)
-      setTimeout(taskWrapper, UNLOCK_TIMEOUT_MS)
-    } else {
-      doUnlock()
+    if (this.voicesLoaded) {
+      executeUnlock()
+      return
     }
+
+    let hasUnlocked = false
+    const unlockOnceLoaded = () => {
+      if (hasUnlocked) return
+      hasUnlocked = true
+      executeUnlock()
+    }
+    this.pendingCallbacks.push(unlockOnceLoaded)
+    setTimeout(unlockOnceLoaded, UNLOCK_TIMEOUT_MS)
   }
 
   speak(text: string, lang: string): void {
@@ -77,46 +99,44 @@ export class SpeechOrchestrator implements ISpeaker {
       return this.cloudFallback.speak(text, lang)
     }
 
-    // Determine target dialect
-    const baseUiLang = lang.split("-")[0]
-    const userLanguage =
-      typeof navigator !== "undefined" && navigator.languages && navigator.languages.length > 0
-        ? navigator.languages[0]
-        : typeof navigator !== "undefined"
-          ? navigator.language
-          : lang
-    const baseUserLang = userLanguage.split("-")[0]
-    const targetLang = baseUiLang === baseUserLang ? userLanguage : lang
+    const targetDialect = resolveTargetDialect(lang)
 
-    const executeTask = () => {
-      const voice = this.resolver.findBestVoice(targetLang)
-      if (!voice) {
-        logger.warn("No se encontró voz nativa, activando Fallback")
-        return this.cloudFallback.speak(text, targetLang)
+    const attemptNativeSpeech = () => {
+      const nativeVoice = this.resolver.findBestVoice(targetDialect)
+      if (!nativeVoice) {
+        logger.warn(
+          "No se encontró voz nativa compatible, activando servicio Cloud TTS de respaldo"
+        )
+        return this.cloudFallback.speak(text, targetDialect)
       }
 
-      this.speakNative(text, voice, targetLang)
+      this.speakNative(text, nativeVoice, targetDialect)
     }
 
-    if (!this.voicesLoaded) {
-      let isResolved = false
-      const taskWrapper = () => {
-        if (isResolved) return
-        isResolved = true
-        executeTask()
+    if (this.voicesLoaded) {
+      attemptNativeSpeech()
+      return
+    }
+
+    // Si las voces del sistema aún se están cargando asíncronamente en segundo plano:
+    let hasAttemptedSpeech = false
+    const executeOnceLoaded = () => {
+      if (hasAttemptedSpeech) return
+      hasAttemptedSpeech = true
+      attemptNativeSpeech()
+    }
+
+    this.pendingCallbacks.push(executeOnceLoaded)
+
+    setTimeout(() => {
+      if (!hasAttemptedSpeech) {
+        hasAttemptedSpeech = true
+        logger.warn(
+          "Tiempo de espera agotado esperando voces nativas, activando Fallback en la nube"
+        )
+        this.cloudFallback.speak(text, targetDialect)
       }
-      this.pendingCallbacks.push(taskWrapper)
-
-      setTimeout(() => {
-        if (!isResolved) {
-          isResolved = true
-          logger.warn("Timeout esperando voces nativas, activando Fallback")
-          this.cloudFallback.speak(text, targetLang)
-        }
-      }, NATIVE_VOICE_TIMEOUT_MS)
-    } else {
-      executeTask()
-    }
+    }, NATIVE_VOICE_TIMEOUT_MS)
   }
 
   private speakNative(text: string, voice: SpeechSynthesisVoice, lang: string): void {
@@ -136,10 +156,12 @@ export class SpeechOrchestrator implements ISpeaker {
     }
 
     utterance.onerror = e => {
-      if (e.error !== "interrupted" && e.error !== "canceled") {
-        logger.error("Error nativo TTS", { error: e.error })
-      }
       duckingBus.releaseDuck()
+
+      const isExpectedCancellation = e.error === "interrupted" || e.error === "canceled"
+      if (isExpectedCancellation) return
+
+      logger.error("Error nativo TTS en síntesis de voz", { error: e.error })
     }
 
     synth.resume()

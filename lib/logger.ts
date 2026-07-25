@@ -6,10 +6,21 @@
 
 type LogLevel = "info" | "warn" | "error" | "debug"
 
+/**
+ * Opciones de inicialización para registrar eventos de un módulo o dominio específico.
+ */
 interface LoggerOptions {
+  /** Nombre del módulo arquitectónico (ej. 'TimerCore', 'SpeechOrchestrator'). */
   module: string
 }
 
+/**
+ * Servicio de telemetría y depuración en consola con aislamiento y formateo por módulo.
+ *
+ * Sigue el Principio de Responsabilidad Única (SRP) encapsulando el formateo de marcas de tiempo e inspección
+ * de objetos. Suaviza el ruido en producción desactivando logs de nivel `debug` e `info` automáticamente cuando
+ * el entorno (`NODE_ENV`) no es 'development', preservando únicamente errores y advertencias críticas.
+ */
 class Logger {
   private module: string
 
@@ -50,7 +61,14 @@ class Logger {
 }
 
 /**
- * Factory para instanciar loggers por módulo
+ * Fábrica (Factory Pattern) para instanciar loggers inmutables asociados a un subsistema o componente.
+ *
+ * @param moduleName Identificador descriptivo del módulo que emitirá los reportes.
+ * @returns Instancia de `Logger` configurada con el prefijo del módulo.
+ *
+ * @example
+ * const logger = createLogger("AudioPlayer");
+ * logger.info("Reproduciendo pista ambiental", { track: "lofi" });
  */
 export function createLogger(moduleName: string) {
   return new Logger({ module: moduleName })

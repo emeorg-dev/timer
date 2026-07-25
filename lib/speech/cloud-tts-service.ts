@@ -6,6 +6,13 @@ import type { ISpeaker } from "./interfaces"
 
 const logger = createLogger("CloudTTSService")
 
+/**
+ * Adaptador de síntesis de voz basado en la nube (Cloud TTS) utilizado como respaldo ante fallos nativos.
+ *
+ * Invoca el endpoint interno (`/api/tts`) delegando la generación acústica al servidor en dispositivos o navegadores
+ * carentes de motores locales fiables. Se integra de manera fluida con el `AudioDuckingBus` para reducir el
+ * volumen de la música ambiental mientras se reproduce la locución en red.
+ */
 export class CloudTTSService implements ISpeaker {
   private audio: HTMLAudioElement | null = null
 

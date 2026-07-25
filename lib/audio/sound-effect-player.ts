@@ -8,7 +8,10 @@ const logger = createLogger("SoundEffectPlayer")
 
 /**
  * Envoltura de orden superior que aplica atenuación temporal de volumen (Audio Ducking)
- * en la música de fondo mientras se ejecuta una melodía o efecto auditivo.
+ * en la música de fondo mientras se ejecuta una melodía o efecto auditivo corto.
+ *
+ * @param durationSec Duración estimada del efecto de sonido para restaurar la ganancia al finalizar.
+ * @param action Bloque síncrono que dispara la síntesis de los tonos en el AudioContext.
  */
 function withAudioDucking(durationSec: number, action: () => void): void {
   duckingBus.requestDuck()
@@ -18,6 +21,13 @@ function withAudioDucking(durationSec: number, action: () => void): void {
   }, durationSec * 1000)
 }
 
+/**
+ * Reproductor y sintetizador procedimental de efectos de sonido in situ mediante la API Web Audio nativa.
+ *
+ * Genera melodías auditivas (como inicio, pausa y campanas de finalización) programando osciladores (`OscillatorNode`)
+ * y envolventes de ganancia exponenciales en tiempo real sin requerir archivos de audio externos.
+ * Incorpora recuperación automática del `AudioContext` cuando el navegador lo suspende por inactividad.
+ */
 export class SoundEffectPlayer implements ISoundGenerator {
   private ctx: AudioContext | null = null
 

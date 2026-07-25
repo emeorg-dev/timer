@@ -75,7 +75,15 @@ interface TimeComponents {
   seconds: number
 }
 
-/** Descompone un total de segundos en sus horas, minutos y segundos exactos. */
+/**
+ * Descompone un total de segundos absolutos en sus componentes sexagesimales (horas, minutos y segundos).
+ *
+ * Esencial para el formateo humano y gramatical del tiempo, aislando el cálculo matemático básico
+ * del procesamiento lingüístico en cumplimiento con el Principio de Responsabilidad Única (SRP).
+ *
+ * @param totalSeconds Cantidad de segundos enteros a convertir.
+ * @returns Estructura con las horas, minutos y segundos desglosados.
+ */
 function extractTimeComponents(totalSeconds: number): TimeComponents {
   return {
     hours: Math.floor(totalSeconds / 3600),
@@ -84,13 +92,28 @@ function extractTimeComponents(totalSeconds: number): TimeComponents {
   }
 }
 
-/** Formatea una cantidad con su unidad gramatical en singular o plural. */
+/**
+ * Formatea una cantidad numérica junto a su unidad temporal con la conjugación gramatical correcta.
+ *
+ * @param value Valor numérico de la unidad de tiempo (ej. 1 o 5).
+ * @param unit Par de palabras en singular y plural [singular, plural] correspondientes al idioma.
+ * @returns Cadena formateada como '1 hora' o '5 horas'.
+ */
 function formatUnitPhrase(value: number, unit: [string, string]): string {
   const isSingular = value === 1
   return `${value} ${isSingular ? unit[0] : unit[1]}`
 }
 
-/** Convierte los componentes de tiempo en una lista de fragmentos verbales (ej: ['1 hora', '20 minutos']). */
+/**
+ * Convierte los componentes temporales en una lista de fragmentos verbales ordenados y limpios.
+ *
+ * Omite unidades con valor cero para producir frases concisas y naturales (ej. oculta los segundos
+ * si el temporizador excede 1 hora, a menos que el tiempo total sea inferior a un minuto).
+ *
+ * @param components Horas, minutos y segundos calculados para la locución.
+ * @param phrases Diccionario lingüístico con las conjugaciones del dialecto activo.
+ * @returns Lista de cadenas descriptivas listas para ser concatenadas (ej. ['2 horas', '15 minutos']).
+ */
 function buildLocalizedTimeParts(components: TimeComponents, phrases: PhraseUnits): string[] {
   const { hours, minutes, seconds } = components
   const parts: string[] = []
@@ -103,7 +126,13 @@ function buildLocalizedTimeParts(components: TimeComponents, phrases: PhraseUnit
   return parts
 }
 
-/** Une los fragmentos de tiempo aplicando comas y la conjunción final apropiada del idioma. */
+/**
+ * Une múltiples fragmentos de tiempo utilizando comas y la conjunción coordinante final apropiada del idioma.
+ *
+ * @param parts Fragmentos de tiempo ya formateados en singular o plural.
+ * @param conjunction Conjunción nativa para el último elemento (ej. 'y' en español, 'and' en inglés).
+ * @returns Frase temporal cohesiva (ej. '1 hora, 20 minutos y 5 segundos').
+ */
 function joinTimePartsWithConjunction(parts: string[], conjunction: string): string {
   if (parts.length === 1) return parts[0]
   const initialParts = parts.slice(0, -1).join(", ")
@@ -111,7 +140,16 @@ function joinTimePartsWithConjunction(parts: string[], conjunction: string): str
   return `${initialParts} ${conjunction} ${lastPart}`
 }
 
-/** Determina el primer valor numérico significativo (horas, minutos o segundos) para evaluar la regla gramatical de singular o plural. */
+/**
+ * Determina el primer valor numérico significativo (horas, minutos o segundos) en un intervalo temporal.
+ *
+ * Esencial para el motor gramatical de internacionalización (i18n), ya que permite evaluar
+ * las reglas de pluralización nativas (`Intl.PluralRules`) del idioma activo basándose en la unidad de
+ * mayor jerarquía que encabezará la oración en voz alta.
+ *
+ * @param components Componentes desglosados de tiempo (horas, minutos y segundos exactos).
+ * @returns El valor numérico principal sobre el cual recae la conjugación gramatical (singular o plural).
+ */
 function getLeadingNumericValue(components: TimeComponents): number {
   const hasHours = components.hours > 0
   if (hasHours) return components.hours
@@ -123,8 +161,21 @@ function getLeadingNumericValue(components: TimeComponents): number {
 }
 
 /**
- * Construye una frase verbal narrada en lenguaje natural a partir de los segundos restantes o transcurridos.
- * Sigue el principio SRP dividiendo la extracción de tiempo, traducción gramatical y pluralización en pasos puros.
+ * Construye una frase verbal en lenguaje natural lista para ser narrada por el motor de síntesis vocal (TTS).
+ *
+ * Sigue los principios de Arquitectura Limpia y SOLID dividiendo el proceso de locución en transformaciones
+ * puras e independientes: desglosar el tiempo, traducir unidades, aplicar conjugaciones de plural (`Intl.PluralRules`)
+ * y envolver la oración según el modo de cuenta ('remaining' para cuenta regresiva o 'elapsed' para progresiva).
+ *
+ * @param totalSeconds Segundos exactos del evento auditivo que se desea narrar.
+ * @param lang Dialecto e idioma oficial de la locución (ej. 'es-ES', 'pt-BR').
+ * @param mode Modo de cuenta que determina el encabezado gramatical (ej. 'Quedan X' o 'Han pasado X').
+ * @param isSmart Indica si el modo de Hitos Inteligentes está activo para pronunciar solo números en los últimos 10s.
+ * @returns Oración completa y localizada, optimizada para su comprensión auditiva por voz natural.
+ *
+ * @example
+ * const locucion = buildAnnouncement(65, "es-ES", "remaining");
+ * // Retorna: "Queda 1 minuto y 5 segundos"
  */
 export function buildAnnouncement(
   totalSeconds: number,

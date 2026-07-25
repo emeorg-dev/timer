@@ -8,12 +8,29 @@ import { AudioPlayer } from "@/lib/audio/audio-player"
 import { BackgroundMusicController } from "@/lib/audio/background-music-controller"
 import { SoundEffectPlayer } from "@/lib/audio/sound-effect-player"
 
+/**
+ * Parámetros reactivos del temporizador para el control dinámico de la música ambiental.
+ */
 interface UseBackgroundMusicProps {
   status: TimerStatus
   remaining: number
   durationSec: number
 }
 
+/**
+ * Sincroniza la reproducción de la música de fondo y modula el tempo y volumen del audio ambiental.
+ *
+ * Orquesta un controlador independiente (`BackgroundMusicController`) que reacciona a los cambios
+ * de estado del temporizador. Aumenta dinámicamente la velocidad de reproducción a medida que
+ * se acerca el vencimiento para transmitir una noción auditiva de urgencia y progresión (Pacing),
+ * integrándose de forma transparente al bus de atenuación (Audio Ducking) durante las locuciones.
+ *
+ * @param props Contiene el estado actual del temporizador, el tiempo restante y la duración total.
+ *
+ * @example
+ * // En el componente principal VoiceTimer:
+ * useBackgroundMusic({ status: "running", remaining: 120, durationSec: 300 });
+ */
 export function useBackgroundMusic({ status, remaining, durationSec }: UseBackgroundMusicProps) {
   const { settings } = useSettings()
   const controllerRef = useRef<BackgroundMusicController | null>(null)

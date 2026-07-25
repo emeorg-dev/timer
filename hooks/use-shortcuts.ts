@@ -4,19 +4,36 @@ import { useEffect } from "react"
 
 import { hasSystemModifierKey, isFormElementFocused } from "@/lib/dom-utils"
 
+/**
+ * Conjunto de manejadores de eventos asignados a los atajos de teclado del temporizador.
+ */
 interface ShortcutHandlers {
+  /** Callback para alternar entre iniciar y pausar la cuenta regresiva. */
   onPlayPause?: () => void
+  /** Callback para restablecer el temporizador a su duración original. */
   onReset?: () => void
+  /** Callback para silenciar temporalmente los anuncios verbales y alertas sonoras. */
   onToggleMute?: () => void
+  /** Callback para activar o desactivar la reproducción de efectos sonoros al completar hitos. */
   onToggleSound?: () => void
+  /** Callback para limpiar la entrada numérica o cerrar diálogos activos al presionar Escape. */
   onClear?: () => void
+  /** Callback para abrir o colapsar el panel lateral de configuración del sistema. */
   onToggleSidebar?: () => void
 }
 
 /**
- * Escucha eventos de teclado globales y ejecuta acciones mapeadas.
- * Utiliza el patrón de Mapa de Acciones (Action Map / Diccionario) en lugar de sentencias switch,
- * cumpliendo con el Principio Abierto/Cerrado (OCP) y mejorando la claridad e historia del código.
+ * Orquesta los atajos de teclado globales mediante un patrón declarativo de Mapa de Acciones (Action Map).
+ *
+ * Vincula teclas accesibles e intuitivas con las funciones principales del temporizador sin requerir el uso de ratón.
+ * Cumple con el Principio Abierto/Cerrado (OCP), permitiendo registrar nuevos atajos fácilmente en un diccionario
+ * centralizado sin modificar estructuras de control anidadas ni interferir cuando el foco está en inputs de texto.
+ *
+ * @param handlers Objeto que contiene las funciones de retorno (callbacks) para cada acción disponible.
+ *
+ * @example
+ * // En el componente raíz de controles:
+ * useShortcuts({ onPlayPause: handlePlayPause, onReset: handleReset });
  */
 export function useShortcuts({
   onPlayPause,

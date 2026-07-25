@@ -12,6 +12,9 @@ import type { IAnnouncementStrategy } from "@/lib/announcer/interfaces"
 import { SmartMilestoneStrategy } from "@/lib/announcer/smart-milestone-strategy"
 import type { LangCode } from "@/lib/i18n"
 
+/**
+ * Parámetros de entrada para el seguimiento auditivo del temporizador en tiempo real.
+ */
 interface UseAnnouncerProps {
   remaining: number
   elapsed: number
@@ -19,7 +22,16 @@ interface UseAnnouncerProps {
 }
 
 /**
- * Crea la estrategia de anuncios adecuada (Hitos Inteligentes o Intervalo Fijo) según la configuración del usuario.
+ * Crea la estrategia algorítmica de locución verbal según las preferencias seleccionadas por el usuario.
+ *
+ * Evalúa si el usuario solicita un intervalo fijo tradicional (`FixedIntervalStrategy`) o el sistema dinámico
+ * de Hitos Inteligentes (`SmartMilestoneStrategy`), el cual incrementa la frecuencia de avisos en los
+ * últimos segundos críticos para aumentar la noción temporal sin saturar al usuario.
+ *
+ * @param interval Frecuencia seleccionada (en segundos). Si es `-1`, activa el modo Inteligente.
+ * @param mode Modo de referencia de conteo ('remaining' para tiempo restante o 'elapsed' para transcurrido).
+ * @param language Dialecto e idioma oficial de la locución (ej. 'es-ES', 'en-US').
+ * @returns Instancia de la estrategia de anuncio lista para ser evaluada por el motor central.
  */
 function createAnnouncementStrategy(
   interval: number,
@@ -34,7 +46,17 @@ function createAnnouncementStrategy(
 }
 
 /**
- * Hook que gestiona el motor de locución verbal, asignando estrategias de anuncio y evaluando el progreso en cada segundo.
+ * Orquesta la narración vocal y los avisos auditivos del temporizador en tiempo real.
+ *
+ * Conecta el estado reactivo de la interfaz (React) con el motor central de anuncios (`AnnouncerEngine`),
+ * garantizando que en cada segundo transcurrido se evalúe si se ha cruzado un umbral de tiempo relevante
+ * para emitir una locución sin bloquear el hilo principal ni provocar renders innecesarios.
+ *
+ * @param props Objeto que contiene el tiempo restante, transcurrido y el estado activo del temporizador.
+ *
+ * @example
+ * // En el componente principal VoiceTimer:
+ * useAnnouncer({ remaining: 300, elapsed: 0, status: "running" });
  */
 export function useAnnouncer({ remaining, elapsed, status }: UseAnnouncerProps) {
   const { settings } = useSettings()

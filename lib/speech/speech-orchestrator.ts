@@ -12,6 +12,9 @@ const UNLOCK_TIMEOUT_MS = 1500
 /**
  * Resuelve el dialecto y acento exacto a utilizar comparando el idioma solicitado por la app
  * con las preferencias del sistema operativo y navegador web del usuario.
+ *
+ * @param requestedLang Idioma oficial configurado en el panel de la aplicación (ej. 'es-ES').
+ * @returns Dialecto refinado (ej. 'es-MX' si el usuario opera en Latinoamérica y la UI está en español).
  */
 function resolveTargetDialect(requestedLang: string): string {
   const baseUiLang = requestedLang.split("-")[0]
@@ -26,6 +29,14 @@ function resolveTargetDialect(requestedLang: string): string {
   return baseUiLang === baseUserLang ? userLanguage : requestedLang
 }
 
+/**
+ * Orquestador central de síntesis de voz con temporización de seguridad y conmutación automática de respaldo.
+ *
+ * Actúa como la fachada principal para la emisión de voz artificial en la aplicación. Si la Web Speech API
+ * del navegador está bloqueada, ausente o no responde en 2000 milisegundos (`NATIVE_VOICE_TIMEOUT_MS`),
+ * el orquestador cancela el intento nativo y transiciona imperceptiblemente hacia el servicio en nube (`CloudTTSService`),
+ * garantizando que el usuario jamás pierda una alerta del temporizador.
+ */
 export class SpeechOrchestrator implements ISpeaker {
   private resolver: VoiceResolver
   private cloudFallback: CloudTTSService

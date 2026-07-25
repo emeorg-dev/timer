@@ -5,14 +5,21 @@ import { useEffect, useState } from "react"
 import type { ThemePref } from "@/components/settings-provider"
 
 /**
- * Evalúa si el tema oscuro debe estar activo según la preferencia elegida por el usuario y la configuración de su sistema.
+ * Evalúa si el tema oscuro debe aplicarse según la preferencia seleccionada y la configuración del sistema operativo.
+ *
+ * @param theme Preferencia de apariencia elegida por el usuario ('light', 'dark' o 'system').
+ * @param isSystemDark Indica si las preferencias nativas de la consola o sistema operativo exigen modo oscuro.
+ * @returns `true` si el modo oscuro debe activarse visualmente en la interfaz.
  */
 function shouldApplyDarkTheme(theme: ThemePref, isSystemDark: boolean): boolean {
   return theme === "dark" || (theme === "system" && isSystemDark)
 }
 
 /**
- * Actualiza las clases CSS en el elemento raíz de la página para activar visualmente el tema claro u oscuro.
+ * Sincroniza visualmente las clases CSS ('dark', 'light') en el elemento raíz (`<html>`) del documento.
+ *
+ * @param root Elemento DOM raíz del documento HTML.
+ * @param isDark Estado calculado que indica si el modo oscuro está activo.
  */
 function updateDocumentThemeClasses(root: HTMLElement, isDark: boolean): void {
   root.classList.toggle("dark", isDark)
@@ -20,7 +27,16 @@ function updateDocumentThemeClasses(root: HTMLElement, isDark: boolean): void {
 }
 
 /**
- * Hook que sincroniza la preferencia de tema con el DOM y reacciona a los cambios en tiempo real del sistema operativo.
+ * Orquesta la apariencia visual de la aplicación, sincronizando el tema con el DOM y el sistema operativo.
+ *
+ * Reacciona dinámicamente a los cambios en las preferencias de color del usuario (`prefers-color-scheme`)
+ * cuando el modo 'system' está seleccionado, alternando las clases CSS sin destellos ni recargas.
+ *
+ * @param theme Opción de apariencia seleccionada en el panel de configuración.
+ * @returns Estado booleano (`isDark`) para adaptar colores programáticamente en lienzos WebGL o sombreadores.
+ *
+ * @example
+ * const isDarkMode = useTheme("system");
  */
 export function useTheme(theme: ThemePref) {
   const [isDark, setIsDark] = useState(false)

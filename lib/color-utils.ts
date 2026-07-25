@@ -1,3 +1,17 @@
+/**
+ * Interpola linealmente (RGB) entre dos colores hexadecimales para generar transiciones suaves en animaciones.
+ *
+ * Esencial para el fondo de gradiente (`GradientBackground`), permitiendo modificar la temperatura
+ * o intensidad visual del lienzo en sincronía con el avance de la cuenta regresiva (Tensión Visual).
+ *
+ * @param color1 Color inicial en formato hexadecimal (ej. '#1a2a6c').
+ * @param color2 Color de destino en formato hexadecimal (ej. '#b21f1f').
+ * @param factor Progreso normalizado de la transición, donde `0.0` representa `color1` y `1.0` representa `color2`.
+ * @returns Color interpolado resultante en formato hexadecimal '#RRGGBB'.
+ *
+ * @example
+ * const colorMedio = interpolateColor("#000000", "#ffffff", 0.5); // Retorna "#808080"
+ */
 export function interpolateColor(color1: string, color2: string, factor: number) {
   const hex = (x: number) => {
     const s = Math.round(x).toString(16)

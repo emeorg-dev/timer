@@ -1,12 +1,28 @@
 import { EventEmitter } from "./event-emitter"
 
+/**
+ * Estados de ejecución posibles del motor del temporizador durante su ciclo de vida.
+ */
 export type TimerStatus = "idle" | "running" | "paused" | "finished"
 
+/**
+ * Eventos y estructuras de datos emitidos por el motor del temporizador hacia sus observadores.
+ */
 export type TimerEvents = {
+  /** Evento de latido emitido en transiciones de segundos exactos. */
   tick: { remainingSec: number; elapsedSec: number }
+  /** Evento emitido al transicionar el estado del temporizador. */
   statusChange: TimerStatus
 }
 
+/**
+ * Motor central del temporizador y máquina de estados (Dominio / Core Engine).
+ *
+ * Aísla la lógica temporal de la interfaz gráfica y de React, manteniendo precisión absoluta
+ * mediante la comparación constante contra una marca de tiempo objetivo (`deadlineMs - Date.now()`).
+ * Este diseño evita el desfase por deriva del bucle de eventos (`drift`) inherente a los `setInterval`
+ * del navegador en pestañas inactivas o procesos pesados.
+ */
 export class TimerCore extends EventEmitter<TimerEvents> {
   private durationSec: number
   private remainingSec: number

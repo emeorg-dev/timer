@@ -4,6 +4,13 @@ import { DEFAULT_SETTINGS } from "./types"
 
 const STORAGE_KEY = "voice-timer-settings"
 
+/**
+ * Implementación de almacenamiento persistente basada en el almacenamiento local del navegador (`localStorage`).
+ *
+ * Protege contra fallos de cuota excedida o JSON corrupto mediante bloques de captura silenciosa,
+ * retornando siempre un objeto de configuración válido y fusionado con `DEFAULT_SETTINGS` para compatibilidad
+ * hacia atrás y en entornos de renderizado del lado del servidor (SSR / Next.js).
+ */
 export class SettingsRepository implements ISettingsRepository {
   load(): Settings {
     if (typeof window === "undefined") {

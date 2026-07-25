@@ -6,6 +6,13 @@ import { duckingBus } from "./audio-ducking-bus"
 import type { SoundType } from "./interfaces"
 import { SoundEffectPlayer } from "./sound-effect-player"
 
+/**
+ * Fachada centralizada y punto de acceso único (Singleton) para todos los servicios acústicos de la aplicación.
+ *
+ * Coordina la síntesis de voz (`SpeechOrchestrator`), los efectos de sonido (`SoundEffectPlayer`) y el bus de
+ * atenuación (`AudioDuckingBus`), aplicando inicialización perezosa (Lazy Loading) para evitar instanciar contextos
+ * de audio antes de que el usuario interactúe con el documento (cumpliendo con las políticas de Autoplay del navegador).
+ */
 export class GlobalAudioService {
   private static instance: GlobalAudioService | null = null
 
@@ -30,6 +37,11 @@ export class GlobalAudioService {
     return this._soundEffectPlayer
   }
 
+  /**
+   * Obtiene la instancia única e inmutable del servicio global de audio (Patrón Singleton).
+   *
+   * @returns Instancia singleton de `GlobalAudioService`.
+   */
   public static getInstance(): GlobalAudioService {
     if (!GlobalAudioService.instance) {
       GlobalAudioService.instance = new GlobalAudioService()

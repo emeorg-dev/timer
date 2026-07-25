@@ -106,7 +106,14 @@ export function VoiceTimer() {
     if (settings.voiceEnabled) {
       speak(buildAnnouncement(0, settings.language, settings.announcementMode), settings.language)
     }
-  }, [settings.soundEnabled, settings.voiceEnabled, settings.language, settings.announcementMode, play, speak])
+  }, [
+    settings.soundEnabled,
+    settings.voiceEnabled,
+    settings.language,
+    settings.announcementMode,
+    play,
+    speak,
+  ])
 
   // 3. El Director de Escena (reacciona al final de la obra)
   useEffect(() => {

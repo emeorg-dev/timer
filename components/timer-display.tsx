@@ -6,7 +6,10 @@ import { interpolateColor } from "@/lib/color-utils"
 import { pad, secondsToTime } from "@/lib/time-utils"
 import { cn } from "@/lib/utils"
 
-function getProgressColor(status: "idle" | "running" | "paused" | "finished", progress: number): string {
+function getProgressColor(
+  status: "idle" | "running" | "paused" | "finished",
+  progress: number
+): string {
   if (status === "idle" || status === "paused") return "var(--color-primary)"
   if (status === "finished") return "#ef4444"
 

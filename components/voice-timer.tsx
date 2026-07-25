@@ -65,7 +65,15 @@ export function VoiceTimer() {
         speak(buildAnnouncement(0, settings.language, settings.announcementMode), settings.language)
       }
     }
-  }, [timer.status, settings, play, speak])
+  }, [
+    timer.status,
+    settings.soundEnabled,
+    settings.voiceEnabled,
+    settings.language,
+    settings.announcementMode,
+    play,
+    speak,
+  ])
 
   const handleStart = useCallback(() => {
     if (settings.voiceEnabled) unlock()

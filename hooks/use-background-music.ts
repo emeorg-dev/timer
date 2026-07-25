@@ -27,27 +27,35 @@ export function useBackgroundMusic({ status, remaining, durationSec }: UseBackgr
     }
   }, [])
 
+  // Efecto 1: Control de pista y volumen (solo reacciona a cambios de configuración)
+  useEffect(() => {
+    const controller = controllerRef.current
+    if (!controller) return
+    controller.setTrack(settings.musicTrack)
+    controller.setVolume(settings.musicVolume / 100)
+  }, [settings.musicTrack, settings.musicVolume])
+
+  // Efecto 2: Control de reproducción (start/pause/stop según estatus)
   useEffect(() => {
     const controller = controllerRef.current
     if (!controller) return
 
-    controller.setTrack(settings.musicTrack)
-    controller.setVolume(settings.musicVolume / 100)
-
     if (status === "running" && settings.musicEnabled) {
       controller.start()
-      controller.updatePace(remaining, durationSec)
     } else if (status === "paused" || !settings.musicEnabled) {
       controller.pause()
     } else if (status === "idle" || status === "finished") {
       controller.stop()
     }
-  }, [
-    status,
-    remaining,
-    durationSec,
-    settings.musicEnabled,
-    settings.musicTrack,
-    settings.musicVolume,
-  ])
+  }, [status, settings.musicEnabled])
+
+  // Efecto 3: Actualización de ritmo (limitar a cada 5s, o últimos 15s para evitar llamadas continuas)
+  useEffect(() => {
+    const controller = controllerRef.current
+    if (!controller || status !== "running" || !settings.musicEnabled) return
+
+    if (remaining % 5 === 0 || remaining <= 15 || remaining === durationSec) {
+      controller.updatePace(remaining, durationSec)
+    }
+  }, [status, remaining, durationSec, settings.musicEnabled])
 }

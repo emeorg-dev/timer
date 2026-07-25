@@ -40,21 +40,39 @@ export function useBackgroundMusic({ status, remaining, durationSec }: UseBackgr
     const controller = controllerRef.current
     if (!controller) return
 
-    if (status === "running" && settings.musicEnabled) {
+    const isRunning = status === "running" && settings.musicEnabled
+    const isStopped = status === "idle" || status === "finished"
+    const isPaused = status === "paused" || (status === "running" && !settings.musicEnabled)
+
+    if (isRunning) {
       controller.start()
-    } else if (status === "paused" || !settings.musicEnabled) {
-      controller.pause()
-    } else if (status === "idle" || status === "finished") {
+      return
+    }
+
+    if (isStopped) {
       controller.stop()
+      return
+    }
+
+    if (isPaused) {
+      controller.pause()
     }
   }, [status, settings.musicEnabled])
 
   // Efecto 3: Actualización de ritmo (limitar a cada 5s, o últimos 15s para evitar llamadas continuas)
   useEffect(() => {
     const controller = controllerRef.current
-    if (!controller || status !== "running" || !settings.musicEnabled) return
+    if (!controller) return
 
-    if (remaining % 5 === 0 || remaining <= 15 || remaining === durationSec) {
+    const isRunning = status === "running" && settings.musicEnabled
+    if (!isRunning) return
+
+    const isStartOfTimer = remaining === durationSec
+    const isCriticalFinalSeconds = remaining <= 15
+    const isRegularInterval = remaining % 5 === 0
+    const shouldUpdatePace = isStartOfTimer || isCriticalFinalSeconds || isRegularInterval
+
+    if (shouldUpdatePace) {
       controller.updatePace(remaining, durationSec)
     }
   }, [status, remaining, durationSec, settings.musicEnabled])

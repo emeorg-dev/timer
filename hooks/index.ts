@@ -1,4 +1,7 @@
 export * from "./use-announcer"
+export * from "./use-background-music"
+export * from "./use-microwave-input"
+export * from "./use-shortcuts"
 export * from "./use-sound"
 export * from "./use-speech"
 export * from "./use-theme"

@@ -14,7 +14,9 @@ import { interpolateColor } from "@/lib/color-utils"
  */
 function getOptimalMaxPixelCount(maxDpr = 2.0, fallback = 3840 * 2160): number {
   if (typeof window === "undefined") return fallback
-  return Math.round(window.innerWidth * window.innerHeight * Math.min(window.devicePixelRatio, maxDpr) ** 2)
+  return Math.round(
+    window.innerWidth * window.innerHeight * Math.min(window.devicePixelRatio, maxDpr) ** 2
+  )
 }
 
 export function GradientBackground({

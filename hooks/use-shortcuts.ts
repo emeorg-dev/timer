@@ -2,6 +2,8 @@
 
 import { useEffect } from "react"
 
+import { hasSystemModifierKey, isFormElementFocused } from "@/lib/dom-utils"
+
 interface ShortcutHandlers {
   onPlayPause?: () => void
   onReset?: () => void
@@ -12,9 +14,9 @@ interface ShortcutHandlers {
 }
 
 /**
- * Escucha eventos de teclado globales y ejecuta acciones mapeadas,
- * ignorando automáticamente las pulsaciones cuando el usuario está
- * enfocado en un campo de texto (inputs, textareas).
+ * Escucha eventos de teclado globales y ejecuta acciones mapeadas.
+ * Utiliza el patrón de Mapa de Acciones (Action Map / Diccionario) en lugar de sentencias switch,
+ * cumpliendo con el Principio Abierto/Cerrado (OCP) y mejorando la claridad e historia del código.
  */
 export function useShortcuts({
   onPlayPause,
@@ -25,46 +27,32 @@ export function useShortcuts({
   onToggleSidebar,
 }: ShortcutHandlers) {
   useEffect(() => {
+    // Mapa declarativo que vincula cada tecla con la acción correspondiente del temporizador
+    const actionMap: Record<string, (() => void) | undefined> = {
+      p: onPlayPause,
+      " ": onPlayPause,
+      r: onReset,
+      m: onToggleMute,
+      s: onToggleSound,
+      c: onToggleSidebar,
+      escape: onClear,
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      const activeEl = document.activeElement?.tagName
-      // Si el usuario tiene seleccionado un input (ej. el Ghost Input en móvil)
-      if (activeEl === "INPUT" || activeEl === "TEXTAREA" || activeEl === "SELECT") {
-        return
-      }
+      // 1. Si el usuario está escribiendo dentro de un campo de formulario, ignoramos los atajos
+      if (isFormElementFocused()) return
 
-      // Evitar que atajos se disparen con modificadores activos (Ctrl, Alt, Meta)
-      if (e.ctrlKey || e.altKey || e.metaKey) {
-        return
-      }
+      // 2. Si hay modificadores de sistema (Ctrl, Alt, Cmd) activos, permitimos su comportamiento nativo
+      if (hasSystemModifierKey(e)) return
 
+      // 3. Buscamos en nuestra historia de acciones si la tecla tiene un comando asignado
       const key = e.key.toLowerCase()
+      const mappedAction = actionMap[key]
 
-      switch (key) {
-        case "p":
-        case " ":
-          e.preventDefault()
-          onPlayPause?.()
-          break
-        case "r":
-          e.preventDefault()
-          onReset?.()
-          break
-        case "m":
-          e.preventDefault()
-          onToggleMute?.()
-          break
-        case "s":
-          e.preventDefault()
-          onToggleSound?.()
-          break
-        case "c":
-          e.preventDefault()
-          onToggleSidebar?.()
-          break
-        case "escape":
-          e.preventDefault()
-          onClear?.()
-          break
+      // 4. Si encontramos la acción, evitamos el scroll/acción nativa y ejecutamos el comando
+      if (mappedAction) {
+        e.preventDefault()
+        mappedAction()
       }
     }
 

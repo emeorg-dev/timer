@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
 
+import { AudioSynthesisError, handleApiError, RateLimitError, ValidationError } from "@/lib/errors"
+import { createLogger } from "@/lib/logger"
 import { tryCatch } from "@/lib/try-catch"
+
+const logger = createLogger("CloudTTS")
 
 /**
  * Registro en memoria para el control de frecuencia de peticiones por dirección IP (Rate Limiter).
@@ -11,7 +15,7 @@ const RATE_LIMIT_WINDOW_MS = 60 * 1000 // 1 minuto
 
 /**
  * Evalúa si una dirección IP cliente ha excedido el cupo de peticiones permitidas por minuto.
- * 
+ *
  * @param ip Dirección IP identificada en las cabeceras de la petición.
  * @returns `true` si el cliente superó el límite y debe ser bloqueado con un estado HTTP 429.
  */
@@ -35,12 +39,15 @@ function checkRateLimit(ip: string): boolean {
 
 /**
  * Valida la integridad y formato de los parámetros lingüísticos y textuales recibidos en la URL.
- * 
+ *
  * @param text Cadena de texto a sintetizar.
  * @param lang Código de dialecto solicitado (ej. 'es-ES').
  * @returns Resultado de la validación conteniendo el estado y un mensaje de error si procede.
  */
-function validateSpeechRequest(text: string | null, lang: string): { isValid: boolean; errorMessage?: string } {
+function validateSpeechRequest(
+  text: string | null,
+  lang: string
+): { isValid: boolean; errorMessage?: string } {
   const isTextMissingOrTooLong = !text || text.length > 200
   if (isTextMissingOrTooLong) {
     return { isValid: false, errorMessage: "Invalid or missing text parameter (max 200 chars)" }
@@ -56,16 +63,16 @@ function validateSpeechRequest(text: string | null, lang: string): { isValid: bo
 
 /**
  * Determina el nombre exacto de la voz y el dialecto regional para la API de Google Cloud TTS.
- * 
+ *
  * Prioriza voces neuronales de alta fidelidad (`Neural2`) para los dialectos principales en español,
  * recurriendo a voces estándar (`Standard-A`) para cualquier otra variante idiomática.
- * 
+ *
  * @param lang Código de dialecto solicitado.
  * @returns Estructura con el código de lenguaje ajustado y el identificador de voz en nube.
  */
 function resolveNeuralVoiceConfig(lang: string): { targetLang: string; voiceName: string } {
   const targetLang = lang === "es" ? "es-US" : lang
-  
+
   const NEURAL_VOICES: Record<string, string> = {
     "es-ES": "es-ES-Neural2-A",
     "es-US": "es-US-Neural2-A",
@@ -77,7 +84,7 @@ function resolveNeuralVoiceConfig(lang: string): { targetLang: string; voiceName
 
 /**
  * Intenta generar la locución utilizando la API oficial y de alta definición de Google Cloud TTS (Capa 1).
- * 
+ *
  * @param text Texto legitimado a locutar.
  * @param lang Dialecto seleccionado.
  * @param apiKey Clave secreta de autenticación de Google Cloud.
@@ -112,25 +119,32 @@ async function synthesizeWithGoogleCloud(
       return new Uint8Array(buffer).buffer as ArrayBuffer
     }
   } catch (error) {
-    console.warn("Fallo en Google Cloud TTS, pasando al servicio de respaldo gratuito.", error)
+    logger.warn(
+      "Fallo en Google Cloud TTS (Capa 1), degradando al servicio gratuito de respaldo.",
+      { error }
+    )
   }
   return null
 }
 
 /**
  * Sintetiza la voz utilizando el endpoint gratuito de Google Translate TTS (Capa 2 / Respaldo).
- * 
+ *
  * Emula los encabezados de un navegador estándar para garantizar la disponibilidad del audio
  * cuando la clave API oficial no está presente o ha agotado su cuota en la nube.
- * 
+ *
  * @param text Texto a pronunciar.
  * @param lang Código oficial del idioma.
  * @param signal Señal de aborto para evitar peticiones colgadas.
  * @returns Búfer con los datos binarios del archivo MP3 generado.
  */
-async function synthesizeWithGoogleTranslate(text: string, lang: string, signal: AbortSignal): Promise<ArrayBuffer> {
+async function synthesizeWithGoogleTranslate(
+  text: string,
+  lang: string,
+  signal: AbortSignal
+): Promise<ArrayBuffer> {
   const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&q=${encodeURIComponent(text)}`
-  
+
   const response = await fetch(googleTtsUrl, {
     headers: {
       // Nos hacemos pasar por un navegador estándar para evitar ser bloqueados por los firewalls
@@ -151,7 +165,7 @@ async function synthesizeWithGoogleTranslate(text: string, lang: string, signal:
 
 /**
  * Orquesta la cadena de síntesis en nube (Patrón Chain of Responsibility).
- * 
+ *
  * Intenta en primera instancia generar el audio mediante la infraestructura Premium (Google Cloud TTS);
  * si esta opción no está configurada o falla, transiciona de manera transparente al motor gratuito de respaldo.
  * Impone una temporización máxima de 5 segundos (`AbortController`) para no congelar la interfaz del usuario.
@@ -181,54 +195,62 @@ async function orchestrateCloudSpeech(text: string, lang: string): Promise<Array
 
 /**
  * Endpoint y Proxy Backend para la Síntesis de Voz en Nube (Cloud TTS API Route).
- * 
+ *
  * Actúa como la fachada de servidor y escudo de seguridad para el orquestador vocal (`SpeechOrchestrator`).
  * Provee locución artificial a navegadores web carentes de motores nativos compatibles o sin voces locales instaladas.
- * 
+ *
  * Implementa las siguientes garantías arquitectónicas:
  * 1. **Seguridad y Cuotas**: Protección in-memory contra ataques de denegación de servicio mediante Rate Limiting.
  * 2. **Alta Disponibilidad**: Cadena de responsabilidad entre Google Cloud TTS (Neural) y Google Translate TTS (Gratis).
  * 3. **Rendimiento e Inmutabilidad**: Cabeceras `Cache-Control` inmutables de 1 año (`max-age=31536000`), logrando
  *    que frases recurrentes como "Faltan 5 minutos" sean servidas en milisegundos desde la caché local del disco del usuario.
- * 
+ *
  * @param request Petición HTTP entrante con parámetros `text` y `lang` en la cadena de consulta.
  * @returns Respuesta HTTP con el payload de audio MP3 o un código de error de validación/límite.
  */
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const text = searchParams.get("text")
-  const lang = searchParams.get("lang") || "es-ES"
+  try {
+    const { searchParams } = new URL(request.url)
+    const text = searchParams.get("text")
+    const lang = searchParams.get("lang") || "es-ES"
 
-  // 1. Validación gramatical y de longitud
-  const validation = validateSpeechRequest(text, lang)
-  const isRequestInvalid = !validation.isValid
-  if (isRequestInvalid) {
-    return new NextResponse(validation.errorMessage, { status: 400 })
+    // 1. Validación gramatical y de longitud lanzando excepción semántica
+    const validation = validateSpeechRequest(text, lang)
+    const isRequestInvalid = !validation.isValid
+    if (isRequestInvalid) {
+      throw new ValidationError(validation.errorMessage || "Texto o formato de idioma inválido")
+    }
+
+    // 2. Control de frecuencia (Rate Limiting) por dirección IP
+    const clientIp = request.headers.get("x-forwarded-for") || "unknown"
+    const isRateLimitExceeded = checkRateLimit(clientIp)
+    if (isRateLimitExceeded) {
+      throw new RateLimitError(clientIp)
+    }
+
+    // 3. Orquestación de síntesis vocal con manejo seguro de excepciones
+    const [error, audioBuffer] = await tryCatch(
+      orchestrateCloudSpeech(text!, lang),
+      "Fallo en API proxy de TTS"
+    )
+
+    const isSpeechGenerationFailed = error || !audioBuffer
+    if (isSpeechGenerationFailed) {
+      throw new AudioSynthesisError(
+        "Fallo al sintetizar el audio en todos los servicios de nube.",
+        error
+      )
+    }
+
+    // 4. Entrega con caché inmutable de alto rendimiento
+    return new NextResponse(audioBuffer, {
+      headers: {
+        "Content-Type": "audio/mpeg",
+        "Cache-Control": "public, max-age=31536000, immutable",
+      },
+    })
+  } catch (error) {
+    // 5. Interceptación y normalización en JSON estructurado (Error Standardization)
+    return handleApiError(error)
   }
-
-  // 2. Control de frecuencia (Rate Limiting) por dirección IP
-  const clientIp = request.headers.get("x-forwarded-for") || "unknown"
-  const isRateLimitExceeded = checkRateLimit(clientIp)
-  if (isRateLimitExceeded) {
-    return new NextResponse("Too Many Requests", { status: 429 })
-  }
-
-  // 3. Orquestación de síntesis vocal con manejo seguro de excepciones
-  const [error, audioBuffer] = await tryCatch(
-    orchestrateCloudSpeech(text!, lang),
-    "Fallo en API proxy de TTS"
-  )
-
-  const isSpeechGenerationFailed = error || !audioBuffer
-  if (isSpeechGenerationFailed) {
-    return new NextResponse("Error generating speech", { status: 500 })
-  }
-
-  // 4. Entrega con caché inmutable de alto rendimiento
-  return new NextResponse(audioBuffer, {
-    headers: {
-      "Content-Type": "audio/mpeg",
-      "Cache-Control": "public, max-age=31536000, immutable",
-    },
-  })
 }

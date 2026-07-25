@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 
 import { GlobalAudioService } from "@/lib/audio/global-audio-service"
 import type { SoundType } from "@/lib/audio/interfaces"
@@ -22,5 +22,5 @@ export function useSound() {
     GlobalAudioService.getInstance().playTone(type)
   }, [])
 
-  return { play }
+  return useMemo(() => ({ play }), [play])
 }

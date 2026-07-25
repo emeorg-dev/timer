@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 
 import { GlobalAudioService } from "@/lib/audio/global-audio-service"
 import type { LangCode } from "@/lib/i18n"
@@ -33,5 +33,5 @@ export function useSpeech() {
     service.cancelSpeech()
   }, [])
 
-  return { speak, cancel, unlock }
+  return useMemo(() => ({ speak, cancel, unlock }), [speak, cancel, unlock])
 }

@@ -81,14 +81,13 @@ export function useAnnouncer({ remaining, elapsed, status }: UseAnnouncerProps) 
     const isVoiceDisabled = !settings.voiceEnabled || settings.announcementInterval === 0
     if (!isTimerRunning || isVoiceDisabled) return
 
-    if (!strategyRef.current) {
-      strategyRef.current = createAnnouncementStrategy(
-        settings.announcementInterval,
-        settings.announcementMode,
-        settings.language
-      )
-      engine.setStrategy(strategyRef.current)
-    }
+    const strategy = createAnnouncementStrategy(
+      settings.announcementInterval,
+      settings.announcementMode,
+      settings.language
+    )
+    strategyRef.current = strategy
+    engine.setStrategy(strategy)
   }, [
     status,
     settings.voiceEnabled,

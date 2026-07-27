@@ -35,5 +35,8 @@
   "finished": "Tempo scaduto",
   "theme": "Tema",
   "smart": "Intelligente",
-  "enableMusic": "Musica di sottofondo"
+  "enableMusic": "Musica di sottofondo",
+  "announceVoiceDesc": "Annunci vocali durante il conteggio.",
+  "enableSoundDesc": "Segnali acustici di avvio e fine.",
+  "enableMusicDesc": "Tracce ambientali rilassanti."
 }

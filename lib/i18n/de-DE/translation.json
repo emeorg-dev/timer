@@ -35,5 +35,8 @@
   "finished": "Zeit abgelaufen",
   "theme": "Thema",
   "smart": "Intelligent",
-  "enableMusic": "Hintergrundmusik"
+  "enableMusic": "Hintergrundmusik",
+  "announceVoiceDesc": "Sprachansagen während des Countdowns.",
+  "enableSoundDesc": "Signaltöne beim Start und Ende.",
+  "enableMusicDesc": "Entspannende Hintergrundmelodien."
 }

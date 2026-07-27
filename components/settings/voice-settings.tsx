@@ -60,10 +60,13 @@ export function VoiceSettings() {
             <div className="flex items-center justify-between gap-3">
               <Label
                 htmlFor="voice-switch"
-                className="flex items-center gap-2.5 text-sm font-medium cursor-pointer flex-1"
+                className="flex items-start gap-2.5 cursor-pointer flex-1"
               >
-                <Speech className="size-4 text-primary shrink-0" aria-hidden="true" />
-                <span className="leading-tight text-balance">{t(lang, "announceVoice")}</span>
+                <Speech className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm font-medium leading-tight text-balance">{t(lang, "announceVoice")}</span>
+                  <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">{t(lang, "announceVoiceDesc")}</span>
+                </div>
               </Label>
               <Switch
                 id="voice-switch"

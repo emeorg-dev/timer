@@ -43,13 +43,16 @@ export function AudioSettings() {
       </AccordionTrigger>
       <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-3">
         {/* Sound */}
-        <SettingCard className="flex-row items-center justify-between">
+        <SettingCard className="flex-row items-center justify-between gap-3">
           <Label
             htmlFor="sound-switch"
-            className="flex items-center gap-2.5 text-sm font-medium cursor-pointer flex-1"
+            className="flex items-start gap-2.5 cursor-pointer flex-1"
           >
-            <AudioLines className="size-4 text-primary shrink-0" aria-hidden="true" />
-            <span className="leading-tight text-balance">{t(lang, "enableSound")}</span>
+            <AudioLines className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-medium leading-tight text-balance">{t(lang, "enableSound")}</span>
+              <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">{t(lang, "enableSoundDesc")}</span>
+            </div>
           </Label>
           <Switch
             id="sound-switch"
@@ -64,10 +67,13 @@ export function AudioSettings() {
           <div className="flex items-center justify-between gap-3">
             <Label
               htmlFor="music-switch"
-              className="flex items-center gap-2.5 text-sm font-medium cursor-pointer flex-1"
+              className="flex items-start gap-2.5 cursor-pointer flex-1"
             >
-              <Disc className="size-4 text-primary shrink-0" aria-hidden="true" />
-              <span className="leading-tight text-balance">{t(lang, "enableMusic")}</span>
+              <Disc className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-medium leading-tight text-balance">{t(lang, "enableMusic")}</span>
+                <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">{t(lang, "enableMusicDesc")}</span>
+              </div>
             </Label>
             <Switch
               id="music-switch"

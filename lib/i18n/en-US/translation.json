@@ -35,5 +35,8 @@
   "finished": "Time is up",
   "theme": "Theme",
   "smart": "Smart",
-  "enableMusic": "Background music"
+  "enableMusic": "Background music",
+  "announceVoiceDesc": "Spoken time alerts during countdown.",
+  "enableSoundDesc": "Start and finish beep alerts.",
+  "enableMusicDesc": "Relaxing ambient tracks."
 }

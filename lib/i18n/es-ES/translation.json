@@ -35,5 +35,8 @@
   "finished": "Tiempo finalizado",
   "theme": "Tema",
   "smart": "Inteligente",
-  "enableMusic": "Música de fondo"
+  "enableMusic": "Música de fondo",
+  "announceVoiceDesc": "Avisos hablados durante el conteo.",
+  "enableSoundDesc": "Beeps y alertas de inicio y fin.",
+  "enableMusicDesc": "Pistas ambientales relajantes."
 }

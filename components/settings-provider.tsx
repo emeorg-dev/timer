@@ -44,6 +44,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     repo.save(settings)
   }, [settings, isReady])
 
+  // Sincronizar dinámicamente el atributo lang del HTML para accesibilidad y lectores de pantalla.
+  useEffect(() => {
+    if (typeof document !== "undefined" && settings.language) {
+      document.documentElement.lang = settings.language
+    }
+  }, [settings.language])
+
   const update: SettingsContextValue["update"] = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }))
   }

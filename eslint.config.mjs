@@ -1,11 +1,27 @@
-import unusedImports from "eslint-plugin-unused-imports";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
-import typescriptEslintParser from "@typescript-eslint/parser";
-import typescriptEslintPlugin from "@typescript-eslint/eslint-plugin";
+import unusedImports from "eslint-plugin-unused-imports"
+import simpleImportSort from "eslint-plugin-simple-import-sort"
+import typescriptEslintParser from "@typescript-eslint/parser"
+import typescriptEslintPlugin from "@typescript-eslint/eslint-plugin"
+import nextPlugin from "@next/eslint-plugin-next"
 
 export default [
   {
-    files: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "hooks/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      ".vercel/**",
+      "coverage/**",
+      "*.tsbuildinfo",
+      "*.config.*",
+    ],
+  },
+  {
+    files: [
+      "app/**/*.{ts,tsx}",
+      "components/**/*.{ts,tsx}",
+      "hooks/**/*.{ts,tsx}",
+      "lib/**/*.{ts,tsx}",
+    ],
     languageOptions: {
       parser: typescriptEslintParser,
       parserOptions: {
@@ -14,28 +30,32 @@ export default [
         ecmaVersion: "latest",
         sourceType: "module",
         ecmaFeatures: {
-          jsx: true
-        }
-      }
+          jsx: true,
+        },
+      },
     },
     plugins: {
       "unused-imports": unusedImports,
       "simple-import-sort": simpleImportSort,
-      "@typescript-eslint": typescriptEslintPlugin
+      "@typescript-eslint": typescriptEslintPlugin,
+      "@next/next": nextPlugin,
     },
     rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+
       // 1. Limpieza y Ordenamiento de Imports (Auto-fixable)
       "unused-imports/no-unused-imports": "error",
       "simple-import-sort/imports": [
         "error",
         {
-          "groups": [
+          groups: [
             ["^react", "^next", "^@?\\w"],
             ["^@/"],
             ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
-            ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"]
-          ]
-        }
+            ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+          ],
+        },
       ],
       "simple-import-sort/exports": "error",
 
@@ -44,10 +64,10 @@ export default [
       "@typescript-eslint/consistent-type-imports": [
         "error",
         {
-          "prefer": "type-imports",
-          "fixStyle": "separate-type-imports",
-          "disallowTypeAnnotations": false
-        }
+          prefer: "type-imports",
+          fixStyle: "separate-type-imports",
+          disallowTypeAnnotations: false,
+        },
       ],
 
       // 3. Buenas Prácticas de Tipado
@@ -60,22 +80,21 @@ export default [
         "warn",
         {
           // Clases, Interfaces y Types deben ser PascalCase
-          "selector": "typeLike",
-          "format": ["PascalCase"]
+          selector: "typeLike",
+          format: ["PascalCase"],
         },
         {
           // Los valores de un ENUM deben ser CONSTANT_CASE
-          "selector": "enumMember",
-          "format": ["UPPER_CASE"]
+          selector: "enumMember",
+          format: ["UPPER_CASE"],
         },
         {
-          // Variables que guarden true/false deben llevar un prefijo indicativo
-          "selector": "variable",
-          "types": ["boolean"],
-          "format": ["PascalCase"],
-          "prefix": ["is", "should", "has", "can", "did", "will"]
-        }
-      ]
-    }
-  }
-];
+          // Variables booleanas en camelCase, PascalCase o UPPER_CASE sin exigir prefijos estrictos que rompan destructuring
+          selector: "variable",
+          types: ["boolean"],
+          format: ["camelCase", "PascalCase", "UPPER_CASE"],
+        },
+      ],
+    },
+  },
+]

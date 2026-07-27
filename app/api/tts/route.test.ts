@@ -88,7 +88,7 @@ describe("TTS API Route con Estandarización de Errores", () => {
     expect(res.body.errorId).toBeDefined()
   })
 
-  it("sintetiza exitosamente y devuelve 200 con cabeceras de caché inmutables ante parámetros válidos", async () => {
+  it("sintetiza exitosamente y devuelve 200 con cabeceras de caché optimizadas ante parámetros válidos", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -101,7 +101,9 @@ describe("TTS API Route con Estandarización de Errores", () => {
     const res = (await GET(req)) as unknown as { status: number; headers: Record<string, string> }
 
     expect(res.status).toBe(200)
-    expect(res.headers["Cache-Control"]).toBe("public, max-age=31536000, immutable")
+    expect(res.headers["Cache-Control"]).toBe(
+      "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400"
+    )
   })
 
   it("devuelve 429 y estructura JSON RATE_LIMIT_EXCEEDED si una IP supera el cupo de 50 peticiones/min", async () => {

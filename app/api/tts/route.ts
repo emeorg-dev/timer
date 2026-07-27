@@ -204,8 +204,8 @@ async function orchestrateCloudSpeech(text: string, lang: string): Promise<Array
  * Implementa las siguientes garantías arquitectónicas:
  * 1. **Seguridad y Cuotas**: Control básico de cuotas in-memory por instancia mediante Rate Limiting (no distribuido en serverless).
  * 2. **Alta Disponibilidad**: Cadena de responsabilidad entre Google Cloud TTS (Neural) y Google Translate TTS (Gratis).
- * 3. **Rendimiento e Inmutabilidad**: Cabeceras `Cache-Control` inmutables de 1 año (`max-age=31536000`), logrando
- *    que frases recurrentes como "Faltan 5 minutos" sean servidas en milisegundos desde la caché local del disco del usuario.
+ * 3. **Rendimiento y Caché Eficiente**: Cabeceras `Cache-Control` optimizadas (`max-age=86400, s-maxage=604800, stale-while-revalidate=86400`),
+ *    que permiten servir frases recurrentes en milisegundos desde caché local y CDN mientras revalidan actualizaciones en segundo plano.
  *
  * @param request Petición HTTP entrante con parámetros `text` y `lang` en la cadena de consulta.
  * @returns Respuesta HTTP con el payload de audio MP3 o un código de error de validación/límite.
@@ -245,11 +245,11 @@ export async function GET(request: Request) {
       )
     }
 
-    // 4. Entrega con caché inmutable de alto rendimiento
+    // 4. Entrega con caché optimizada y revalidación en segundo plano
     return new NextResponse(audioBuffer, {
       headers: {
         "Content-Type": "audio/mpeg",
-        "Cache-Control": "public, max-age=31536000, immutable",
+        "Cache-Control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400",
       },
     })
   } catch (error) {

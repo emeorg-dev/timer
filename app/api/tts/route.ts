@@ -8,6 +8,8 @@ const logger = createLogger("CloudTTS")
 
 /**
  * Registro en memoria para el control de frecuencia de peticiones por dirección IP (Rate Limiter).
+ * Nota: En entornos serverless (ej. Vercel), este mapa es local a cada instancia efímera;
+ * provee una limitación básica por instancia y no un mecanismo distribuido ni persistente contra DDoS.
  */
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT_MAX = 50
@@ -200,7 +202,7 @@ async function orchestrateCloudSpeech(text: string, lang: string): Promise<Array
  * Provee locución artificial a navegadores web carentes de motores nativos compatibles o sin voces locales instaladas.
  *
  * Implementa las siguientes garantías arquitectónicas:
- * 1. **Seguridad y Cuotas**: Protección in-memory contra ataques de denegación de servicio mediante Rate Limiting.
+ * 1. **Seguridad y Cuotas**: Control básico de cuotas in-memory por instancia mediante Rate Limiting (no distribuido en serverless).
  * 2. **Alta Disponibilidad**: Cadena de responsabilidad entre Google Cloud TTS (Neural) y Google Translate TTS (Gratis).
  * 3. **Rendimiento e Inmutabilidad**: Cabeceras `Cache-Control` inmutables de 1 año (`max-age=31536000`), logrando
  *    que frases recurrentes como "Faltan 5 minutos" sean servidas en milisegundos desde la caché local del disco del usuario.
@@ -222,7 +224,8 @@ export async function GET(request: Request) {
     }
 
     // 2. Control de frecuencia (Rate Limiting) por dirección IP
-    const clientIp = request.headers.get("x-forwarded-for") || "unknown"
+    const forwardedFor = request.headers.get("x-forwarded-for")
+    const clientIp = forwardedFor?.split(",")[0]?.trim() || "unknown"
     const isRateLimitExceeded = checkRateLimit(clientIp)
     if (isRateLimitExceeded) {
       throw new RateLimitError(clientIp)

@@ -61,10 +61,7 @@ export function useShortcuts({
       // 0. Atajo con modificador de sistema (Ctrl/Cmd + {): alternar panel lateral en cualquier sistema operativo y teclado.
       // Se evalúa antes de isFormElementFocused y hasSystemModifierKey para garantizar el funcionamiento con teclas como '{' o '[' en PC/Mac/Español.
       const isCtrlOrCmd = e.ctrlKey || e.metaKey
-      const isSidebarToggleKey =
-        e.key === "{" ||
-        e.key === "[" ||
-        e.code === "BracketLeft"
+      const isSidebarToggleKey = e.key === "{" || e.key === "[" || e.code === "BracketLeft"
 
       if (isCtrlOrCmd && isSidebarToggleKey && onToggleSidebar) {
         e.preventDefault()

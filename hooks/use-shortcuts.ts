@@ -52,10 +52,26 @@ export function useShortcuts({
       m: onToggleMute,
       s: onToggleSound,
       c: onToggleSidebar,
+      "{": onToggleSidebar,
+      "[": onToggleSidebar,
       escape: onClear,
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // 0. Atajo con modificador de sistema (Ctrl/Cmd + {): alternar panel lateral en cualquier sistema operativo y teclado.
+      // Se evalúa antes de isFormElementFocused y hasSystemModifierKey para garantizar el funcionamiento con teclas como '{' o '[' en PC/Mac/Español.
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey
+      const isSidebarToggleKey =
+        e.key === "{" ||
+        e.key === "[" ||
+        e.code === "BracketLeft"
+
+      if (isCtrlOrCmd && isSidebarToggleKey && onToggleSidebar) {
+        e.preventDefault()
+        onToggleSidebar()
+        return
+      }
+
       // 1. Si el usuario está escribiendo dentro de un campo de formulario, ignoramos los atajos
       if (isFormElementFocused()) return
 

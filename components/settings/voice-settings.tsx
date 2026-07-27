@@ -5,7 +5,6 @@ import { Bell, ChevronLeft, ChevronRight, Clock, Play, Speech } from "lucide-rea
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSpeech } from "@/hooks/use-speech"

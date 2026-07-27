@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-import type { ThemePref } from "@/components/settings-provider"
+import type { ThemePref } from "@/components/settings"
 
 /**
  * Evalúa si el tema oscuro debe aplicarse según la preferencia seleccionada y la configuración del sistema operativo.

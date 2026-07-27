@@ -2,7 +2,6 @@
 
 import { Languages } from "lucide-react"
 
-import { useSettings } from "@/components/settings-provider"
 import {
   Select,
   SelectContent,
@@ -13,6 +12,7 @@ import {
 import { type LangCode, LANGUAGES, t } from "@/lib/i18n"
 
 import { SettingSection } from "./setting-section"
+import { useSettings } from "./settings-provider"
 
 export function GeneralSettings() {
   const { settings, update } = useSettings()

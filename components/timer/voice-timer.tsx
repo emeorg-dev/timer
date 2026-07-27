@@ -3,18 +3,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import dynamic from "next/dynamic"
 
-import { useSettings } from "@/components/settings-provider"
+import { useSettings } from "@/components/settings"
 
 const GradientBackground = dynamic(
-  () => import("@/components/GradientBackground").then(mod => mod.GradientBackground),
+  () => import("@/components/gradient-background").then(mod => mod.GradientBackground),
   { ssr: false }
 )
 const SettingsSidebar = dynamic(
-  () => import("@/components/settings-sidebar").then(mod => mod.SettingsSidebar),
+  () => import("@/components/settings").then(mod => mod.SettingsSidebar),
   { ssr: false }
 )
-import { TimerControls } from "@/components/timer-controls"
-import { TimerDisplay } from "@/components/timer-display"
 import { Button } from "@/components/ui/button"
 import { useAnnouncer } from "@/hooks/use-announcer"
 import { useBackgroundMusic } from "@/hooks/use-background-music"
@@ -26,6 +24,9 @@ import { useTheme } from "@/hooks/use-theme"
 import { useTimer } from "@/hooks/use-timer"
 import { buildAnnouncement } from "@/lib/announcements"
 import { InputParser } from "@/lib/core/input-parser"
+
+import { TimerControls } from "./timer-controls"
+import { TimerDisplay } from "./timer-display"
 
 const PRESET_BUTTONS = [
   { label: "1m", seq: "0100" },

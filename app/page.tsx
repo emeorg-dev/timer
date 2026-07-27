@@ -1,5 +1,5 @@
-import { SettingsProvider } from "@/components/settings-provider"
-import { VoiceTimer } from "@/components/voice-timer"
+import { SettingsProvider } from "@/components/settings"
+import { VoiceTimer } from "@/components/timer"
 
 export default function Page() {
   return (

@@ -2,9 +2,9 @@
 
 import { Accordion } from "@/components/ui/accordion"
 
-import { AudioSettings } from "./settings/audio-settings"
-import { GeneralSettings } from "./settings/general-settings"
-import { VoiceSettings } from "./settings/voice-settings"
+import { AudioSettings } from "./audio-settings"
+import { GeneralSettings } from "./general-settings"
+import { VoiceSettings } from "./voice-settings"
 
 export function SettingsPanel() {
   return (

@@ -2,7 +2,6 @@
 
 import { Bell, ChevronLeft, ChevronRight, Play, Speech } from "lucide-react"
 
-import { type AnnouncementMode, useSettings } from "@/components/settings-provider"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -14,6 +13,7 @@ import { t } from "@/lib/i18n"
 
 import { SettingCard } from "./setting-card"
 import { SettingSection } from "./setting-section"
+import { type AnnouncementMode, useSettings } from "./settings-provider"
 
 const INTERVALS: {
   value: number

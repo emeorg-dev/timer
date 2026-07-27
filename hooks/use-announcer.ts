@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef } from "react"
 
-import type { AnnouncementMode } from "@/components/settings-provider"
-import { useSettings } from "@/components/settings-provider"
+import type { AnnouncementMode } from "@/components/settings"
+import { useSettings } from "@/components/settings"
 import { useSpeech } from "@/hooks/use-speech"
 import type { TimerStatus } from "@/hooks/use-timer"
 import { AnnouncerEngine } from "@/lib/announcer/announcer-engine"

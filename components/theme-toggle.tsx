@@ -2,7 +2,7 @@
 
 import { Monitor, Moon, Sun } from "lucide-react"
 
-import { type ThemePref, useSettings } from "@/components/settings-provider"
+import { type ThemePref, useSettings } from "@/components/settings"
 import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 

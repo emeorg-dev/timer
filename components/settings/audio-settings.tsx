@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { AudioLines, Check, ChevronsUpDown, Disc } from "lucide-react"
 
-import { useSettings } from "@/components/settings-provider"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +21,7 @@ import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 import { SettingCard } from "./setting-card"
+import { useSettings } from "./settings-provider"
 
 const MUSIC_TRACKS = [
   { value: "/bg-music.ogg", label: "Lo-Fi Chill (Default)" },

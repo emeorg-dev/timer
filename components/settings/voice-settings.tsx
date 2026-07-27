@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSpeech } from "@/hooks/use-speech"
 import { t } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
 
 import { SettingCard } from "./setting-card"
 import { SettingSection } from "./setting-section"
@@ -87,84 +88,92 @@ export function VoiceSettings() {
 
         <Separator className="opacity-50" />
 
-        {/* Announcement type */}
-        <SettingSection
-          icon={<Bell className="size-4" aria-hidden="true" />}
-          title={t(lang, "announcementType")}
+        <div
+          className={cn(
+            "flex flex-col gap-6 transition-opacity duration-200",
+            !settings.voiceEnabled && "opacity-50 pointer-events-none select-none"
+          )}
+          aria-disabled={!settings.voiceEnabled}
         >
-          <div className="flex flex-col gap-2">
-            <Tabs
-              value={settings.announcementMode}
-              onValueChange={v => {
-                update("announcementMode", v as AnnouncementMode)
-                if (v === "elapsed" && settings.announcementInterval === -1) {
-                  update("announcementInterval", 60)
-                }
-              }}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
-                <TabsTrigger value="remaining" className="text-xs">
-                  {t(lang, "remaining")}
-                </TabsTrigger>
-                <TabsTrigger value="elapsed" className="text-xs">
-                  {t(lang, "elapsed")}
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <p className="text-xs text-muted-foreground text-center italic">
-              {settings.announcementMode === "remaining"
-                ? `"${t(lang, "remainingExample")}"`
-                : `"${t(lang, "elapsedExample")}"`}
-            </p>
-          </div>
-        </SettingSection>
-
-        {/* Frequency */}
-        <SettingSection
-          icon={<Bell className="size-4" aria-hidden="true" />}
-          title={t(lang, "frequency")}
-        >
-          <SettingCard>
-            <div className="flex items-center justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="size-8 shrink-0 rounded-full"
-                onClick={() => {
-                  if (actualIndex > 0) {
-                    update("announcementInterval", availableIntervals[actualIndex - 1].value)
+          {/* Announcement type */}
+          <SettingSection
+            icon={<Bell className="size-4" aria-hidden="true" />}
+            title={t(lang, "announcementType")}
+          >
+            <div className="flex flex-col gap-2">
+              <Tabs
+                value={settings.announcementMode}
+                onValueChange={v => {
+                  update("announcementMode", v as AnnouncementMode)
+                  if (v === "elapsed" && settings.announcementInterval === -1) {
+                    update("announcementInterval", 60)
                   }
                 }}
-                disabled={actualIndex <= 0}
+                className="w-full"
               >
-                <ChevronLeft className="size-4" />
-              </Button>
-
-              <div className="flex flex-col items-center justify-center flex-1 min-w-0 px-2 text-center">
-                <span className="text-sm font-medium text-foreground truncate w-full leading-tight">
-                  {t(lang, currentIntervalOption.key)}
-                </span>
-              </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="size-8 shrink-0 rounded-full"
-                onClick={() => {
-                  if (actualIndex < availableIntervals.length - 1) {
-                    update("announcementInterval", availableIntervals[actualIndex + 1].value)
-                  }
-                }}
-                disabled={actualIndex >= availableIntervals.length - 1}
-              >
-                <ChevronRight className="size-4" />
-              </Button>
+                <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
+                  <TabsTrigger value="remaining" className="text-xs" disabled={!settings.voiceEnabled}>
+                    {t(lang, "remaining")}
+                  </TabsTrigger>
+                  <TabsTrigger value="elapsed" className="text-xs" disabled={!settings.voiceEnabled}>
+                    {t(lang, "elapsed")}
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <p className="text-xs text-muted-foreground text-center italic">
+                {settings.announcementMode === "remaining"
+                  ? `"${t(lang, "remainingExample")}"`
+                  : `"${t(lang, "elapsedExample")}"`}
+              </p>
             </div>
-          </SettingCard>
-        </SettingSection>
+          </SettingSection>
+
+          {/* Frequency */}
+          <SettingSection
+            icon={<Bell className="size-4" aria-hidden="true" />}
+            title={t(lang, "frequency")}
+          >
+            <SettingCard>
+              <div className="flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="size-8 shrink-0 rounded-full"
+                  onClick={() => {
+                    if (actualIndex > 0) {
+                      update("announcementInterval", availableIntervals[actualIndex - 1].value)
+                    }
+                  }}
+                  disabled={!settings.voiceEnabled || actualIndex <= 0}
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+
+                <div className="flex flex-col items-center justify-center flex-1 min-w-0 px-2 text-center">
+                  <span className="text-sm font-medium text-foreground truncate w-full leading-tight">
+                    {t(lang, currentIntervalOption.key)}
+                  </span>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="size-8 shrink-0 rounded-full"
+                  onClick={() => {
+                    if (actualIndex < availableIntervals.length - 1) {
+                      update("announcementInterval", availableIntervals[actualIndex + 1].value)
+                    }
+                  }}
+                  disabled={!settings.voiceEnabled || actualIndex >= availableIntervals.length - 1}
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+              </div>
+            </SettingCard>
+          </SettingSection>
+        </div>
       </AccordionContent>
     </AccordionItem>
   )

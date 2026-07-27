@@ -24,7 +24,10 @@ import { SettingCard } from "./setting-card"
 import { useSettings } from "./settings-provider"
 
 const MUSIC_TRACKS = [
-  { value: "/bg-music.ogg", label: "Lo-Fi Chill (Default)" },
+  {
+    value: "/music/Leighton_Brothers_-_Steamboat_Bill_(1910)/Leighton_Brothers_-_Steamboat_Bill_(1910).ogg",
+    label: "Steamboat Bill (1910)",
+  },
   { value: "/bg-music-2.ogg", label: "Piano Relax" },
   { value: "/bg-music-3.ogg", label: "Ambient" },
 ]

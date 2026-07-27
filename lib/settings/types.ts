@@ -38,6 +38,6 @@ export const DEFAULT_SETTINGS: Settings = {
   soundEnabled: true,
   theme: "system",
   musicEnabled: true,
-  musicTrack: "/bg-music.ogg",
+  musicTrack: "/music/Leighton_Brothers_-_Steamboat_Bill_(1910)/Leighton_Brothers_-_Steamboat_Bill_(1910).ogg",
   musicVolume: 40,
 }

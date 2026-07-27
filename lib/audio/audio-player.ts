@@ -13,6 +13,7 @@ export class AudioPlayer implements IFilePlayer {
   constructor() {
     if (typeof window !== "undefined") {
       this.audio = new Audio()
+      this.audio.preload = "none"
     }
   }
 

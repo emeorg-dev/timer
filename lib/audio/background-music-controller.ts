@@ -58,7 +58,7 @@ export class BackgroundMusicController {
   private currentStage = 0
   private baseVolume = 0.4
   private duckVolume = 0.1
-  private currentTrack = "/bg-music.ogg"
+  private currentTrack = "/music/Leighton_Brothers_-_Steamboat_Bill_(1910)/Leighton_Brothers_-_Steamboat_Bill_(1910).ogg"
   private isDucking = false
   private unsubscribeDucking: (() => void) | null = null
 

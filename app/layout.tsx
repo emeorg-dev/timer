@@ -23,33 +23,51 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icon-light-34x34.png",
+        url: "/icons/icon-light-512x512.png",
+        sizes: "512x512",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/icons/icon-light-192x192.png",
+        sizes: "192x192",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/icons/icon-light-34x34.png",
         sizes: "34x34",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/icon-light-44x44.png",
+        url: "/icons/icon-light-44x44.png",
         sizes: "44x44",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/icon-dark-34x34.png",
+        url: "/icons/icon-dark-34x34.png",
         sizes: "34x34",
         media: "(prefers-color-scheme: dark)",
       },
       {
-        url: "/icon-dark-44x44.png",
+        url: "/icons/icon-dark-44x44.png",
         sizes: "44x44",
         media: "(prefers-color-scheme: dark)",
       },
       {
-        url: "/icon.svg",
+        url: "/icons/icon.svg",
         type: "image/svg+xml",
       },
     ],
     apple: [
       {
-        url: "/icon-light-44x44.png",
+        url: "/icons/icon-light-512x512.png",
+        sizes: "512x512",
+      },
+      {
+        url: "/icons/icon-light-192x192.png",
+        sizes: "192x192",
+      },
+      {
+        url: "/icons/icon-light-44x44.png",
         sizes: "44x44",
       },
     ],

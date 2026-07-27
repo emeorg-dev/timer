@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, ChevronLeft, ChevronRight, Play, Speech } from "lucide-react"
+import { Bell, ChevronLeft, ChevronRight, Clock, Play, Speech } from "lucide-react"
 
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
@@ -20,13 +20,13 @@ const INTERVALS: {
   value: number
   key: "smart" | "every10s" | "every30s" | "everyMinute" | "every5min" | "onlyAtEnd"
 }[] = [
-  { value: -1, key: "smart" },
-  { value: 10, key: "every10s" },
-  { value: 30, key: "every30s" },
-  { value: 60, key: "everyMinute" },
-  { value: 300, key: "every5min" },
-  { value: 0, key: "onlyAtEnd" },
-]
+    { value: -1, key: "smart" },
+    { value: 10, key: "every10s" },
+    { value: 30, key: "every30s" },
+    { value: 60, key: "everyMinute" },
+    { value: 300, key: "every5min" },
+    { value: 0, key: "onlyAtEnd" },
+  ]
 
 export function VoiceSettings() {
   const { settings, update } = useSettings()
@@ -89,8 +89,6 @@ export function VoiceSettings() {
           </SettingCard>
         </SettingSection>
 
-        <Separator className="opacity-50" />
-
         <div
           className={cn(
             "flex flex-col gap-6 transition-opacity duration-200",
@@ -99,45 +97,49 @@ export function VoiceSettings() {
           aria-disabled={!settings.voiceEnabled}
         >
           {/* Announcement type */}
-          <SettingSection
-            icon={<Bell className="size-4" aria-hidden="true" />}
-            title={t(lang, "announcementType")}
-          >
-            <div className="flex flex-col gap-2">
-              <Tabs
-                value={settings.announcementMode}
-                onValueChange={v => {
-                  update("announcementMode", v as AnnouncementMode)
-                  if (v === "elapsed" && settings.announcementInterval === -1) {
-                    update("announcementInterval", 60)
-                  }
-                }}
-                className="w-full"
-              >
-                <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
-                  <TabsTrigger value="remaining" className="text-xs" disabled={!settings.voiceEnabled}>
-                    {t(lang, "remaining")}
-                  </TabsTrigger>
-                  <TabsTrigger value="elapsed" className="text-xs" disabled={!settings.voiceEnabled}>
-                    {t(lang, "elapsed")}
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-              <p className="text-xs text-muted-foreground text-center italic">
-                {settings.announcementMode === "remaining"
-                  ? `"${t(lang, "remainingExample")}"`
-                  : `"${t(lang, "elapsedExample")}"`}
-              </p>
-            </div>
+          <SettingSection>
+            <SettingCard>
+              <div className="flex items-center gap-2.5">
+                <Bell className="size-4 text-primary shrink-0" aria-hidden="true" />
+                <span className="text-sm font-medium leading-tight text-balance">{t(lang, "announcementType")}</span>
+              </div>
+              <div className="flex flex-col gap-2 pt-1">
+                <Tabs
+                  value={settings.announcementMode}
+                  onValueChange={v => {
+                    update("announcementMode", v as AnnouncementMode)
+                    if (v === "elapsed" && settings.announcementInterval === -1) {
+                      update("announcementInterval", 60)
+                    }
+                  }}
+                  className="w-full"
+                >
+                  <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
+                    <TabsTrigger value="remaining" className="text-xs" disabled={!settings.voiceEnabled}>
+                      {t(lang, "remaining")}
+                    </TabsTrigger>
+                    <TabsTrigger value="elapsed" className="text-xs" disabled={!settings.voiceEnabled}>
+                      {t(lang, "elapsed")}
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                <p className="text-xs text-muted-foreground text-center italic">
+                  {settings.announcementMode === "remaining"
+                    ? `"${t(lang, "remainingExample")}"`
+                    : `"${t(lang, "elapsedExample")}"`}
+                </p>
+              </div>
+            </SettingCard>
           </SettingSection>
 
           {/* Frequency */}
-          <SettingSection
-            icon={<Bell className="size-4" aria-hidden="true" />}
-            title={t(lang, "frequency")}
-          >
+          <SettingSection>
             <SettingCard>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <Clock className="size-4 text-primary shrink-0" aria-hidden="true" />
+                <span className="text-sm font-medium leading-tight text-balance">{t(lang, "frequency")}</span>
+              </div>
+              <div className="flex items-center justify-between pt-1">
                 <Button
                   type="button"
                   variant="outline"

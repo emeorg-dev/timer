@@ -10,13 +10,12 @@ import { interpolateColor } from "@/lib/color-utils"
 
 /**
  * Calcula el límite máximo de píxeles para el shader WebGL.
- * Garantiza nitidez Retina en escritorio mientras limita móviles de altísima densidad (3x/4x DPR) a 2.0x.
+ * Limita la resolución (máx 1080p / 1.5x DPR) para mantener nitidez visual en escritorio sin sobrecargar la CPU/GPU.
  */
-function getOptimalMaxPixelCount(maxDpr = 2.0, fallback = 3840 * 2160): number {
+function getOptimalMaxPixelCount(maxDpr = 1.5, fallback = 1920 * 1080): number {
   if (typeof window === "undefined") return fallback
-  return Math.round(
-    window.innerWidth * window.innerHeight * Math.min(window.devicePixelRatio, maxDpr) ** 2
-  )
+  const calculated = window.innerWidth * window.innerHeight * Math.min(window.devicePixelRatio, maxDpr) ** 2
+  return Math.min(Math.round(calculated), 2073600)
 }
 
 function getShaderSpeed(
@@ -42,15 +41,15 @@ function interpolatePalette(paletteA: string[], paletteB: string[], factor: numb
 function getRunningColors(status: TimerStatus, progress: number, isDark: boolean): string[] {
   const palettes = isDark
     ? {
-        green: ["#000000", "#004400", "#008800", "#22cc22"],
-        yellow: ["#000000", "#78350f", "#b45309", "#fef08a"],
-        red: ["#000000", "#7f1d1d", "#b91c1c", "#fbbf24"],
-      }
+      green: ["#000000", "#004400", "#008800", "#22cc22"],
+      yellow: ["#000000", "#78350f", "#b45309", "#fef08a"],
+      red: ["#000000", "#7f1d1d", "#b91c1c", "#fbbf24"],
+    }
     : {
-        green: ["#ffffff", "#bbf7d0", "#86efac", "#22c55e"],
-        yellow: ["#ffffff", "#fef08a", "#fde047", "#eab308"],
-        red: ["#ffffff", "#fecaca", "#fca5a5", "#ef4444"],
-      }
+      green: ["#ffffff", "#bbf7d0", "#86efac", "#22c55e"],
+      yellow: ["#ffffff", "#fef08a", "#fde047", "#eab308"],
+      red: ["#ffffff", "#fecaca", "#fca5a5", "#ef4444"],
+    }
 
   if (status === "finished") return palettes.red
 
@@ -103,6 +102,10 @@ export function GradientBackground({
 
   const colorBack = isDark ? "#000000" : "#ffffff"
   const maxPixelCount = getOptimalMaxPixelCount()
+
+  if (!isVisible) {
+    return <div className="absolute inset-0 -z-10 bg-background pointer-events-none transition-opacity duration-1000" />
+  }
 
   return (
     <div className="absolute inset-0 -z-10 pointer-events-none transition-opacity duration-1000">

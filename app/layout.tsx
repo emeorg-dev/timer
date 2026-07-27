@@ -47,6 +47,12 @@ export const metadata: Metadata = {
         type: "image/svg+xml",
       },
     ],
+    apple: [
+      {
+        url: "/icon-light-44x44.png",
+        sizes: "44x44",
+      },
+    ],
   },
 }
 

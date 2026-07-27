@@ -7,11 +7,21 @@ import { useSettings } from "@/components/settings"
 
 const GradientBackground = dynamic(
   () => import("@/components/gradient-background").then(mod => mod.GradientBackground),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => <div className="absolute inset-0 -z-10 bg-background transition-opacity duration-1000" />,
+  }
 )
 const SettingsSidebar = dynamic(
   () => import("@/components/settings").then(mod => mod.SettingsSidebar),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="absolute left-0 top-0 z-40 flex h-14 w-[60px] items-center justify-center">
+        <div className="size-9 rounded-full bg-secondary/30 animate-pulse" />
+      </div>
+    ),
+  }
 )
 import { Button } from "@/components/ui/button"
 import { useAnnouncer } from "@/hooks/use-announcer"

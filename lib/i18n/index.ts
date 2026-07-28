@@ -52,5 +52,6 @@ export const UI: Record<LangCode, Record<UIKey, string>> = {
  * const boton = t("es", "start"); // Retorna "Iniciar"
  */
 export function t(lang: LangCode, key: UIKey): string {
-  return UI[lang][key]
+  const dictionary = UI[lang] || UI["es"]
+  return dictionary[key]
 }

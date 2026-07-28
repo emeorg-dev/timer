@@ -192,7 +192,7 @@ export function VoiceTimer() {
 
   return (
     <main className="relative flex h-[100dvh] w-full select-none overflow-hidden bg-background">
-      <SettingsSidebar />
+      
 
       {/* Main Content Area */}
       <div className="relative z-0 flex min-h-0 flex-1 flex-col items-center justify-center gap-[clamp(1rem,4vh,2.5rem)] px-4 py-4 transition-all duration-300">

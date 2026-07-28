@@ -94,7 +94,7 @@ export const TimerDisplay = memo(function TimerDisplay({
         {status === "idle" && onInputChange !== undefined && (
           <input
             type="tel"
-            className="absolute inset-0 z-10 w-full h-full opacity-0 cursor-text"
+            className="absolute inset-0 z-10 w-full h-full opacity-0 cursor-text caret-transparent text-transparent selection:bg-transparent"
             value={inputValue || ""}
             onChange={e => {
               const val = sanitizeMicrowaveInput(e.target.value)
@@ -112,7 +112,7 @@ export const TimerDisplay = memo(function TimerDisplay({
         )}
         <div
           className={cn(
-            "font-mono tabular-nums tracking-tight",
+            "font-mono tabular-nums tracking-tight select-none pointer-events-none",
             "text-[clamp(2rem,12vmin,4rem)]",
             status === "finished" && "text-destructive"
           )}

@@ -9,7 +9,9 @@ const GradientBackground = dynamic(
   () => import("@/components/gradient-background").then(mod => mod.GradientBackground),
   {
     ssr: false,
-    loading: () => <div className="absolute inset-0 -z-10 bg-background transition-opacity duration-1000" />,
+    loading: () => (
+      <div className="absolute inset-0 -z-10 bg-background transition-opacity duration-1000" />
+    ),
   }
 )
 const SettingsSidebar = dynamic(

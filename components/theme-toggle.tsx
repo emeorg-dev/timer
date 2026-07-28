@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Monitor, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { Monitor, Moon, Sun } from "lucide-react"
 
 import { type ThemePref, useSettings } from "@/components/settings"
 import { t } from "@/lib/i18n"

@@ -42,7 +42,7 @@ function SheetContent({
       <DialogPrimitive.Popup
         data-slot="sheet-content"
         className={cn(
-          "fixed top-0 z-50 flex h-full w-[88%] max-w-sm flex-col gap-4 bg-card p-6 shadow-xl transition-transform duration-300 ease-out outline-none",
+          "fixed top-0 z-50 flex h-full w-[88%] max-w-sm flex-col bg-card p-6 shadow-xl transition-transform duration-300 ease-out outline-none",
           side === "left"
             ? "left-0 border-r border-border data-[ending-style]:-translate-x-full data-[starting-style]:-translate-x-full"
             : "right-0 border-l border-border data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full",

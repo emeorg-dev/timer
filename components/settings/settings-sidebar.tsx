@@ -64,8 +64,8 @@ export function SettingsSidebar() {
             </Button>
           </div>
 
-          <ScrollArea className="flex-1 w-full">
-            <div className="p-4">
+          <ScrollArea className="flex-1 min-h-0 w-full">
+            <div className="px-4">
               <SettingsPanel />
             </div>
           </ScrollArea>

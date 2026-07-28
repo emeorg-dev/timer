@@ -32,7 +32,7 @@ export interface Settings {
  */
 export const DEFAULT_SETTINGS: Settings = {
   voiceEnabled: true,
-  language: "es-ES",
+  language: "es",
   announcementInterval: 60,
   announcementMode: "remaining",
   soundEnabled: true,

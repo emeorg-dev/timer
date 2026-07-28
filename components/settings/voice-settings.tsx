@@ -49,7 +49,7 @@ export function VoiceSettings() {
     <AccordionItem value="item-2" className="border-border/10">
       <AccordionTrigger className="hover:no-underline hover:bg-secondary/50 px-2 rounded-md transition-colors">
         <span className="font-semibold text-sm">
-          {lang === "es-ES" ? "Voz y Anuncios" : "Voice & Announcements"}
+          {lang === "es" ? "Voz y Anuncios" : "Voice & Announcements"}
         </span>
       </AccordionTrigger>
       <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-6">

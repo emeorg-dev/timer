@@ -13,7 +13,7 @@ interface PhraseUnits {
 }
 
 const PHRASES: Record<LangCode, PhraseUnits> = {
-  "es-ES": {
+  es: {
     hour: ["hora", "horas"],
     minute: ["minuto", "minutos"],
     second: ["segundo", "segundos"],
@@ -22,7 +22,7 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
     finished: "Tiempo finalizado",
     and: "y",
   },
-  "en-US": {
+  en: {
     hour: ["hour", "hours"],
     minute: ["minute", "minutes"],
     second: ["second", "seconds"],
@@ -31,7 +31,7 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
     finished: "Time is up",
     and: "and",
   },
-  "pt-BR": {
+  pt: {
     hour: ["hora", "horas"],
     minute: ["minuto", "minutos"],
     second: ["segundo", "segundos"],
@@ -40,7 +40,7 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
     finished: "Tempo esgotado",
     and: "e",
   },
-  "fr-FR": {
+  fr: {
     hour: ["heure", "heures"],
     minute: ["minute", "minutes"],
     second: ["seconde", "secondes"],
@@ -49,7 +49,7 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
     finished: "Temps écoulé",
     and: "et",
   },
-  "de-DE": {
+  de: {
     hour: ["Stunde", "Stunden"],
     minute: ["Minute", "Minuten"],
     second: ["Sekunde", "Sekunden"],
@@ -58,7 +58,7 @@ const PHRASES: Record<LangCode, PhraseUnits> = {
     finished: "Zeit abgelaufen",
     and: "und",
   },
-  "it-IT": {
+  it: {
     hour: ["ora", "ore"],
     minute: ["minuto", "minuti"],
     second: ["secondo", "secondi"],

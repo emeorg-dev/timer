@@ -42,7 +42,7 @@ export function AudioSettings() {
     <AccordionItem value="item-3" className="border-border/10">
       <AccordionTrigger className="hover:no-underline hover:bg-secondary/50 px-2 rounded-md transition-colors">
         <span className="font-semibold text-sm">
-          {lang === "es-ES" ? "Audio y Música" : "Audio & Music"}
+          {lang === "es" ? "Audio y Música" : "Audio & Music"}
         </span>
       </AccordionTrigger>
       <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-3">
@@ -96,7 +96,7 @@ export function AudioSettings() {
             <div className="flex flex-col gap-4 pt-2">
               <div className="flex flex-col gap-2">
                 <Label className="text-xs text-muted-foreground">
-                  {lang === "es-ES" ? "Pista de Música" : "Music Track"}
+                  {lang === "es" ? "Pista de Música" : "Music Track"}
                 </Label>
                 <Popover open={isMusicDropdownOpen} onOpenChange={setIsMusicDropdownOpen}>
                   <PopoverTrigger
@@ -112,7 +112,7 @@ export function AudioSettings() {
                     {settings.musicTrack
                       ? MUSIC_TRACKS.find(track => track.value === settings.musicTrack)?.label ||
                         settings.musicTrack
-                      : lang === "es-ES"
+                      : lang === "es"
                         ? "Selecciona una pista..."
                         : "Select a track..."}
                     <ChevronsUpDown className="opacity-50 shrink-0" />
@@ -120,12 +120,12 @@ export function AudioSettings() {
                   <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                     <Command>
                       <CommandInput
-                        placeholder={lang === "es-ES" ? "Buscar pista..." : "Search track..."}
+                        placeholder={lang === "es" ? "Buscar pista..." : "Search track..."}
                         className="h-9"
                       />
                       <CommandList>
                         <CommandEmpty>
-                          {lang === "es-ES" ? "Pista no encontrada." : "No track found."}
+                          {lang === "es" ? "Pista no encontrada." : "No track found."}
                         </CommandEmpty>
                         <CommandGroup>
                           {MUSIC_TRACKS.map(track => (
@@ -156,7 +156,7 @@ export function AudioSettings() {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-xs text-muted-foreground">
-                    {lang === "es-ES" ? "Volumen" : "Volume"}
+                    {lang === "es" ? "Volumen" : "Volume"}
                   </Label>
                   <span className="text-xs text-muted-foreground">{settings.musicVolume}%</span>
                 </div>

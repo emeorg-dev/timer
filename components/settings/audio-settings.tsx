@@ -21,6 +21,7 @@ import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 import { SettingCard } from "./setting-card"
+import { SettingSection } from "./setting-section"
 import { useSettings } from "./settings-provider"
 
 const MUSIC_TRACKS = [
@@ -47,28 +48,31 @@ export function AudioSettings() {
       </AccordionTrigger>
       <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-3">
         {/* Sound */}
-        <SettingCard className="flex-row items-center justify-between gap-3">
-          <Label htmlFor="sound-switch" className="flex items-start gap-2.5 cursor-pointer flex-1">
-            <AudioLines className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
-            <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-medium leading-tight text-balance">
-                {t(lang, "enableSound")}
-              </span>
-              <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">
-                {t(lang, "enableSoundDesc")}
-              </span>
-            </div>
-          </Label>
-          <Switch
-            id="sound-switch"
-            checked={settings.soundEnabled}
-            onCheckedChange={v => update("soundEnabled", v)}
-            className="shrink-0"
-          />
-        </SettingCard>
+        <SettingSection>
+          <SettingCard className="flex-row items-center justify-between gap-3">
+            <Label htmlFor="sound-switch" className="flex items-start gap-2.5 cursor-pointer flex-1">
+              <AudioLines className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-medium leading-tight text-balance">
+                  {t(lang, "enableSound")}
+                </span>
+                <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">
+                  {t(lang, "enableSoundDesc")}
+                </span>
+              </div>
+            </Label>
+            <Switch
+              id="sound-switch"
+              checked={settings.soundEnabled}
+              onCheckedChange={v => update("soundEnabled", v)}
+              className="shrink-0"
+            />
+          </SettingCard>
+        </SettingSection>
 
         {/* Background Music */}
-        <SettingCard>
+        <SettingSection>
+          <SettingCard>
           <div className="flex items-center justify-between gap-3">
             <Label
               htmlFor="music-switch"
@@ -172,7 +176,8 @@ export function AudioSettings() {
               </div>
             </div>
           )}
-        </SettingCard>
+          </SettingCard>
+        </SettingSection>
       </AccordionContent>
     </AccordionItem>
   )

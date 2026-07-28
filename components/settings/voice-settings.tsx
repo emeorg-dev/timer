@@ -102,12 +102,12 @@ export function VoiceSettings() {
           {/* Announcement type */}
           <SettingSection>
             <SettingCard>
-              <div className="flex items-center gap-2.5">
-                <Bell className="size-4 text-primary shrink-0" aria-hidden="true" />
+              <Label className="flex items-start gap-2.5 cursor-pointer flex-1">
+                <Bell className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
                 <span className="text-sm font-medium leading-tight text-balance">
                   {t(lang, "announcementType")}
                 </span>
-              </div>
+              </Label>
               <div className="flex flex-col gap-2 pt-1">
                 <Tabs
                   value={settings.announcementMode}
@@ -148,12 +148,12 @@ export function VoiceSettings() {
           {/* Frequency */}
           <SettingSection>
             <SettingCard>
-              <div className="flex items-center gap-2.5">
-                <Clock className="size-4 text-primary shrink-0" aria-hidden="true" />
+              <Label className="flex items-start gap-2.5 cursor-pointer flex-1">
+                <Clock className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
                 <span className="text-sm font-medium leading-tight text-balance">
                   {t(lang, "frequency")}
                 </span>
-              </div>
+              </Label>
               <div className="flex items-center justify-between pt-1">
                 <Button
                   type="button"

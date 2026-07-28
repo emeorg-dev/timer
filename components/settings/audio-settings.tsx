@@ -30,8 +30,6 @@ const MUSIC_TRACKS = [
       "/music/Leighton_Brothers_-_Steamboat_Bill_(1910)/Leighton_Brothers_-_Steamboat_Bill_(1910).ogg",
     label: "Steamboat Bill (1910)",
   },
-  { value: "/bg-music-2.ogg", label: "Piano Relax" },
-  { value: "/bg-music-3.ogg", label: "Ambient" },
 ]
 
 export function AudioSettings() {

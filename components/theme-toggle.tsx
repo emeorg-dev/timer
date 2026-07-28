@@ -1,6 +1,8 @@
 "use client"
 
+import * as React from "react"
 import { Monitor, Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 
 import { type ThemePref, useSettings } from "@/components/settings"
 import { t } from "@/lib/i18n"
@@ -17,8 +19,14 @@ const OPTIONS: {
 ]
 
 export function ThemeToggle() {
-  const { settings, update } = useSettings()
+  const { settings } = useSettings()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
   const lang = settings.language
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <div
@@ -27,12 +35,12 @@ export function ThemeToggle() {
       aria-label={t(lang, "systemMode")}
     >
       {OPTIONS.map(opt => {
-        const isActive = settings.theme === opt.value
+        const isActive = mounted && theme === opt.value
         return (
           <button
             key={opt.value}
             type="button"
-            onClick={() => update("theme", opt.value)}
+            onClick={() => setTheme(opt.value)}
             aria-pressed={isActive}
             aria-label={t(lang, opt.key)}
             title={t(lang, opt.key)}

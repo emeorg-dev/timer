@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
 
 import "./globals.css"
+import { Providers } from "@/components/providers"
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 const geistMono = Geist_Mono({
@@ -94,8 +94,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} bg-background`}
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
-        {children}
-        {process.env.NODE_ENV === "production" && <Analytics />}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )

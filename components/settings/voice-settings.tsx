@@ -29,7 +29,7 @@ const INTERVALS: {
 
 export function VoiceSettings() {
   const { settings, update } = useSettings()
-  const { speak, unlock } = useSpeech()
+  const { speak, cancel, unlock } = useSpeech()
   const lang = settings.language
 
   // Computed state for Stepper frequency
@@ -41,6 +41,7 @@ export function VoiceSettings() {
   const currentIntervalOption = availableIntervals[actualIndex]
 
   const handleTestVoice = () => {
+    cancel()
     unlock()
     speak(t(lang, "testPhrase"), lang)
   }

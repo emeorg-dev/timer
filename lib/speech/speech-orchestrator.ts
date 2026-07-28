@@ -82,27 +82,13 @@ export class SpeechOrchestrator implements ISpeaker {
 
   unlock(): void {
     if (!this.supported) return
-    const executeUnlock = () => {
-      const synth = window.speechSynthesis
-      const utterance = new SpeechSynthesisUtterance(" ")
-      utterance.volume = 0
-      synth.speak(utterance)
-      this.cloudFallback.unlock()
-    }
-
-    if (this.voicesLoaded) {
-      executeUnlock()
-      return
-    }
-
-    let hasUnlocked = false
-    const unlockOnceLoaded = () => {
-      if (hasUnlocked) return
-      hasUnlocked = true
-      executeUnlock()
-    }
-    this.pendingCallbacks.push(unlockOnceLoaded)
-    setTimeout(unlockOnceLoaded, UNLOCK_TIMEOUT_MS)
+    
+    const synth = window.speechSynthesis
+    const utterance = new SpeechSynthesisUtterance(" ")
+    utterance.volume = 0
+    synth.speak(utterance)
+    
+    this.cloudFallback.unlock()
   }
 
   speak(text: string, lang: string): void {
@@ -180,6 +166,7 @@ export class SpeechOrchestrator implements ISpeaker {
   }
 
   cancel(): void {
+    this.pendingCallbacks = []
     if (this.supported) {
       window.speechSynthesis.cancel()
     }

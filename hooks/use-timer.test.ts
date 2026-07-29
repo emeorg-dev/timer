@@ -111,9 +111,8 @@ describe("useTimer", () => {
 
     expect(result.current.remaining).toBe(7)
 
-    // Este valor documenta el comportamiento defectuoso actual:
-    // calcula 20 (nueva prop) - 7 (remaining interno) = 13.
-    expect(result.current.elapsed).toBe(13)
+    // Ahora el hook consume elapsedSec de TimerCore, que mantiene su contexto correcto.
+    expect(result.current.elapsed).toBe(3)
   })
 
   it("sincroniza una nueva duración mientras está idle", () => {
@@ -134,7 +133,7 @@ describe("useTimer", () => {
     expect(result.current.elapsed).toBe(0)
   })
 
-  it("documenta qué duración usa reset después de cambiar la prop mientras corre", () => {
+  it("aplica la última durationSec al volver a idle", () => {
     const { result, rerender } = renderHook(
       ({ durationSec }) => useTimer(durationSec),
       {
@@ -153,14 +152,15 @@ describe("useTimer", () => {
       durationSec: 20,
     })
 
+    expect(result.current.elapsed).toBe(2)
+
     act(() => {
       result.current.reset()
     })
 
-    // Al hacer reset el estado pasa a idle.
-    // El useEffect([durationSec, status]) reacciona al idle, y aplica setDuration(20).
-    // Por lo tanto, remaining terminaría siendo 20.
+    expect(result.current.status).toBe("idle")
     expect(result.current.remaining).toBe(20)
+    expect(result.current.elapsed).toBe(0)
   })
 
   it("limpia TimerCore al desmontarse", () => {

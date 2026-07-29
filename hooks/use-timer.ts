@@ -23,6 +23,7 @@ export type { TimerStatus }
 export function useTimer(durationSec: number) {
   const [status, setStatus] = useState<TimerStatus>("idle")
   const [remaining, setRemaining] = useState(durationSec)
+  const [elapsed, setElapsed] = useState(0)
 
   const timerRef = useRef<TimerCore | null>(null)
 
@@ -34,8 +35,9 @@ export function useTimer(durationSec: number) {
       setStatus(newStatus)
     })
 
-    const unsubscribeTick = timer.on("tick", ({ remainingSec }) => {
+    const unsubscribeTick = timer.on("tick", ({ remainingSec, elapsedSec }) => {
       setRemaining(remainingSec)
+      setElapsed(elapsedSec)
     })
 
     return () => {
@@ -50,6 +52,7 @@ export function useTimer(durationSec: number) {
     if (timerRef.current && status === "idle") {
       timerRef.current.setDuration(durationSec)
       setRemaining(durationSec)
+      setElapsed(0)
     }
   }, [durationSec, status])
 
@@ -61,7 +64,7 @@ export function useTimer(durationSec: number) {
   return {
     status,
     remaining,
-    elapsed: durationSec - remaining,
+    elapsed,
     duration: durationSec,
     start,
     pause,

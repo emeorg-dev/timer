@@ -27,6 +27,12 @@ export const LANGUAGES: LanguageOption[] = [
   { code: "it", label: "Italiano" },
 ]
 
+const SUPPORTED_LANGUAGES = new Set<LangCode>(LANGUAGES.map(language => language.code))
+
+export function isSupportedLanguage(language: unknown): language is LangCode {
+  return typeof language === "string" && SUPPORTED_LANGUAGES.has(language as LangCode)
+}
+
 /**
  * Clave de traducción inferida del diccionario base en español, garantizando tipado estricto en todos los idiomas.
  */

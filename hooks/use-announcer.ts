@@ -2,15 +2,12 @@
 
 import { useEffect, useMemo, useRef } from "react"
 
-import type { AnnouncementMode } from "@/components/settings"
-import { useSettings } from "@/components/settings"
+import { useSettings } from "@/hooks/use-settings"
 import { useSpeech } from "@/hooks/use-speech"
 import type { TimerStatus } from "@/hooks/use-timer"
+import { createAnnouncementStrategy } from "@/lib/announcer/announcement-strategy-factory"
 import { AnnouncerEngine } from "@/lib/announcer/announcer-engine"
-import { FixedIntervalStrategy } from "@/lib/announcer/fixed-interval-strategy"
 import type { IAnnouncementStrategy } from "@/lib/announcer/interfaces"
-import { SmartMilestoneStrategy } from "@/lib/announcer/smart-milestone-strategy"
-import type { LangCode } from "@/lib/i18n"
 
 /**
  * Parámetros de entrada para el seguimiento auditivo del temporizador en tiempo real.
@@ -19,30 +16,6 @@ interface UseAnnouncerProps {
   remaining: number
   elapsed: number
   status: TimerStatus
-}
-
-/**
- * Crea la estrategia algorítmica de locución verbal según las preferencias seleccionadas por el usuario.
- *
- * Evalúa si el usuario solicita un intervalo fijo tradicional (`FixedIntervalStrategy`) o el sistema dinámico
- * de Hitos Inteligentes (`SmartMilestoneStrategy`), el cual incrementa la frecuencia de avisos en los
- * últimos segundos críticos para aumentar la noción temporal sin saturar al usuario.
- *
- * @param interval Frecuencia seleccionada (en segundos). Si es `-1`, activa el modo Inteligente.
- * @param mode Modo de referencia de conteo ('remaining' para tiempo restante o 'elapsed' para transcurrido).
- * @param language Dialecto e idioma oficial de la locución (ej. 'es-ES', 'en-US').
- * @returns Instancia de la estrategia de anuncio lista para ser evaluada por el motor central.
- */
-function createAnnouncementStrategy(
-  interval: number,
-  mode: AnnouncementMode,
-  language: LangCode
-): IAnnouncementStrategy {
-  const isSmartMilestoneMode = interval === -1
-  if (isSmartMilestoneMode) {
-    return new SmartMilestoneStrategy(mode, language)
-  }
-  return new FixedIntervalStrategy(interval, mode, language)
 }
 
 /**
@@ -81,11 +54,11 @@ export function useAnnouncer({ remaining, elapsed, status }: UseAnnouncerProps) 
     const isVoiceDisabled = !settings.voiceEnabled || settings.announcementInterval === 0
     if (!isTimerRunning || isVoiceDisabled) return
 
-    const strategy = createAnnouncementStrategy(
-      settings.announcementInterval,
-      settings.announcementMode,
-      settings.language
-    )
+    const strategy = createAnnouncementStrategy({
+      interval: settings.announcementInterval,
+      mode: settings.announcementMode,
+      language: settings.language,
+    })
     strategyRef.current = strategy
     engine.setStrategy(strategy)
   }, [

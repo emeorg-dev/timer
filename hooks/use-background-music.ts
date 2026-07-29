@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 
-import { useSettings } from "@/components/settings"
+import { useSettings } from "@/hooks/use-settings"
 import type { TimerStatus } from "@/hooks/use-timer"
 import { AudioPlayer } from "@/lib/audio/audio-player"
 import { BackgroundMusicController } from "@/lib/audio/background-music-controller"

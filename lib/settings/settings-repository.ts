@@ -1,3 +1,5 @@
+import { isSupportedLanguage } from "../i18n"
+
 import type { ISettingsRepository } from "./interfaces"
 import type { Settings } from "./types"
 import { DEFAULT_SETTINGS } from "./types"
@@ -21,9 +23,7 @@ export class SettingsRepository implements ISettingsRepository {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<Settings>
-        // Ensure language is a supported code
-        const supportedLangs = ["es", "en", "pt", "fr", "de", "it"]
-        if (parsed.language && !supportedLangs.includes(parsed.language)) {
+        if (parsed.language && !isSupportedLanguage(parsed.language)) {
           parsed.language = "es"
         }
         return { ...DEFAULT_SETTINGS, ...parsed }

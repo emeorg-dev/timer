@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { GrainGradient } from "@paper-design/shaders-react"
 
-import { useSettings } from "@/components/settings"
+import { useSettings } from "@/hooks/use-settings"
 import { useTheme } from "@/hooks/use-theme"
 import type { TimerStatus } from "@/hooks/use-timer"
 import { interpolateColor } from "@/lib/color-utils"

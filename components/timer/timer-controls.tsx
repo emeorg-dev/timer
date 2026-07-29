@@ -3,8 +3,8 @@
 import { memo } from "react"
 import { Pause, Play, RotateCcw } from "lucide-react"
 
-import { useSettings } from "@/components/settings"
 import { Button } from "@/components/ui/button"
+import { useSettings } from "@/hooks/use-settings"
 import type { TimerStatus } from "@/hooks/use-timer"
 import { t } from "@/lib/i18n"
 

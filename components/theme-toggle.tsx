@@ -4,8 +4,9 @@ import * as React from "react"
 import { useTheme } from "next-themes"
 import { Monitor, Moon, Sun } from "lucide-react"
 
-import { type ThemePref, useSettings } from "@/components/settings"
+import { useSettings } from "@/hooks/use-settings"
 import { t } from "@/lib/i18n"
+import type { ThemePref } from "@/lib/settings/types"
 import { cn } from "@/lib/utils"
 
 const OPTIONS: {

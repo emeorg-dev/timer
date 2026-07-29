@@ -48,7 +48,10 @@ export function AudioSettings() {
         {/* Sound */}
         <SettingSection>
           <SettingCard className="flex-row items-center justify-between gap-3">
-            <Label htmlFor="sound-switch" className="flex items-start gap-2.5 cursor-pointer flex-1">
+            <Label
+              htmlFor="sound-switch"
+              className="flex items-start gap-2.5 cursor-pointer flex-1"
+            >
               <AudioLines className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
               <div className="flex flex-col gap-0.5">
                 <span className="text-sm font-medium leading-tight text-balance">
@@ -71,109 +74,111 @@ export function AudioSettings() {
         {/* Background Music */}
         <SettingSection>
           <SettingCard>
-          <div className="flex items-center justify-between gap-3">
-            <Label
-              htmlFor="music-switch"
-              className="flex items-start gap-2.5 cursor-pointer flex-1"
-            >
-              <Disc className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
-              <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-medium leading-tight text-balance">
-                  {t(lang, "enableMusic")}
-                </span>
-                <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">
-                  {t(lang, "enableMusicDesc")}
-                </span>
-              </div>
-            </Label>
-            <Switch
-              id="music-switch"
-              checked={settings.musicEnabled}
-              onCheckedChange={v => update("musicEnabled", v)}
-              className="shrink-0"
-            />
-          </div>
-
-          {settings.musicEnabled && (
-            <div className="flex flex-col gap-4 pt-2">
-              <div className="flex flex-col gap-2">
-                <Label className="text-xs text-muted-foreground">
-                  {lang === "es" ? "Pista de Música" : "Music Track"}
-                </Label>
-                <Popover open={isMusicDropdownOpen} onOpenChange={setIsMusicDropdownOpen}>
-                  <PopoverTrigger
-                    render={
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={isMusicDropdownOpen}
-                        className="w-full justify-between bg-background/50 font-normal"
-                      />
-                    }
-                  >
-                    {settings.musicTrack
-                      ? MUSIC_TRACKS.find(track => track.value === settings.musicTrack)?.label ||
-                        settings.musicTrack
-                      : lang === "es"
-                        ? "Selecciona una pista..."
-                        : "Select a track..."}
-                    <ChevronsUpDown className="opacity-50 shrink-0" />
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                    <Command>
-                      <CommandInput
-                        placeholder={lang === "es" ? "Buscar pista..." : "Search track..."}
-                        className="h-9"
-                      />
-                      <CommandList>
-                        <CommandEmpty>
-                          {lang === "es" ? "Pista no encontrada." : "No track found."}
-                        </CommandEmpty>
-                        <CommandGroup>
-                          {MUSIC_TRACKS.map(track => (
-                            <CommandItem
-                              key={track.value}
-                              value={track.value}
-                              onSelect={() => {
-                                update("musicTrack", track.value)
-                                setIsMusicDropdownOpen(false)
-                              }}
-                            >
-                              {track.label}
-                              <Check
-                                className={cn(
-                                  "ml-auto",
-                                  settings.musicTrack === track.value ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs text-muted-foreground">
-                    {lang === "es" ? "Volumen" : "Volume"}
-                  </Label>
-                  <span className="text-xs text-muted-foreground">{settings.musicVolume}%</span>
+            <div className="flex items-center justify-between gap-3">
+              <Label
+                htmlFor="music-switch"
+                className="flex items-start gap-2.5 cursor-pointer flex-1"
+              >
+                <Disc className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm font-medium leading-tight text-balance">
+                    {t(lang, "enableMusic")}
+                  </span>
+                  <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">
+                    {t(lang, "enableMusicDesc")}
+                  </span>
                 </div>
-                <Slider
-                  value={[settings.musicVolume]}
-                  onValueChange={v => {
-                    const newValue = typeof v === "number" ? v : v[0]
-                    update("musicVolume", newValue)
-                  }}
-                  max={100}
-                  step={1}
-                />
-              </div>
+              </Label>
+              <Switch
+                id="music-switch"
+                checked={settings.musicEnabled}
+                onCheckedChange={v => update("musicEnabled", v)}
+                className="shrink-0"
+              />
             </div>
-          )}
+
+            {settings.musicEnabled && (
+              <div className="flex flex-col gap-4 pt-2">
+                <div className="flex flex-col gap-2">
+                  <Label className="text-xs text-muted-foreground">
+                    {lang === "es" ? "Pista de Música" : "Music Track"}
+                  </Label>
+                  <Popover open={isMusicDropdownOpen} onOpenChange={setIsMusicDropdownOpen}>
+                    <PopoverTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={isMusicDropdownOpen}
+                          className="w-full justify-between bg-background/50 font-normal"
+                        />
+                      }
+                    >
+                      {settings.musicTrack
+                        ? MUSIC_TRACKS.find(track => track.value === settings.musicTrack)?.label ||
+                          settings.musicTrack
+                        : lang === "es"
+                          ? "Selecciona una pista..."
+                          : "Select a track..."}
+                      <ChevronsUpDown className="opacity-50 shrink-0" />
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                      <Command>
+                        <CommandInput
+                          placeholder={lang === "es" ? "Buscar pista..." : "Search track..."}
+                          className="h-9"
+                        />
+                        <CommandList>
+                          <CommandEmpty>
+                            {lang === "es" ? "Pista no encontrada." : "No track found."}
+                          </CommandEmpty>
+                          <CommandGroup>
+                            {MUSIC_TRACKS.map(track => (
+                              <CommandItem
+                                key={track.value}
+                                value={track.value}
+                                onSelect={() => {
+                                  update("musicTrack", track.value)
+                                  setIsMusicDropdownOpen(false)
+                                }}
+                              >
+                                {track.label}
+                                <Check
+                                  className={cn(
+                                    "ml-auto",
+                                    settings.musicTrack === track.value
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-muted-foreground">
+                      {lang === "es" ? "Volumen" : "Volume"}
+                    </Label>
+                    <span className="text-xs text-muted-foreground">{settings.musicVolume}%</span>
+                  </div>
+                  <Slider
+                    value={[settings.musicVolume]}
+                    onValueChange={v => {
+                      const newValue = typeof v === "number" ? v : v[0]
+                      update("musicVolume", newValue)
+                    }}
+                    max={100}
+                    step={1}
+                  />
+                </div>
+              </div>
+            )}
           </SettingCard>
         </SettingSection>
       </AccordionContent>

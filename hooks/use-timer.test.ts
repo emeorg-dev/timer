@@ -88,14 +88,11 @@ describe("useTimer", () => {
   })
 
   it("mantiene elapsed consistente si durationSec cambia mientras corre", () => {
-    const { result, rerender } = renderHook(
-      ({ durationSec }) => useTimer(durationSec),
-      {
-        initialProps: {
-          durationSec: 10,
-        },
-      }
-    )
+    const { result, rerender } = renderHook(({ durationSec }) => useTimer(durationSec), {
+      initialProps: {
+        durationSec: 10,
+      },
+    })
 
     act(() => {
       result.current.start()
@@ -116,14 +113,11 @@ describe("useTimer", () => {
   })
 
   it("sincroniza una nueva duración mientras está idle", () => {
-    const { result, rerender } = renderHook(
-      ({ durationSec }) => useTimer(durationSec),
-      {
-        initialProps: {
-          durationSec: 10,
-        },
-      }
-    )
+    const { result, rerender } = renderHook(({ durationSec }) => useTimer(durationSec), {
+      initialProps: {
+        durationSec: 10,
+      },
+    })
 
     rerender({
       durationSec: 20,
@@ -134,14 +128,11 @@ describe("useTimer", () => {
   })
 
   it("aplica la última durationSec al volver a idle", () => {
-    const { result, rerender } = renderHook(
-      ({ durationSec }) => useTimer(durationSec),
-      {
-        initialProps: {
-          durationSec: 10,
-        },
-      }
-    )
+    const { result, rerender } = renderHook(({ durationSec }) => useTimer(durationSec), {
+      initialProps: {
+        durationSec: 10,
+      },
+    })
 
     act(() => {
       result.current.start()
@@ -176,7 +167,7 @@ describe("useTimer", () => {
     expect(() => {
       vi.advanceTimersByTime(5000)
     }).not.toThrow()
-    
+
     // Si TimerCore no limpió el intervalo, los timers falsos seguirían corriendo.
     // Como unmount llama destroy(), limpia el timer de forma correcta.
   })

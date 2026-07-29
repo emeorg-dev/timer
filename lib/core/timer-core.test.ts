@@ -16,7 +16,7 @@ describe("Pruebas de Caracterización de TimerCore", () => {
   // Función auxiliar para rastrear el estado
   function trackStatuses(timer: TimerCore): TimerStatus[] {
     const statuses: TimerStatus[] = []
-    timer.on("statusChange", (status) => {
+    timer.on("statusChange", status => {
       statuses.push(status)
     })
     return statuses
@@ -25,7 +25,7 @@ describe("Pruebas de Caracterización de TimerCore", () => {
   // Función auxiliar para rastrear los ticks (pulsos)
   function trackTicks(timer: TimerCore) {
     const ticks: Array<{ remainingSec: number; elapsedSec: number }> = []
-    timer.on("tick", (value) => {
+    timer.on("tick", value => {
       ticks.push(value)
     })
     return ticks
@@ -86,7 +86,7 @@ describe("Pruebas de Caracterización de TimerCore", () => {
         elapsedSec: 5,
       })
 
-      const runningEvents = statuses.filter((status) => status === "running")
+      const runningEvents = statuses.filter(status => status === "running")
 
       expect(runningEvents).toHaveLength(1)
     })
@@ -239,7 +239,7 @@ describe("Pruebas de Caracterización de TimerCore", () => {
       timer.start()
       vi.advanceTimersByTime(7000)
 
-      const finishedEvents = statuses.filter((status) => status === "finished")
+      const finishedEvents = statuses.filter(status => status === "finished")
 
       expect(finishedEvents).toHaveLength(1)
     })

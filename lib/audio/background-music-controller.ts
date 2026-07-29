@@ -1,4 +1,4 @@
-import { duckingBus } from "./audio-ducking-bus"
+import { duckingBus, type IAudioDucking } from "./audio-ducking-bus"
 import type { IFilePlayer, ISoundGenerator } from "./interfaces"
 
 /**
@@ -62,16 +62,18 @@ export class BackgroundMusicController {
     "/music/Leighton_Brothers_-_Steamboat_Bill_(1910)/Leighton_Brothers_-_Steamboat_Bill_(1910).ogg"
   private isDucking = false
   private unsubscribeDucking: (() => void) | null = null
+  private ducking: IAudioDucking
 
-  constructor(player: IFilePlayer, sfx: ISoundGenerator) {
+  constructor(player: IFilePlayer, sfx: ISoundGenerator, ducking: IAudioDucking = duckingBus) {
     this.player = player
     this.sfx = sfx
+    this.ducking = ducking
 
     this.player.setSource(this.currentTrack)
     this.player.setLoop(true)
     this.player.setVolume(this.baseVolume)
 
-    this.unsubscribeDucking = duckingBus.subscribe(isDucking => {
+    this.unsubscribeDucking = this.ducking.subscribe(isDucking => {
       this.isDucking = isDucking
       this.player.setVolume(isDucking ? this.duckVolume : this.baseVolume)
     })

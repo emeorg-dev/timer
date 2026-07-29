@@ -7,3 +7,11 @@ export interface ISpeaker {
   /** Interrumpe de inmediato cualquier locución en curso. */
   cancel(): void
 }
+
+export interface IUnlockableSpeaker extends ISpeaker {
+  unlock(): void
+}
+
+export interface IVoiceResolver {
+  findBestVoice(targetLang: string): SpeechSynthesisVoice | null
+}

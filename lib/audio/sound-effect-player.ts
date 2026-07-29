@@ -1,7 +1,7 @@
 import { createLogger } from "../logger"
 import { tryCatchSync } from "../try-catch"
 
-import { duckingBus } from "./audio-ducking-bus"
+import { duckingBus, type IAudioDucking } from "./audio-ducking-bus"
 import type { ISoundGenerator, SoundType } from "./interfaces"
 
 const logger = createLogger("SoundEffectPlayer")
@@ -13,11 +13,11 @@ const logger = createLogger("SoundEffectPlayer")
  * @param durationSec Duración estimada del efecto de sonido para restaurar la ganancia al finalizar.
  * @param action Bloque síncrono que dispara la síntesis de los tonos en el AudioContext.
  */
-function withAudioDucking(durationSec: number, action: () => void): void {
-  duckingBus.requestDuck()
+function withAudioDucking(ducking: IAudioDucking, durationSec: number, action: () => void): void {
+  ducking.requestDuck()
   action()
   setTimeout(() => {
-    duckingBus.releaseDuck()
+    ducking.releaseDuck()
   }, durationSec * 1000)
 }
 
@@ -30,6 +30,11 @@ function withAudioDucking(durationSec: number, action: () => void): void {
  */
 export class SoundEffectPlayer implements ISoundGenerator {
   private ctx: AudioContext | null = null
+  private ducking: IAudioDucking
+
+  constructor(ducking: IAudioDucking = duckingBus) {
+    this.ducking = ducking
+  }
 
   private getContext(): AudioContext | null {
     if (typeof window === "undefined") return null
@@ -63,20 +68,20 @@ export class SoundEffectPlayer implements ISoundGenerator {
   }
 
   private playStartMelody = (): void => {
-    withAudioDucking(0.34, () => {
+    withAudioDucking(this.ducking, 0.34, () => {
       this.synthesizeTone(660, 0, 0.15)
       this.synthesizeTone(880, 0.16, 0.18)
     })
   }
 
   private playPauseBeep = (): void => {
-    withAudioDucking(0.18, () => {
+    withAudioDucking(this.ducking, 0.18, () => {
       this.synthesizeTone(440, 0, 0.18)
     })
   }
 
   private playFinishChime = (): void => {
-    withAudioDucking(0.81, () => {
+    withAudioDucking(this.ducking, 0.81, () => {
       this.synthesizeTone(880, 0, 0.2)
       this.synthesizeTone(660, 0.22, 0.2)
       this.synthesizeTone(990, 0.46, 0.35)
@@ -88,7 +93,7 @@ export class SoundEffectPlayer implements ISoundGenerator {
       const ctx = this.getContext()
       if (!ctx) return
 
-      withAudioDucking(0.6, () => {
+      withAudioDucking(this.ducking, 0.6, () => {
         const osc = ctx.createOscillator()
         const gain = ctx.createGain()
         osc.type = "sine"

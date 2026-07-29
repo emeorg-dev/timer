@@ -1,8 +1,8 @@
-import { duckingBus } from "../audio/audio-ducking-bus"
+import { duckingBus, type IAudioDucking } from "../audio/audio-ducking-bus"
 import { createLogger } from "../logger"
 import { tryCatchSync } from "../try-catch"
 
-import type { ISpeaker } from "./interfaces"
+import type { IUnlockableSpeaker } from "./interfaces"
 
 const logger = createLogger("CloudTTSService")
 
@@ -13,10 +13,12 @@ const logger = createLogger("CloudTTSService")
  * carentes de motores locales fiables. Se integra de manera fluida con el `AudioDuckingBus` para reducir el
  * volumen de la música ambiental mientras se reproduce la locución en red.
  */
-export class CloudTTSService implements ISpeaker {
+export class CloudTTSService implements IUnlockableSpeaker {
   private audio: HTMLAudioElement | null = null
+  private ducking: IAudioDucking
 
-  constructor() {
+  constructor(ducking: IAudioDucking = duckingBus) {
+    this.ducking = ducking
     if (typeof window !== "undefined") {
       this.audio = new Audio()
     }
@@ -48,7 +50,7 @@ export class CloudTTSService implements ISpeaker {
       logger.error("Cloud TTS falló")
     }
 
-    duckingBus.requestDuck()
+    this.ducking.requestDuck()
     this.audio.play().catch(e => {
       logger.error("Cloud TTS Promise bloqueada", { error: e })
       this.cleanup()
@@ -67,6 +69,6 @@ export class CloudTTSService implements ISpeaker {
       this.audio.onended = null
       this.audio.onerror = null
     }
-    duckingBus.releaseDuck()
+    this.ducking.releaseDuck()
   }
 }

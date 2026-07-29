@@ -1,3 +1,5 @@
+import type { IVoiceResolver } from "./interfaces"
+
 /**
  * Evalúa en tiempo de ejecución si el navegador web soporta la API nativa de síntesis de voz (`speechSynthesis`).
  *
@@ -21,7 +23,7 @@ export function isNativeSpeechSupported(): boolean {
  *    y 'Mónica' o 'Jorge' para España).
  * 3. Respaldo por idioma base (cualquier voz que comience por 'es').
  */
-export class VoiceResolver {
+export class VoiceResolver implements IVoiceResolver {
   private getVoices(): SpeechSynthesisVoice[] {
     if (!isNativeSpeechSupported()) return []
     return window.speechSynthesis.getVoices()

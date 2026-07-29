@@ -1,5 +1,11 @@
 type DuckListener = (isDucking: boolean) => void
 
+export interface IAudioDucking {
+  subscribe(listener: DuckListener): () => void
+  requestDuck(): void
+  releaseDuck(): void
+}
+
 /**
  * Bus central de atenuación de volumen (Audio Ducking Bus) por conteo de referencias.
  *
@@ -8,7 +14,7 @@ type DuckListener = (isDucking: boolean) => void
  * el volumen ambiental permanezca reducido de manera suave si múltiples anuncios se superponen en el tiempo,
  * restaurando la ganancia normal únicamente al liberarse todas y cada una de las locuciones activas.
  */
-export class AudioDuckingBus {
+export class AudioDuckingBus implements IAudioDucking {
   private listeners: Set<DuckListener> = new Set()
   private duckCount = 0
 

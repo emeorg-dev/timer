@@ -64,30 +64,39 @@ export class TimerCore extends EventEmitter<TimerEvents> {
     const isRunning = this.status === "running"
     if (!isRunning) return
 
-    const msLeft = this.deadlineMs - Date.now()
-    const secLeft = Math.max(0, Math.ceil(msLeft / 1000))
+    const remainingMs = Math.max(0, this.deadlineMs - Date.now())
+    const nextRemainingSec = Math.ceil(remainingMs / 1000)
 
-    const hasChangedSecond = secLeft !== this.lastWholeSec
-    if (hasChangedSecond) {
-      this.lastWholeSec = secLeft
-      this.remainingSec = secLeft
-      this.emit("tick", {
-        remainingSec: this.remainingSec,
-        elapsedSec: this.durationSec - this.remainingSec,
-      })
-    }
-
-    const hasDeadlinePassed = msLeft <= 0
-    if (hasDeadlinePassed) {
+    if (nextRemainingSec <= 0) {
       this.remainingSec = 0
-      this.setStatus("finished")
-      this.emit("tick", { remainingSec: 0, elapsedSec: this.durationSec })
+      this.lastWholeSec = 0
+
       this.stopLoop()
+
+      this.emit("tick", {
+        remainingSec: 0,
+        elapsedSec: this.durationSec,
+      })
+
+      this.setStatus("finished")
       return
     }
+
+    if (nextRemainingSec === this.lastWholeSec) {
+      return
+    }
+
+    this.remainingSec = nextRemainingSec
+    this.lastWholeSec = nextRemainingSec
+
+    this.emit("tick", {
+      remainingSec: this.remainingSec,
+      elapsedSec: this.durationSec - this.remainingSec,
+    })
   }
 
   start(): void {
+    if (this.status !== "idle") return
     if (this.durationSec <= 0) return
     this.deadlineMs = Date.now() + this.durationSec * 1000
     this.lastWholeSec = this.durationSec

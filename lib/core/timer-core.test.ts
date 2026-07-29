@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { TimerCore } from "./timer-core"
+
 import type { TimerStatus } from "./timer-core"
+import { TimerCore } from "./timer-core"
 
 describe("Pruebas de Caracterización de TimerCore", () => {
   beforeEach(() => {
@@ -66,51 +67,76 @@ describe("Pruebas de Caracterización de TimerCore", () => {
     })
   })
 
-  describe("Grupo 3 - Comportamiento Defectuoso de start()", () => {
-    it("actualmente reinicia el límite de tiempo cuando se llama a start mientras se ejecuta", () => {
+  describe("Grupo 3 - Comportamiento de start()", () => {
+    it("ignora start cuando ya está ejecutándose", () => {
       const timer = new TimerCore(10)
       const ticks = trackTicks(timer)
-
-      timer.start()
-
-      vi.advanceTimersByTime(4000) // restante ≈ 6
-
-      timer.start() // Esto reiniciará el límite a 10 segundos a partir de ahora
-
-      vi.advanceTimersByTime(1000) // 1 segundo después de reiniciar
-
-      const latestTick = ticks.at(-1)
-      expect(latestTick?.remainingSec).toBe(9)
-    })
-
-    it("actualmente reinicia desde la duración completa cuando se llama a start mientras está pausado", () => {
-      const timer = new TimerCore(10)
-      const ticks = trackTicks(timer)
-
-      timer.start()
-      vi.advanceTimersByTime(4000) // restante ≈ 6
-
-      timer.pause()
-      timer.start() // Actualmente esto reinicia el límite
-
-      vi.advanceTimersByTime(1000)
-
-      const latestTick = ticks.at(-1)
-      expect(latestTick?.remainingSec).toBe(9)
-    })
-
-    it("actualmente reinicia cuando se llama a start después de terminar", () => {
-      const timer = new TimerCore(2)
       const statuses = trackStatuses(timer)
 
       timer.start()
-      vi.advanceTimersByTime(2500)
 
-      expect(statuses).toContain("finished")
+      vi.advanceTimersByTime(4000)
 
-      timer.start() // Reinicia el límite
+      timer.start()
 
-      expect(statuses.at(-1)).toBe("running")
+      vi.advanceTimersByTime(1000)
+
+      expect(ticks.at(-1)).toEqual({
+        remainingSec: 5,
+        elapsedSec: 5,
+      })
+
+      const runningEvents = statuses.filter((status) => status === "running")
+
+      expect(runningEvents).toHaveLength(1)
+    })
+
+    it("ignora start mientras está pausado", () => {
+      const timer = new TimerCore(10)
+      const ticks = trackTicks(timer)
+      const statuses = trackStatuses(timer)
+
+      timer.start()
+
+      vi.advanceTimersByTime(4000)
+
+      timer.pause()
+
+      const pausedTick = ticks.at(-1)
+      const tickCountAtPause = ticks.length
+      const statusCountAtPause = statuses.length
+
+      timer.start()
+
+      vi.advanceTimersByTime(3000)
+
+      expect(ticks.length).toBe(tickCountAtPause)
+      expect(ticks.at(-1)).toEqual(pausedTick)
+      expect(statuses.length).toBe(statusCountAtPause)
+      expect(statuses.at(-1)).toBe("paused")
+    })
+
+    it("ignora start después de finalizar", () => {
+      const timer = new TimerCore(2)
+      const ticks = trackTicks(timer)
+      const statuses = trackStatuses(timer)
+
+      timer.start()
+
+      vi.advanceTimersByTime(2100)
+
+      expect(statuses.at(-1)).toBe("finished")
+
+      const tickCountAtFinish = ticks.length
+      const statusCountAtFinish = statuses.length
+
+      timer.start()
+
+      vi.advanceTimersByTime(3000)
+
+      expect(ticks.length).toBe(tickCountAtFinish)
+      expect(statuses.length).toBe(statusCountAtFinish)
+      expect(statuses.at(-1)).toBe("finished")
     })
   })
 
@@ -218,16 +244,22 @@ describe("Pruebas de Caracterización de TimerCore", () => {
       expect(finishedEvents).toHaveLength(1)
     })
 
-    it("actualmente emite dos ticks finales con cero tiempo restante", () => {
+    it("emite un solo tick final con cero tiempo restante", () => {
       const timer = new TimerCore(2)
       const ticks = trackTicks(timer)
 
       timer.start()
+
       vi.advanceTimersByTime(7000)
 
       const zeroTicks = ticks.filter(({ remainingSec }) => remainingSec === 0)
 
-      expect(zeroTicks).toHaveLength(2)
+      expect(zeroTicks).toHaveLength(1)
+
+      expect(zeroTicks[0]).toEqual({
+        remainingSec: 0,
+        elapsedSec: 2,
+      })
     })
   })
 

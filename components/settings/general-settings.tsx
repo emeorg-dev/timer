@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/select"
 import { type LangCode, LANGUAGES, t } from "@/lib/i18n"
 
+import { Label } from "../ui/label"
+
+import { SettingCard } from "./setting-card"
 import { SettingSection } from "./setting-section"
 import { useSettings } from "./settings-provider"
-import { SettingCard } from "./setting-card"
-import { Label } from "../ui/label"
 
 export function GeneralSettings() {
   const { settings, update } = useSettings()

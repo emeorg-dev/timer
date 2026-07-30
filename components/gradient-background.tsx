@@ -113,6 +113,7 @@ export function GradientBackground({
   return (
     <div className="absolute inset-0 -z-10 pointer-events-none transition-opacity duration-1000">
       <GrainGradient
+        key={isDark ? "dark" : "light"}
         style={{ height: "100%", width: "100%" }}
         colorBack={colorBack}
         softness={0.76}

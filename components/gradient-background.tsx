@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react"
 import { GrainGradient } from "@paper-design/shaders-react"
 
+import { useTheme } from "next-themes"
+
 import { useSettings } from "@/hooks/use-settings"
-import { useTheme } from "@/hooks/use-theme"
 import type { TimerStatus } from "@/hooks/use-timer"
 import { interpolateColor } from "@/lib/color-utils"
 
@@ -70,8 +71,8 @@ export function GradientBackground({
   status: TimerStatus
   progress: number // 0 to 1
 }) {
-  const { settings } = useSettings()
-  const isDark = useTheme(settings.theme)
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === "dark"
 
   const [isVisible, setIsVisible] = useState(true)
 

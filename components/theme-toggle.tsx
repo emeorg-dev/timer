@@ -20,7 +20,7 @@ const OPTIONS: {
 ]
 
 export function ThemeToggle() {
-  const { settings } = useSettings()
+  const { settings, update } = useSettings()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
   const lang = settings.language
@@ -41,7 +41,10 @@ export function ThemeToggle() {
           <button
             key={opt.value}
             type="button"
-            onClick={() => setTheme(opt.value)}
+            onClick={() => {
+              setTheme(opt.value)
+              update("theme", opt.value)
+            }}
             aria-pressed={isActive}
             aria-label={t(lang, opt.key)}
             title={t(lang, opt.key)}

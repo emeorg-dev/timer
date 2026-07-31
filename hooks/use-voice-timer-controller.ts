@@ -9,7 +9,6 @@ import { useSettings } from "@/hooks/use-settings"
 import { useShortcuts } from "@/hooks/use-shortcuts"
 import { useSound } from "@/hooks/use-sound"
 import { useSpeech } from "@/hooks/use-speech"
-import { useTheme } from "@/hooks/use-theme"
 import { useTimer } from "@/hooks/use-timer"
 import { buildAnnouncement } from "@/lib/announcements"
 import { InputParser } from "@/lib/core/input-parser"
@@ -33,8 +32,6 @@ export function useVoiceTimerController() {
   const { speak, cancel, unlock } = useSpeech()
   const { play } = useSound()
   const [inputSequence, setInputSequence] = useState(DEFAULT_INPUT_SEQUENCE)
-
-  useTheme(settings.theme)
 
   const durationSec = useMemo(() => InputParser.parse(inputSequence), [inputSequence])
   const timer = useTimer(durationSec)

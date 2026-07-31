@@ -7,15 +7,15 @@ describe("SettingsRepository", () => {
     localStorage.clear()
   })
 
-  it("conserva un idioma soportado", () => {
-    localStorage.setItem("voice-timer-settings", JSON.stringify({ language: "pt" }))
+  it("conserva la configuración existente", () => {
+    localStorage.setItem("voice-timer-settings", JSON.stringify({ voiceEnabled: false }))
 
-    expect(new SettingsRepository().load().language).toBe("pt")
+    expect(new SettingsRepository().load().voiceEnabled).toBe(false)
   })
 
-  it("restaura español cuando el idioma persistido no está soportado", () => {
-    localStorage.setItem("voice-timer-settings", JSON.stringify({ language: "unknown" }))
+  it("utiliza valores por defecto si no hay configuración", () => {
+    localStorage.removeItem("voice-timer-settings")
 
-    expect(new SettingsRepository().load().language).toBe("es")
+    expect(new SettingsRepository().load().voiceEnabled).toBe(true)
   })
 })

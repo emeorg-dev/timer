@@ -3,10 +3,9 @@
 import { memo } from "react"
 import { Pause, Play, RotateCcw } from "lucide-react"
 
+import { useLanguage } from "@/components/language/language-provider"
 import { Button } from "@/components/ui/button"
-import { useSettings } from "@/hooks/use-settings"
 import type { TimerStatus } from "@/hooks/use-timer"
-import { t } from "@/lib/i18n"
 
 export const TimerControls = memo(function TimerControls({
   status,
@@ -21,22 +20,21 @@ export const TimerControls = memo(function TimerControls({
   onResume: () => void
   onReset: () => void
 }) {
-  const { settings } = useSettings()
-  const lang = settings.language
+  const { t } = useLanguage()
 
   return (
     <div className="flex items-center justify-center gap-3">
       {status === "idle" && (
         <Button size="lg" className="min-w-36 gap-2" onClick={onStart}>
           <Play className="size-5" aria-hidden="true" />
-          {t(lang, "start")}
+          {t("timer.controls.start")}
         </Button>
       )}
 
       {status === "running" && (
         <Button size="lg" variant="secondary" className="min-w-36 gap-2" onClick={onPause}>
           <Pause className="size-5" aria-hidden="true" />
-          {t(lang, "pause")}
+          {t("timer.controls.pause")}
         </Button>
       )}
 
@@ -45,7 +43,7 @@ export const TimerControls = memo(function TimerControls({
           {status === "paused" && (
             <Button size="lg" className="min-w-36 gap-2" onClick={onResume}>
               <Play className="size-5" aria-hidden="true" />
-              {t(lang, "resume")}
+              {t("timer.controls.resume")}
             </Button>
           )}
           <Button
@@ -55,7 +53,7 @@ export const TimerControls = memo(function TimerControls({
             onClick={onReset}
           >
             <RotateCcw className="size-5" aria-hidden="true" />
-            {t(lang, "reset")}
+            {t("timer.controls.reset")}
           </Button>
         </>
       )}

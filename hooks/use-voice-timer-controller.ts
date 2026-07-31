@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 
+import { useLanguage } from "@/components/language/language-provider"
 import { useAnnouncer } from "@/hooks/use-announcer"
 import { useBackgroundMusic } from "@/hooks/use-background-music"
 import { useMicrowaveInput } from "@/hooks/use-microwave-input"
@@ -29,6 +30,7 @@ function selectTimerAction(
 
 export function useVoiceTimerController() {
   const { settings, isReady, update } = useSettings()
+  const { locale } = useLanguage()
   const { speak, cancel, unlock } = useSpeech()
   const { play } = useSound()
   const [inputSequence, setInputSequence] = useState(DEFAULT_INPUT_SEQUENCE)
@@ -49,9 +51,9 @@ export function useVoiceTimerController() {
   })
 
   const announceCompletion = useCallback(() => {
-    const announcement = buildAnnouncement(0, settings.language, settings.announcementMode)
-    speak(announcement, settings.language)
-  }, [settings.announcementMode, settings.language, speak])
+    const announcement = buildAnnouncement(0, locale, settings.announcementMode)
+    speak(announcement, locale)
+  }, [settings.announcementMode, locale, speak])
 
   const finishTimer = useCallback(() => {
     if (settings.soundEnabled) play("finish")

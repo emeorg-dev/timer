@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react"
 
+import { useLanguage } from "@/components/language/language-provider"
 import { useSettings } from "@/hooks/use-settings"
 import { useSpeech } from "@/hooks/use-speech"
 import type { TimerStatus } from "@/hooks/use-timer"
@@ -33,11 +34,12 @@ interface UseAnnouncerProps {
  */
 export function useAnnouncer({ remaining, elapsed, status }: UseAnnouncerProps) {
   const { settings } = useSettings()
+  const { locale } = useLanguage()
   const speech = useSpeech()
 
   const engine = useMemo(
-    () => new AnnouncerEngine(speech, settings.language),
-    [speech, settings.language]
+    () => new AnnouncerEngine(speech, locale),
+    [speech, locale]
   )
   const strategyRef = useRef<IAnnouncementStrategy | null>(null)
 
@@ -57,7 +59,7 @@ export function useAnnouncer({ remaining, elapsed, status }: UseAnnouncerProps) 
     const strategy = createAnnouncementStrategy({
       interval: settings.announcementInterval,
       mode: settings.announcementMode,
-      language: settings.language,
+      language: locale,
     })
     strategyRef.current = strategy
     engine.setStrategy(strategy)
@@ -66,7 +68,7 @@ export function useAnnouncer({ remaining, elapsed, status }: UseAnnouncerProps) 
     settings.voiceEnabled,
     settings.announcementInterval,
     settings.announcementMode,
-    settings.language,
+    locale,
     engine,
   ])
 

@@ -1,20 +1,15 @@
-import de from "./de"
-import en from "./en"
-import es from "./es"
-import fr from "./fr"
-import it from "./it"
-import pt from "./pt"
+import { de } from "./de"
+import { en } from "./en"
+import { es } from "./es"
+import { fr } from "./fr"
+import { it } from "./it"
+import { pt } from "./pt"
+import type { Locale, TranslationDictionary } from "./types"
 
-/**
- * Identificadores oficiales y dialectos soportados por el motor de localización e internacionalización.
- */
-export type LangCode = "es" | "en" | "pt" | "fr" | "de" | "it"
+export type { Locale, Locale as LangCode, TranslationDictionary }
 
-/**
- * Opción de selección lingüística utilizada para renderizar selectores en la interfaz de configuración.
- */
 export interface LanguageOption {
-  code: LangCode
+  code: Locale
   label: string
 }
 
@@ -27,18 +22,16 @@ export const LANGUAGES: LanguageOption[] = [
   { code: "it", label: "Italiano" },
 ]
 
-const SUPPORTED_LANGUAGES = new Set<LangCode>(LANGUAGES.map(language => language.code))
+export const SUPPORTED_LOCALES = ["es", "en", "pt", "fr", "de", "it"] as const
+export const DEFAULT_LOCALE: Locale = "es"
 
-export function isSupportedLanguage(language: unknown): language is LangCode {
-  return typeof language === "string" && SUPPORTED_LANGUAGES.has(language as LangCode)
+const SUPPORTED_LOCALES_SET = new Set<string>(SUPPORTED_LOCALES)
+
+export function isSupportedLocale(locale: unknown): locale is Locale {
+  return typeof locale === "string" && SUPPORTED_LOCALES_SET.has(locale)
 }
 
-/**
- * Clave de traducción inferida del diccionario base en español, garantizando tipado estricto en todos los idiomas.
- */
-export type UIKey = keyof typeof es
-
-export const UI: Record<LangCode, Record<UIKey, string>> = {
+export const dictionaries: Record<Locale, TranslationDictionary> = {
   es,
   en,
   pt,
@@ -47,17 +40,8 @@ export const UI: Record<LangCode, Record<UIKey, string>> = {
   it,
 }
 
-/**
- * Recupera de forma segura e inmutable la cadena de texto localizada para un idioma y clave específicos.
- *
- * @param lang Código oficial del idioma activo seleccionado por el usuario.
- * @param key Clave tipada (`UIKey`) que identifica el recurso textual en el diccionario.
- * @returns Cadena traducida lista para ser renderizada en el DOM o pronunciada por voz.
- *
- * @example
- * const boton = t("es", "start"); // Retorna "Iniciar"
- */
-export function t(lang: LangCode, key: UIKey): string {
-  const dictionary = UI[lang] || UI["es"]
-  return dictionary[key]
+// Utility to get a deeply nested property using dot notation
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getNestedTranslation(obj: any, path: string): string {
+  return path.split(".").reduce((acc, part) => acc && acc[part], obj) || path
 }

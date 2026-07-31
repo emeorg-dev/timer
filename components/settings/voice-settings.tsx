@@ -2,13 +2,13 @@
 
 import { Bell, ChevronLeft, ChevronRight, Clock, Play, Speech } from "lucide-react"
 
+import { useLanguage } from "@/components/language/language-provider"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSpeech } from "@/hooks/use-speech"
-import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 import { SettingCard } from "./setting-card"
@@ -30,7 +30,7 @@ const INTERVALS: {
 export function VoiceSettings() {
   const { settings, update } = useSettings()
   const { speak, cancel, unlock } = useSpeech()
-  const lang = settings.language
+  const { t, locale } = useLanguage()
 
   // Computed state for Stepper frequency
   const availableIntervals = INTERVALS.filter(
@@ -43,14 +43,14 @@ export function VoiceSettings() {
   const handleTestVoice = () => {
     cancel()
     unlock()
-    speak(t(lang, "testPhrase"), lang)
+    speak(t("timer.settings.testPhrase"), locale)
   }
 
   return (
     <AccordionItem value="item-2" className="border-border/10">
       <AccordionTrigger className="hover:no-underline hover:bg-secondary/50 px-2 rounded-md transition-colors">
         <span className="font-semibold text-sm">
-          {lang === "es" ? "Voz y Anuncios" : "Voice & Announcements"}
+          {t("timer.settings.voiceAnnouncementsTitle")}
         </span>
       </AccordionTrigger>
       <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-6">
@@ -65,10 +65,10 @@ export function VoiceSettings() {
                 <Speech className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm font-medium leading-tight text-balance">
-                    {t(lang, "announceVoice")}
+                    {t("timer.settings.announceVoice")}
                   </span>
                   <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">
-                    {t(lang, "announceVoiceDesc")}
+                    {t("timer.settings.announceVoiceDesc")}
                   </span>
                 </div>
               </Label>
@@ -88,7 +88,7 @@ export function VoiceSettings() {
               className="w-full"
             >
               <Play className="size-3.5 shrink-0" aria-hidden="true" />
-              <span className="truncate">{t(lang, "testVoice")}</span>
+              <span className="truncate">{t("timer.settings.testVoice")}</span>
             </Button>
           </SettingCard>
         </SettingSection>
@@ -106,7 +106,7 @@ export function VoiceSettings() {
               <Label className="flex items-start gap-2.5 cursor-pointer flex-1">
                 <Bell className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
                 <span className="text-sm font-medium leading-tight text-balance">
-                  {t(lang, "announcementType")}
+                  {t("timer.settings.announcementType")}
                 </span>
               </Label>
               <div className="flex flex-col gap-2 pt-1">
@@ -126,21 +126,21 @@ export function VoiceSettings() {
                       className="text-xs"
                       disabled={!settings.voiceEnabled}
                     >
-                      {t(lang, "remaining")}
+                      {t("timer.settings.remaining")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="elapsed"
                       className="text-xs"
                       disabled={!settings.voiceEnabled}
                     >
-                      {t(lang, "elapsed")}
+                      {t("timer.settings.elapsed")}
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
                 <p className="text-xs text-muted-foreground text-center italic">
                   {settings.announcementMode === "remaining"
-                    ? `"${t(lang, "remainingExample")}"`
-                    : `"${t(lang, "elapsedExample")}"`}
+                    ? `"${t("timer.settings.remainingExample")}"`
+                    : `"${t("timer.settings.elapsedExample")}"`}
                 </p>
               </div>
             </SettingCard>
@@ -152,7 +152,7 @@ export function VoiceSettings() {
               <Label className="flex items-start gap-2.5 cursor-pointer flex-1">
                 <Clock className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
                 <span className="text-sm font-medium leading-tight text-balance">
-                  {t(lang, "frequency")}
+                  {t("timer.settings.frequency")}
                 </span>
               </Label>
               <div className="flex items-center justify-between pt-1">
@@ -173,7 +173,7 @@ export function VoiceSettings() {
 
                 <div className="flex flex-col items-center justify-center flex-1 min-w-0 px-2 text-center">
                   <span className="text-sm font-medium text-foreground truncate w-full leading-tight">
-                    {t(lang, currentIntervalOption.key)}
+                    {t(`timer.settings.${currentIntervalOption.key}`)}
                   </span>
                 </div>
 

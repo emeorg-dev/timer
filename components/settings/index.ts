@@ -1,5 +1,4 @@
 export * from "./audio-settings"
-export * from "./general-settings"
 export * from "./setting-card"
 export * from "./setting-section"
 export * from "./settings-panel"

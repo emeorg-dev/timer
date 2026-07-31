@@ -1,5 +1,3 @@
-import { isSupportedLanguage } from "../i18n"
-
 import type { ISettingsRepository } from "./interfaces"
 import type { Settings } from "./types"
 import { DEFAULT_SETTINGS } from "./types"
@@ -22,10 +20,14 @@ export class SettingsRepository implements ISettingsRepository {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
-        const parsed = JSON.parse(raw) as Partial<Settings>
-        if (parsed.language && !isSupportedLanguage(parsed.language)) {
-          parsed.language = "es"
-        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const parsed = JSON.parse(raw) as any
+        
+        // Remove legacy properties
+        delete parsed.theme
+        delete parsed.language
+        delete parsed.locale
+
         return { ...DEFAULT_SETTINGS, ...parsed }
       }
     } catch {

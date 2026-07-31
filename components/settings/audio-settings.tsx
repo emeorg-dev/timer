@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { AudioLines, Check, ChevronsUpDown, Disc } from "lucide-react"
 
+import { useLanguage } from "@/components/language/language-provider"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,7 +18,6 @@ import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
-import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 import { SettingCard } from "./setting-card"
@@ -34,14 +34,14 @@ const MUSIC_TRACKS = [
 
 export function AudioSettings() {
   const { settings, update } = useSettings()
-  const lang = settings.language
+  const { t } = useLanguage()
   const [isMusicDropdownOpen, setIsMusicDropdownOpen] = useState(false)
 
   return (
     <AccordionItem value="item-3" className="border-border/10">
       <AccordionTrigger className="hover:no-underline hover:bg-secondary/50 px-2 rounded-md transition-colors">
         <span className="font-semibold text-sm">
-          {lang === "es" ? "Audio y Música" : "Audio & Music"}
+          {t("timer.settings.audioMusicTitle")}
         </span>
       </AccordionTrigger>
       <AccordionContent className="px-2 pt-4 pb-2 flex flex-col gap-3">
@@ -55,10 +55,10 @@ export function AudioSettings() {
               <AudioLines className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
               <div className="flex flex-col gap-0.5">
                 <span className="text-sm font-medium leading-tight text-balance">
-                  {t(lang, "enableSound")}
+                  {t("timer.settings.enableSound")}
                 </span>
                 <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">
-                  {t(lang, "enableSoundDesc")}
+                  {t("timer.settings.enableSoundDesc")}
                 </span>
               </div>
             </Label>
@@ -82,10 +82,10 @@ export function AudioSettings() {
                 <Disc className="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm font-medium leading-tight text-balance">
-                    {t(lang, "enableMusic")}
+                    {t("timer.settings.enableMusic")}
                   </span>
                   <span className="text-xs text-muted-foreground font-normal leading-normal text-balance">
-                    {t(lang, "enableMusicDesc")}
+                    {t("timer.settings.enableMusicDesc")}
                   </span>
                 </div>
               </Label>
@@ -101,7 +101,7 @@ export function AudioSettings() {
               <div className="flex flex-col gap-4 pt-2">
                 <div className="flex flex-col gap-2">
                   <Label className="text-xs text-muted-foreground">
-                    {lang === "es" ? "Pista de Música" : "Music Track"}
+                    {t("timer.settings.musicTrack")}
                   </Label>
                   <Popover open={isMusicDropdownOpen} onOpenChange={setIsMusicDropdownOpen}>
                     <PopoverTrigger
@@ -117,20 +117,18 @@ export function AudioSettings() {
                       {settings.musicTrack
                         ? MUSIC_TRACKS.find(track => track.value === settings.musicTrack)?.label ||
                           settings.musicTrack
-                        : lang === "es"
-                          ? "Selecciona una pista..."
-                          : "Select a track..."}
+                        : t("timer.settings.selectTrack")}
                       <ChevronsUpDown className="opacity-50 shrink-0" />
                     </PopoverTrigger>
                     <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                       <Command>
                         <CommandInput
-                          placeholder={lang === "es" ? "Buscar pista..." : "Search track..."}
+                          placeholder={t("timer.settings.searchTrack")}
                           className="h-9"
                         />
                         <CommandList>
                           <CommandEmpty>
-                            {lang === "es" ? "Pista no encontrada." : "No track found."}
+                            {t("timer.settings.noTrack")}
                           </CommandEmpty>
                           <CommandGroup>
                             {MUSIC_TRACKS.map(track => (
@@ -163,7 +161,7 @@ export function AudioSettings() {
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs text-muted-foreground">
-                      {lang === "es" ? "Volumen" : "Volume"}
+                      {t("timer.settings.volume")}
                     </Label>
                     <span className="text-xs text-muted-foreground">{settings.musicVolume}%</span>
                   </div>

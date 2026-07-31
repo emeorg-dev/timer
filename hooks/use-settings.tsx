@@ -21,10 +21,6 @@ interface SettingsProviderProps {
 const SettingsContext = createContext<SettingsContextValue | null>(null)
 const browserSettingsRepository = new SettingsRepository()
 
-function synchronizeDocumentLanguage(language: Settings["language"]): void {
-  document.documentElement.lang = language
-}
-
 export function SettingsProvider({
   children,
   repository = browserSettingsRepository,
@@ -40,10 +36,6 @@ export function SettingsProvider({
   useEffect(() => {
     if (isReady) repository.save(settings)
   }, [isReady, repository, settings])
-
-  useEffect(() => {
-    synchronizeDocumentLanguage(settings.language)
-  }, [settings.language])
 
   const update: SettingsContextValue["update"] = (key, value) => {
     setSettings(previousSettings => ({ ...previousSettings, [key]: value }))

@@ -4,26 +4,25 @@ import * as React from "react"
 import { useTheme } from "next-themes"
 import { Monitor, Moon, Sun } from "lucide-react"
 
-import { useSettings } from "@/hooks/use-settings"
-import { t } from "@/lib/i18n"
-import type { ThemePref } from "@/lib/settings/types"
+import { useLanguage } from "@/components/language/language-provider"
 import { cn } from "@/lib/utils"
 
+type ThemeValue = "light" | "system" | "dark"
+
 const OPTIONS: {
-  value: ThemePref
+  value: ThemeValue
   icon: React.ReactNode
-  key: "lightMode" | "darkMode" | "systemMode"
+  key: "light" | "dark" | "system"
 }[] = [
-  { value: "light", icon: <Sun className="size-4" aria-hidden="true" />, key: "lightMode" },
-  { value: "system", icon: <Monitor className="size-4" aria-hidden="true" />, key: "systemMode" },
-  { value: "dark", icon: <Moon className="size-4" aria-hidden="true" />, key: "darkMode" },
+  { value: "light", icon: <Sun className="size-4" aria-hidden="true" />, key: "light" },
+  { value: "system", icon: <Monitor className="size-4" aria-hidden="true" />, key: "system" },
+  { value: "dark", icon: <Moon className="size-4" aria-hidden="true" />, key: "dark" },
 ]
 
 export function ThemeToggle() {
-  const { settings, update } = useSettings()
   const { theme, setTheme } = useTheme()
+  const { t } = useLanguage()
   const [mounted, setMounted] = React.useState(false)
-  const lang = settings.language
 
   React.useEffect(() => {
     setMounted(true)
@@ -33,7 +32,7 @@ export function ThemeToggle() {
     <div
       className="flex items-center gap-1 rounded-full border border-border bg-card p-1"
       role="group"
-      aria-label={t(lang, "systemMode")}
+      aria-label={t("common.theme.label")}
     >
       {OPTIONS.map(opt => {
         const isActive = mounted && theme === opt.value
@@ -41,13 +40,10 @@ export function ThemeToggle() {
           <button
             key={opt.value}
             type="button"
-            onClick={() => {
-              setTheme(opt.value)
-              update("theme", opt.value)
-            }}
+            onClick={() => setTheme(opt.value)}
             aria-pressed={isActive}
-            aria-label={t(lang, opt.key)}
-            title={t(lang, opt.key)}
+            aria-label={t(`common.theme.${opt.key}`)}
+            title={t(`common.theme.${opt.key}`)}
             className={cn(
               "flex size-8 items-center justify-center rounded-full transition-colors",
               isActive

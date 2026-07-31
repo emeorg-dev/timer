@@ -1,11 +1,9 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { useTheme } from "next-themes"
 import { GrainGradient } from "@paper-design/shaders-react"
 
-import { useTheme } from "next-themes"
-
-import { useSettings } from "@/hooks/use-settings"
 import type { TimerStatus } from "@/hooks/use-timer"
 import { interpolateColor } from "@/lib/color-utils"
 

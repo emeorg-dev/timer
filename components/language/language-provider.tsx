@@ -34,16 +34,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored && isSupportedLocale(stored)) {
         setLocaleState(stored)
-      } else {
-        // Fallback to old key for migration
-        const oldStored = localStorage.getItem("voice-timer-settings")
-        if (oldStored) {
-          const parsed = JSON.parse(oldStored)
-          if (parsed.language && isSupportedLocale(parsed.language)) {
-            setLocaleState(parsed.language)
-            localStorage.setItem(STORAGE_KEY, parsed.language)
-          }
-        }
       }
     } catch {
       // ignore
